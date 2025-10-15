@@ -113,7 +113,9 @@ export function CyberScoreDonut() {
       border: '2px solid #E0E4E8',
       height: 420,
       position: 'relative',
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       <div style={{ 
         marginBottom: 24, 
@@ -129,17 +131,33 @@ export function CyberScoreDonut() {
       </div>
       
       {/* Donut Chart */}
-      <div style={{ position: 'relative', height: 200, marginBottom: 24 }}>
+      <div style={{ 
+        position: 'relative', 
+        height: 200, 
+        marginBottom: 24,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Pie data={data} dataKey="value" innerRadius="45%" outerRadius="70%" startAngle={90} endAngle={-270}>
+            <Pie 
+              data={data} 
+              dataKey="value" 
+              innerRadius="45%" 
+              outerRadius="70%" 
+              startAngle={90} 
+              endAngle={-270}
+              cx="50%"
+              cy="50%"
+            >
               <Cell fill={UNCW_TEAL} />
               <Cell fill="#E0E4E8" />
             </Pie>
           </PieChart>
         </ResponsiveContainer>
         
-        {/* Centered Score */}
+        {/* Perfectly Centered Score */}
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -147,25 +165,29 @@ export function CyberScoreDonut() {
           transform: 'translate(-50%, -50%)',
           textAlign: 'center',
           pointerEvents: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
+          width: 'auto',
+          height: 'auto'
         }}>
           <div style={{ 
-            fontSize: '3rem', 
+            fontSize: '2.5rem', 
             fontWeight: 700, 
             color: UNCW_TEAL, 
-            lineHeight: 0.8,
-            marginBottom: '-8px'
+            lineHeight: 1,
+            textAlign: 'center',
+            margin: 0,
+            padding: 0
           }}>
             {score}
           </div>
           <div style={{ 
-            fontSize: '1rem', 
+            fontSize: '0.9rem', 
             fontWeight: 600, 
             color: '#666',
-            lineHeight: 1
+            textAlign: 'center',
+            lineHeight: 1,
+            margin: 0,
+            padding: 0,
+            marginTop: '-2px'
           }}>
             / 100
           </div>
@@ -173,14 +195,17 @@ export function CyberScoreDonut() {
       </div>
       
       {/* Metrics Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, flex: 1 }}>
         {metrics.map((metric, idx) => (
           <div key={idx} style={{
             textAlign: 'center',
             padding: '12px 8px',
             backgroundColor: '#F8FAFB',
             borderRadius: 8,
-            border: '1px solid #E0E4E8'
+            border: '1px solid #E0E4E8',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
           }}>
             <div style={{ fontSize: '1.2rem', fontWeight: 700, color: metric.color, marginBottom: 4 }}>
               {metric.value}
