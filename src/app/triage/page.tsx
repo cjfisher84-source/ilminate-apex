@@ -1,10 +1,11 @@
 'use client'
 import { useState } from 'react'
 import {
-  Grid, Card, CardContent, CardActions,
+  Card, CardContent, CardActions,
   TextField, Button, MenuItem, Typography,
   Snackbar, Alert, Box, Chip, LinearProgress
 } from '@mui/material'
+import Grid from '@mui/material/Grid2'
 
 type Kind = 'False Positive' | 'False Negative' | 'Question'
 
@@ -60,7 +61,7 @@ ${details || '(none)'}
       <Typography variant="h6">Apex AI — Triage</Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} md={7}>
+        <Grid size={{ xs: 12, md: 7 }}>
           <Card>
             {loading && <LinearProgress />}
             <CardContent sx={{ display:'grid', gap:2 }}>
@@ -76,10 +77,10 @@ ${details || '(none)'}
               </TextField>
 
               <Grid container spacing={2}>
-                <Grid item xs={12} md={8}>
+                <Grid size={{ xs: 12, md: 8 }}>
                   <TextField label="Message Subject" fullWidth value={subject} onChange={e=>setSubject(e.target.value)} />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <TextField label="Sender" placeholder="user@domain.com" fullWidth value={sender} onChange={e=>setSender(e.target.value)} />
                 </Grid>
               </Grid>
@@ -109,7 +110,7 @@ ${details || '(none)'}
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={5}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Card>
             <CardContent>
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb:1 }}>Result</Typography>
