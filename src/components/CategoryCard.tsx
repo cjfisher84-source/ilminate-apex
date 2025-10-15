@@ -5,21 +5,26 @@ export default function CategoryCard({ label, value, description }:{label:string
   return (
     <Tooltip title={description} arrow placement="top">
       <Card sx={{ 
-        bgcolor: 'rgba(15, 23, 42, 0.8)', 
-        border: '1px solid rgba(71, 85, 105, 0.5)',
+        bgcolor: '#FFFFFF', 
+        border: '2px solid #E0E4E8',
         cursor: 'help',
-        '&:hover': { borderColor: '#006666' }
+        transition: 'all 0.3s ease',
+        '&:hover': { 
+          borderColor: '#007070',
+          boxShadow: '0 8px 24px rgba(0, 112, 112, 0.15)',
+          transform: 'translateY(-2px)'
+        }
       }}>
         <CardContent sx={{ p: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box>
-            <Typography variant="caption" sx={{ textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)' }}>
+            <Typography variant="caption" sx={{ textTransform: 'uppercase', color: '#666', fontWeight: 600, letterSpacing: 1 }}>
               Messages
             </Typography>
-            <Typography variant="h4" sx={{ fontWeight: 600, mt: 0.5 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, mt: 0.5, color: '#1a1a1a' }}>
               {value.toLocaleString()}
             </Typography>
           </Box>
-          <Typography variant="h6" sx={{ color: '#006666', fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ color: '#007070', fontWeight: 700 }}>
             {label}
           </Typography>
         </CardContent>
