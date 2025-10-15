@@ -3,8 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --background: #0f172a;
-  --foreground: #f1f5f9;
+  /* UNCW Teal & Gold - Bright Color Scheme */
+  --uncw-teal: #007070;
+  --uncw-teal-dark: #005555;
+  --uncw-gold: #FFD700;
+  --uncw-gold-dark: #E6C200;
+  --background: #F5F7FA;
+  --foreground: #1a1a1a;
+  --card-bg: #FFFFFF;
+  --border-color: #E0E4E8;
 }
 
 body {

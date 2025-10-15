@@ -3,8 +3,9 @@ import { useState } from 'react'
 import {
   Card, CardContent, CardActions,
   TextField, Button, MenuItem, Typography,
-  Snackbar, Alert, Box, Chip, LinearProgress, Stack
+  Snackbar, Alert, Box, Chip, LinearProgress
 } from '@mui/material'
+import Link from 'next/link'
 
 type Kind = 'False Positive' | 'False Negative' | 'Question'
 
@@ -56,18 +57,79 @@ ${details || '(none)'}
   }
 
   return (
-    <Box sx={{ display:'flex', flexDirection:'column', gap:3, p:3 }}>
-      <Typography variant="h6">Apex AI — Triage</Typography>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#F5F7FA', p: 4 }}>
+      <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
+        {/* Header with Logo */}
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          mb: 4,
+          pb: 3,
+          borderBottom: '2px solid #007070'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {/* Ilminate Logo */}
+            <Box sx={{
+              width: 80,
+              height: 80,
+              bgcolor: '#007070',
+              borderRadius: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 900,
+              fontSize: '2.5rem',
+              color: 'white',
+              boxShadow: '0 4px 12px rgba(0, 112, 112, 0.3)'
+            }}>
+              IL
+            </Box>
+            <Box>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: '#1a1a1a' }}>
+                Apex AI <span style={{ color: '#007070' }}>Triage</span>
+              </Typography>
+              <Typography variant="subtitle1" sx={{ color: '#666', fontWeight: 500 }}>
+                Intelligent Threat Analysis & Investigation
+              </Typography>
+            </Box>
+          </Box>
+          <Link href="/" passHref legacyBehavior>
+            <Button 
+              variant="outlined" 
+              component="a" 
+              size="large"
+              sx={{ 
+                borderColor: '#007070',
+                color: '#007070',
+                px: 4,
+                py: 1.5,
+                fontSize: '1.1rem',
+                fontWeight: 600,
+                '&:hover': { 
+                  borderColor: '#005555',
+                  bgcolor: 'rgba(0, 112, 112, 0.05)'
+                }
+              }}
+            >
+              Dashboard
+            </Button>
+          </Link>
+        </Box>
 
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: { xs: 'column', md: 'row' }, 
-        gap: 2 
-      }}>
-        <Box sx={{ flex: { xs: 1, md: '1 1 58%' } }}>
-          <Card>
-            {loading && <LinearProgress />}
-            <CardContent sx={{ display:'grid', gap:2 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', md: 'row' }, 
+          gap: 3
+        }}>
+          <Box sx={{ flex: { xs: 1, md: '1 1 58%' } }}>
+            <Card sx={{ 
+              bgcolor: '#FFFFFF',
+              border: '2px solid #E0E4E8',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+            }}>
+              {loading && <LinearProgress sx={{ bgcolor: '#E0E4E8', '& .MuiLinearProgress-bar': { bgcolor: '#007070' } }} />}
+              <CardContent sx={{ display:'grid', gap:2 }}>
               <Typography variant="subtitle2" color="text.secondary">Report type</Typography>
               <TextField
                 select fullWidth label="Triage Type"
@@ -107,17 +169,40 @@ ${details || '(none)'}
               />
 
               <Box sx={{ display:'flex', gap:1, flexWrap:'wrap' }}>
-                <Chip label="SPF/DKIM/DMARC" />
-                <Chip label="Suspicious Links" />
-                <Chip label="Attachment Heuristics" />
-                <Chip label="Sender Reputation" />
+                <Chip label="SPF/DKIM/DMARC" sx={{ bgcolor: '#007070', color: 'white', fontWeight: 600 }} />
+                <Chip label="Suspicious Links" sx={{ bgcolor: '#FFD700', color: '#1a1a1a', fontWeight: 600 }} />
+                <Chip label="Attachment Heuristics" sx={{ bgcolor: '#007070', color: 'white', fontWeight: 600 }} />
+                <Chip label="Sender Reputation" sx={{ bgcolor: '#FFD700', color: '#1a1a1a', fontWeight: 600 }} />
               </Box>
             </CardContent>
             <CardActions sx={{ p:2, gap:1 }}>
-              <Button variant="contained" color="primary" disabled={disabled} onClick={runTriage}>
+              <Button 
+                variant="contained" 
+                disabled={disabled} 
+                onClick={runTriage}
+                sx={{
+                  bgcolor: '#007070',
+                  color: 'white',
+                  fontWeight: 600,
+                  '&:hover': { bgcolor: '#005555' },
+                  '&:disabled': { bgcolor: '#E0E4E8', color: '#999' }
+                }}
+              >
                 Run Apex AI Analysis
               </Button>
-              <Button variant="outlined" onClick={draftEmail}>
+              <Button 
+                variant="outlined" 
+                onClick={draftEmail}
+                sx={{
+                  borderColor: '#FFD700',
+                  color: '#E6C200',
+                  fontWeight: 600,
+                  '&:hover': { 
+                    borderColor: '#E6C200',
+                    bgcolor: 'rgba(255, 215, 0, 0.05)'
+                  }
+                }}
+              >
                 Email triage@ilminate.com
               </Button>
             </CardActions>
@@ -125,18 +210,32 @@ ${details || '(none)'}
         </Box>
 
         <Box sx={{ flex: { xs: 1, md: '1 1 42%' } }}>
-          <Card>
+          <Card sx={{ 
+            bgcolor: '#FFFFFF',
+            border: '2px solid #E0E4E8',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+          }}>
             <CardContent>
-              <Typography variant="subtitle2" color="text.secondary" sx={{ mb:1 }}>Result</Typography>
+              <Typography variant="subtitle2" sx={{ mb:1, color: '#666', fontWeight: 700, textTransform: 'uppercase' }}>
+                Result
+              </Typography>
               <Box component="pre" sx={{
-                p:2, border:'1px solid #1d2630', borderRadius:1,
-                bgcolor: 'background.default', overflow:'auto', whiteSpace:'pre-wrap', minHeight: 240
+                p:2, 
+                border:'2px solid #E0E4E8', 
+                borderRadius:2,
+                bgcolor: '#F8FAFB', 
+                overflow:'auto', 
+                whiteSpace:'pre-wrap', 
+                minHeight: 240,
+                color: '#1a1a1a',
+                fontSize: '0.9rem'
               }}>
                 {result || 'Run the analysis to see a summary.'}
               </Box>
             </CardContent>
           </Card>
         </Box>
+      </Box>
       </Box>
 
       <Snackbar
