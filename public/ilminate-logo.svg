@@ -1,0 +1,39 @@
+<svg width="300" height="200" viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- White background with rounded corners -->
+  <rect width="300" height="200" fill="white" rx="15"/>
+  
+  <!-- Shield background (dark navy blue) -->
+  <defs>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="lighthouseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891b2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0e7490;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield shape (positioned on the right) -->
+  <path d="M200 30 L250 50 L250 130 C250 150 200 170 200 170 C200 170 150 150 150 130 L150 50 Z" fill="url(#shieldGradient)"/>
+  
+  <!-- Lighthouse tower (inside shield) -->
+  <rect x="188" y="70" width="24" height="50" fill="url(#lighthouseGradient)"/>
+  
+  <!-- Lighthouse top/lantern room -->
+  <rect x="182" y="60" width="36" height="20" fill="url(#lighthouseGradient)"/>
+  
+  <!-- Light beam (extending beyond shield to the right) -->
+  <path d="M218 70L250 55L218 65L250 60L218 70Z" fill="#fbbf24" opacity="0.9"/>
+  
+  <!-- Lighthouse base -->
+  <rect x="175" y="120" width="50" height="15" rx="3" fill="url(#lighthouseGradient)"/>
+  
+  <!-- Window (dark rectangular opening) -->
+  <rect x="194" y="90" width="12" height="8" rx="2" fill="#1e3a8a" opacity="0.8"/>
+  
+  <!-- ILMINATE text (positioned bottom left) -->
+  <text x="50" y="160" text-anchor="start" font-family="Arial, sans-serif" font-size="28" font-weight="bold">
+    <tspan fill="#0891b2">ILM</tspan><tspan fill="#1e3a8a">INATE</tspan>
+  </text>
+</svg>
