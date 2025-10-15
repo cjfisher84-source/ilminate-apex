@@ -72,7 +72,7 @@ ${details || '(none)'}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
             {/* Ilminate Logo */}
             <Image 
-              src="/ilminate-logo.svg" 
+              src="/ilminate-logo.png" 
               alt="Ilminate Logo" 
               width={100} 
               height={100}
