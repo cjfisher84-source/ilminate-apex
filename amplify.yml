@@ -1,0 +1,31 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci --cache .npm --prefer-offline
+        - echo "Checking environment variables..."
+        - echo "NEXTAUTH_URL is set:" $NEXTAUTH_URL
+        - echo "NEXTAUTH_SECRET length:" ${#NEXTAUTH_SECRET}
+        - echo "ANTHROPIC_API_KEY set:" ${ANTHROPIC_API_KEY:+yes}
+        - echo "OPENAI_API_KEY set:" ${OPENAI_API_KEY:+yes}
+        - echo "Working directory:" $(pwd)
+        - echo "Directory contents:" && ls -la
+    build:
+      commands:
+        - env | grep -E '(NEXTAUTH|GOOGLE|AZURE|ANTHROPIC|OPENAI|COGNITO)' | sed 's/=.*/=***/' || true
+        - npm run build
+    postBuild:
+      commands:
+        - echo "Build completed successfully"
+        - echo "Build output:" && ls -la .next/
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - .next/cache/**/*
+      - .npm/**/*
+      - node_modules/**/*
+

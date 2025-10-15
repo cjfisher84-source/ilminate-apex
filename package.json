@@ -1,0 +1,46 @@
+{
+  "name": "ilminate-apex",
+  "version": "0.1.0",
+  "private": true,
+  "description": "APEX AI-powered cybersecurity analysis and triage system",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "build-strict": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.906.0",
+    "@aws-sdk/client-dynamodb": "^3.906.0",
+    "@aws-sdk/client-s3": "^3.906.0",
+    "@aws-sdk/lib-dynamodb": "^3.906.0",
+    "@aws-sdk/s3-request-presigner": "^3.906.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.4",
+    "@mui/material": "^7.3.4",
+    "@radix-ui/react-tooltip": "1.2.8",
+    "class-variance-authority": "0.7.1",
+    "lucide-react": "0.545.0",
+    "next": "13.5.7",
+    "next-auth": "^4.24.11",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0",
+    "recharts": "^3.2.1",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "13.5.7",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+
