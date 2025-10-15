@@ -20,9 +20,13 @@ frontend:
         - echo "Build completed successfully"
         - echo "Build output:" && ls -la .next/
   artifacts:
-    baseDirectory: .next
+    baseDirectory: .
     files:
       - '**/*'
+      - .next/**/*
+      - node_modules/**/*
+      - package.json
+      - public/**/*
   cache:
     paths:
       - .next/cache/**/*
