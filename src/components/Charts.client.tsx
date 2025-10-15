@@ -145,16 +145,28 @@ export function CyberScoreDonut() {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
+          textAlign: 'center',
+          pointerEvents: 'none',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'none'
+          justifyContent: 'center'
         }}>
-          <div style={{ fontSize: '3rem', fontWeight: 700, color: UNCW_TEAL, lineHeight: 1 }}>
+          <div style={{ 
+            fontSize: '3rem', 
+            fontWeight: 700, 
+            color: UNCW_TEAL, 
+            lineHeight: 0.8,
+            marginBottom: '-8px'
+          }}>
             {score}
           </div>
-          <div style={{ fontSize: '1rem', fontWeight: 600, color: '#666' }}>
+          <div style={{ 
+            fontSize: '1rem', 
+            fontWeight: 600, 
+            color: '#666',
+            lineHeight: 1
+          }}>
             / 100
           </div>
         </div>
