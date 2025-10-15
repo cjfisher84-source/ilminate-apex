@@ -4,7 +4,7 @@
   "private": true,
   "description": "APEX AI-powered cybersecurity analysis and triage system",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "build-strict": "next build",
     "start": "next start",
