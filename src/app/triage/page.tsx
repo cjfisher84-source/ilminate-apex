@@ -6,6 +6,7 @@ import {
   Snackbar, Alert, Box, Chip, LinearProgress
 } from '@mui/material'
 import Link from 'next/link'
+import Image from 'next/image'
 
 type Kind = 'False Positive' | 'False Negative' | 'Question'
 
@@ -68,23 +69,16 @@ ${details || '(none)'}
           pb: 3,
           borderBottom: '2px solid #007070'
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
             {/* Ilminate Logo */}
-            <Box sx={{
-              width: 80,
-              height: 80,
-              bgcolor: '#007070',
-              borderRadius: 2,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 900,
-              fontSize: '2.5rem',
-              color: 'white',
-              boxShadow: '0 4px 12px rgba(0, 112, 112, 0.3)'
-            }}>
-              IL
-            </Box>
+            <Image 
+              src="/ilminate-logo.svg" 
+              alt="Ilminate Logo" 
+              width={100} 
+              height={100}
+              priority
+              style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
+            />
             <Box>
               <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: '#1a1a1a' }}>
                 Apex AI <span style={{ color: '#007070' }}>Triage</span>
