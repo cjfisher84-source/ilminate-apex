@@ -1,6 +1,7 @@
 'use client'
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Legend, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
-import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes } from '@/lib/mock'
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Legend, LineChart, Line, PieChart, Pie, Cell, Sankey } from 'recharts'
+import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes, mockThreatInteractionMap, mockAIExploitDetection, mockCrossChannelTimeline } from '@/lib/mock'
+import { Box, Typography, Chip } from '@mui/material'
 
 const UNCW_TEAL = '#007070'
 const UNCW_GOLD = '#FFD700'
@@ -319,6 +320,246 @@ export function EDRThreatDetections() {
           <Bar dataKey="detected" name="Detected" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
           <Bar dataKey="blocked" name="Blocked" fill={UNCW_GOLD} radius={[8, 8, 0, 0]} />
         </BarChart>
+      </ResponsiveContainer>
+    </div>
+  )
+}
+
+export function ThreatInteractionMap({ campaignId }: { campaignId: string }) {
+  const interactions = mockThreatInteractionMap(campaignId)
+  
+  const actionCounts = interactions.reduce((acc, int) => {
+    acc[int.action] = (acc[int.action] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+  
+  const outcomeColors = {
+    safe: '#10b981',
+    prevented: UNCW_GOLD,
+    compromised: '#ef4444'
+  }
+  
+  return (
+    <div style={{ 
+      backgroundColor: '#FFFFFF', 
+      borderRadius: 16, 
+      padding: 32, 
+      border: '2px solid #E0E4E8',
+      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+      minHeight: 400
+    }}>
+      <div style={{ 
+        marginBottom: 24, 
+        color: '#1a1a1a', 
+        fontSize: '1.3rem', 
+        fontWeight: 700,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12
+      }}>
+        <div style={{ width: 4, height: 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        Threat Interaction Map
+      </div>
+      
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+          {Object.entries(actionCounts).map(([action, count]) => (
+            <Box key={action} sx={{ textAlign: 'center' }}>
+              <Box sx={{
+                width: 100,
+                height: 100,
+                borderRadius: '50%',
+                bgcolor: action === 'reported' ? UNCW_GOLD : action === 'clicked' ? '#ef4444' : UNCW_TEAL,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+              }}>
+                <Typography variant="h4" sx={{ fontWeight: 700 }}>{count}</Typography>
+                <Typography variant="caption" sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>
+                  {action}
+                </Typography>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+        
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+          {Object.entries(interactions.reduce((acc, int) => {
+            acc[int.outcome] = (acc[int.outcome] || 0) + 1
+            return acc
+          }, {} as Record<string, number>)).map(([outcome, count]) => (
+            <Chip 
+              key={outcome}
+              label={`${outcome.toUpperCase()}: ${count}`}
+              sx={{ 
+                bgcolor: outcomeColors[outcome as keyof typeof outcomeColors],
+                color: 'white',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                px: 2,
+                py: 2.5
+              }}
+            />
+          ))}
+        </Box>
+      </Box>
+      
+      <Box sx={{ mt: 3, p: 2, bgcolor: '#F8FAFB', borderRadius: 2 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2, color: '#666' }}>
+          CHANNEL BREAKDOWN
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          {Object.entries(interactions.reduce((acc, int) => {
+            acc[int.channel] = (acc[int.channel] || 0) + 1
+            return acc
+          }, {} as Record<string, number>)).map(([channel, count]) => (
+            <Chip 
+              key={channel}
+              label={`${channel}: ${count}`}
+              variant="outlined"
+              sx={{ borderColor: UNCW_TEAL, color: UNCW_TEAL, fontWeight: 600 }}
+            />
+          ))}
+        </Box>
+      </Box>
+    </div>
+  )
+}
+
+export function AIExploitDetectionChart() {
+  const data = mockAIExploitDetection()
+  
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const item = payload[0].payload
+      return (
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          border: '2px solid #007070',
+          borderRadius: 12,
+          padding: 16,
+          maxWidth: 350
+        }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 1 }}>
+            {item.category}
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#666', mb: 2, lineHeight: 1.6 }}>
+            {item.description}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
+            <Chip label={`Detected: ${item.detected}`} size="small" sx={{ bgcolor: '#ef4444', color: 'white', fontWeight: 600 }} />
+            <Chip label={`Blocked: ${item.blocked}`} size="small" sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600 }} />
+            <Chip label={item.severity} size="small" sx={{ 
+              bgcolor: item.severity === 'Critical' ? '#ef4444' : item.severity === 'High' ? '#f97316' : '#FFD700',
+              color: 'white',
+              fontWeight: 600
+            }} />
+          </Box>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: '#666', display: 'block', mb: 0.5 }}>
+            Examples:
+          </Typography>
+          {item.examples.map((ex: string, idx: number) => (
+            <Typography key={idx} variant="caption" sx={{ display: 'block', color: '#999', fontStyle: 'italic', mb: 0.5 }}>
+              • {ex}
+            </Typography>
+          ))}
+        </div>
+      )
+    }
+    return null
+  }
+  
+  return (
+    <div style={{ 
+      backgroundColor: '#FFFFFF', 
+      borderRadius: 16, 
+      padding: 32, 
+      border: '2px solid #E0E4E8',
+      height: 520,
+      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+    }}>
+      <div style={{ 
+        marginBottom: 24, 
+        color: '#1a1a1a', 
+        fontSize: '1.3rem', 
+        fontWeight: 700,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12
+      }}>
+        <div style={{ width: 4, height: 28, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
+        AI Exploit Detection & Prevention
+      </div>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 100 }} layout="horizontal">
+          <XAxis type="number" tick={{ fontSize: 11, fill: '#666' }} />
+          <YAxis type="category" dataKey="category" tick={{ fontSize: 11, fill: '#666' }} width={150} />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend wrapperStyle={{ paddingTop: 20 }} />
+          <Bar dataKey="detected" name="Detected" fill="#ef4444" radius={[0, 8, 8, 0]} />
+          <Bar dataKey="blocked" name="Blocked" fill={UNCW_TEAL} radius={[0, 8, 8, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  )
+}
+
+export function CrossChannelTimelineChart({ campaignId }: { campaignId: string }) {
+  const data = mockCrossChannelTimeline(campaignId)
+  
+  return (
+    <div style={{ 
+      backgroundColor: '#FFFFFF', 
+      borderRadius: 16, 
+      padding: 32, 
+      border: '2px solid #E0E4E8',
+      height: 420,
+      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+    }}>
+      <div style={{ 
+        marginBottom: 24, 
+        color: '#1a1a1a', 
+        fontSize: '1.3rem', 
+        fontWeight: 700,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12
+      }}>
+        <div style={{ width: 4, height: 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        Cross-Channel Threat Activity
+      </div>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id="colorEmail" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={UNCW_TEAL} stopOpacity={0.5}/>
+              <stop offset="95%" stopColor={UNCW_TEAL} stopOpacity={0.05}/>
+            </linearGradient>
+            <linearGradient id="colorTeams" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={UNCW_GOLD} stopOpacity={0.5}/>
+              <stop offset="95%" stopColor={UNCW_GOLD} stopOpacity={0.05}/>
+            </linearGradient>
+            <linearGradient id="colorSlack" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.5}/>
+              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.05}/>
+            </linearGradient>
+            <linearGradient id="colorAI" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.5}/>
+              <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05}/>
+            </linearGradient>
+          </defs>
+          <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#999' }} />
+          <YAxis tick={{ fontSize: 11, fill: '#666' }} width={40} />
+          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }} />
+          <Legend wrapperStyle={{ paddingTop: 16 }} />
+          <Area type="monotone" dataKey="email" name="Email" stroke={UNCW_TEAL} fill="url(#colorEmail)" strokeWidth={2} />
+          <Area type="monotone" dataKey="teams" name="Teams" stroke={UNCW_GOLD} fill="url(#colorTeams)" strokeWidth={2} />
+          <Area type="monotone" dataKey="slack" name="Slack" stroke="#8b5cf6" fill="url(#colorSlack)" strokeWidth={2} />
+          <Area type="monotone" dataKey="aiAssistant" name="AI Assistant" stroke="#ef4444" fill="url(#colorAI)" strokeWidth={2} />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   )

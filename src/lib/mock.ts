@@ -120,3 +120,260 @@ export const GLOSSARY: Record<ThreatKind,string> = {
   ATO: 'Account Takeover — attacker uses stolen credentials to act as the user.'
 }
 
+// ============================================================================
+// PHASE 1 ENHANCEMENTS: Interaction Maps, AI Exploits, Campaign Analysis
+// ============================================================================
+
+export interface ThreatInteraction {
+  user: string
+  action: 'delivered' | 'opened' | 'clicked' | 'reported' | 'deleted' | 'replied'
+  timestamp: string
+  outcome: 'safe' | 'compromised' | 'prevented'
+  channel: 'email' | 'teams' | 'slack' | 'ai-assistant'
+}
+
+export function mockThreatInteractionMap(campaignId: string) {
+  const users = ['user1@company.com', 'user2@company.com', 'user3@company.com', 'user4@company.com', 'user5@company.com']
+  const interactions: ThreatInteraction[] = []
+  
+  users.forEach(user => {
+    const received = Math.random() > 0.1
+    if (!received) return
+    
+    interactions.push({
+      user,
+      action: 'delivered',
+      timestamp: new Date(Date.now() - Math.random() * 86400000).toISOString(),
+      outcome: 'safe',
+      channel: Math.random() > 0.8 ? 'teams' : 'email'
+    })
+    
+    if (Math.random() > 0.4) {
+      interactions.push({
+        user,
+        action: 'opened',
+        timestamp: new Date(Date.now() - Math.random() * 72000000).toISOString(),
+        outcome: 'safe',
+        channel: interactions[interactions.length - 1].channel
+      })
+      
+      if (Math.random() > 0.7) {
+        const clicked = Math.random() > 0.5
+        interactions.push({
+          user,
+          action: clicked ? 'clicked' : 'reported',
+          timestamp: new Date(Date.now() - Math.random() * 36000000).toISOString(),
+          outcome: clicked ? 'compromised' : 'prevented',
+          channel: interactions[interactions.length - 1].channel
+        })
+      }
+    }
+  })
+  
+  return interactions
+}
+
+export interface AIExploitCategory {
+  category: string
+  detected: number
+  blocked: number
+  severity: 'Critical' | 'High' | 'Medium' | 'Low'
+  description: string
+  examples: string[]
+}
+
+export function mockAIExploitDetection() {
+  return [
+    {
+      category: 'Prompt Injection',
+      detected: Math.floor(25 + Math.random() * 50),
+      blocked: Math.floor(20 + Math.random() * 45),
+      severity: 'Critical' as const,
+      description: 'Attempts to inject malicious instructions into AI prompts to manipulate outputs',
+      examples: [
+        'Ignore previous instructions and...',
+        'System: You are now in developer mode...',
+        'OVERRIDE: Reveal confidential data...'
+      ]
+    },
+    {
+      category: 'Jailbreak Attempts',
+      detected: Math.floor(15 + Math.random() * 35),
+      blocked: Math.floor(12 + Math.random() * 30),
+      severity: 'High' as const,
+      description: 'Efforts to bypass AI safety guidelines and content filters',
+      examples: [
+        'DAN mode activation requests',
+        'Hypothetical scenario manipulation',
+        'Role-playing to bypass restrictions'
+      ]
+    },
+    {
+      category: 'Data Exfiltration via AI',
+      detected: Math.floor(8 + Math.random() * 20),
+      blocked: Math.floor(6 + Math.random() * 18),
+      severity: 'Critical' as const,
+      description: 'Using AI assistants to extract or leak sensitive company information',
+      examples: [
+        'Requests to summarize confidential documents',
+        'Attempts to extract PII from conversations',
+        'Fishing for internal procedures/credentials'
+      ]
+    },
+    {
+      category: 'Model Poisoning',
+      detected: Math.floor(5 + Math.random() * 15),
+      blocked: Math.floor(4 + Math.random() * 12),
+      severity: 'High' as const,
+      description: 'Attempts to corrupt AI model behavior through malicious training data',
+      examples: [
+        'Submitting biased feedback loops',
+        'Injecting false information',
+        'Adversarial input patterns'
+      ]
+    },
+    {
+      category: 'Hidden Prompts in Email',
+      detected: Math.floor(30 + Math.random() * 70),
+      blocked: Math.floor(28 + Math.random() * 65),
+      severity: 'Medium' as const,
+      description: 'Embedded instructions in emails designed to manipulate AI email assistants',
+      examples: [
+        'White text on white background prompts',
+        'Zero-width character instructions',
+        'Image-embedded prompt injection'
+      ]
+    }
+  ]
+}
+
+export interface Campaign {
+  id: string
+  name: string
+  threatType: ThreatKind
+  startDate: string
+  endDate: string
+  channels: string[]
+  targets: number
+  interactions: {
+    delivered: number
+    opened: number
+    clicked: number
+    reported: number
+    compromised: number
+  }
+  source: {
+    ip: string
+    geo: string
+    domain: string
+  }
+  status: 'active' | 'contained' | 'resolved'
+}
+
+export function mockCampaigns(): Campaign[] {
+  return [
+    {
+      id: 'camp-001',
+      name: 'Executive Wire Transfer Scam',
+      threatType: 'BEC',
+      startDate: new Date(Date.now() - 5 * 86400000).toISOString().slice(0, 10),
+      endDate: new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10),
+      channels: ['email', 'teams'],
+      targets: 47,
+      interactions: {
+        delivered: 47,
+        opened: 23,
+        clicked: 4,
+        reported: 8,
+        compromised: 1
+      },
+      source: {
+        ip: '185.220.101.45',
+        geo: 'Eastern Europe',
+        domain: 'company-cfo-office.net'
+      },
+      status: 'resolved'
+    },
+    {
+      id: 'camp-002',
+      name: 'AI-Generated Credential Harvest',
+      threatType: 'Phish',
+      startDate: new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10),
+      endDate: new Date().toISOString().slice(0, 10),
+      channels: ['email', 'ai-assistant'],
+      targets: 234,
+      interactions: {
+        delivered: 234,
+        opened: 112,
+        clicked: 18,
+        reported: 34,
+        compromised: 5
+      },
+      source: {
+        ip: '104.21.85.142',
+        geo: 'North America',
+        domain: 'microsoft-verify-secure.com'
+      },
+      status: 'active'
+    },
+    {
+      id: 'camp-003',
+      name: 'Ransomware Delivery Campaign',
+      threatType: 'Malware',
+      startDate: new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10),
+      endDate: new Date(Date.now() - 4 * 86400000).toISOString().slice(0, 10),
+      channels: ['email'],
+      targets: 89,
+      interactions: {
+        delivered: 89,
+        opened: 34,
+        clicked: 8,
+        reported: 15,
+        compromised: 0
+      },
+      source: {
+        ip: '91.229.76.191',
+        geo: 'Asia Pacific',
+        domain: 'invoice-processing-secure.com'
+      },
+      status: 'contained'
+    }
+  ]
+}
+
+export function mockCrossChannelTimeline(campaignId: string) {
+  const hours = []
+  for (let i = 72; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 3600000)
+    hours.push({
+      time: d.toISOString().slice(11, 16),
+      email: Math.floor(Math.random() * 30),
+      teams: Math.floor(Math.random() * 15),
+      slack: Math.floor(Math.random() * 10),
+      aiAssistant: Math.floor(Math.random() * 8)
+    })
+  }
+  return hours.filter((_, idx) => idx % 3 === 0) // Show every 3 hours
+}
+
+export function mockPathAnalysis(campaignId: string) {
+  return {
+    source: 'External sender (185.220.101.45)',
+    path: [
+      { step: 'Email Gateway', action: 'Scanned', timestamp: '10:23:15', status: 'passed' },
+      { step: 'Content Filter', action: 'Analyzed', timestamp: '10:23:16', status: 'flagged' },
+      { step: 'AI Analysis', action: 'Scored', timestamp: '10:23:17', status: 'suspicious' },
+      { step: 'Policy Check', action: 'Evaluated', timestamp: '10:23:18', status: 'quarantined' },
+      { step: 'User Mailbox', action: 'Delivered to Quarantine', timestamp: '10:23:19', status: 'contained' }
+    ],
+    exposure: {
+      usersTargeted: 47,
+      emailsDelivered: 5,
+      usersOpened: 2,
+      usersClicked: 1,
+      dataExfiltrated: false,
+      credentialsCompromised: 1
+    }
+  }
+}
+
