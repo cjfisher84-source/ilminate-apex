@@ -174,14 +174,14 @@ export default function ThreatDetailPage() {
           borderBottom: '2px solid #007070'
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            <Image 
-              src="/ilminate-logo.svg" 
-              alt="Ilminate Logo" 
-              width={100} 
-              height={100}
-              priority
-              style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
-            />
+                    <Image 
+                      src="/ilminate-logo.png" 
+                      alt="Ilminate Logo" 
+                      width={100} 
+                      height={100}
+                      priority
+                      style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
+                    />
             <Box>
               <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: '#1a1a1a' }}>
                 {info.title}

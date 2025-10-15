@@ -36,7 +36,7 @@ export default function InvestigationsPage() {
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
             <Image 
-              src="/ilminate-logo.svg" 
+              src="/ilminate-logo.png" 
               alt="Ilminate Logo" 
               width={100} 
               height={100}
