@@ -49,12 +49,56 @@ export function mockDomainAbuse(){
 }
 
 export function mockAIThreats(){
-  // breakdown of AI-related threat techniques detected
+  // breakdown of AI-related threat techniques detected with context
   return [
-    { type:'Prompt Poisoning', count: Math.floor(5+Math.random()*30) },
-    { type:'LLM-Evasion Text', count: Math.floor(10+Math.random()*40) },
-    { type:'AI-Generated Phish', count: Math.floor(30+Math.random()*80) },
-    { type:'Image Deepfake', count: Math.floor(5+Math.random()*20) },
+    { 
+      type:'Prompt Poisoning', 
+      count: Math.floor(5+Math.random()*30),
+      description: 'Attempts to manipulate AI systems through carefully crafted prompts',
+      severity: 'High',
+      trend: 'Increasing'
+    },
+    { 
+      type:'LLM-Evasion Text', 
+      count: Math.floor(10+Math.random()*40),
+      description: 'Text designed to bypass language model filters and detection',
+      severity: 'Medium',
+      trend: 'Stable'
+    },
+    { 
+      type:'AI-Generated Phish', 
+      count: Math.floor(30+Math.random()*80),
+      description: 'Sophisticated phishing emails created using AI language models',
+      severity: 'Critical',
+      trend: 'Increasing'
+    },
+    { 
+      type:'Image Deepfake', 
+      count: Math.floor(5+Math.random()*20),
+      description: 'Manipulated images created with AI for impersonation attacks',
+      severity: 'High',
+      trend: 'Emerging'
+    },
+  ]
+}
+
+export function mockEDREndpointBreakdown(){
+  // EDR endpoint status distribution
+  return [
+    { status: 'Protected', count: Math.floor(220 + Math.random()*30), color: '#10b981' },
+    { status: 'Vulnerable', count: Math.floor(8 + Math.random()*15), color: '#ef4444' },
+    { status: 'Updating', count: Math.floor(5 + Math.random()*10), color: '#FFD700' },
+    { status: 'Offline', count: Math.floor(2 + Math.random()*8), color: '#9ca3af' },
+  ]
+}
+
+export function mockEDRThreatTypes(){
+  // EDR detected threat types
+  return [
+    { type: 'Ransomware', detected: Math.floor(3 + Math.random()*12), blocked: Math.floor(2 + Math.random()*10) },
+    { type: 'Trojan', detected: Math.floor(8 + Math.random()*20), blocked: Math.floor(6 + Math.random()*18) },
+    { type: 'Suspicious Behavior', detected: Math.floor(15 + Math.random()*35), blocked: Math.floor(12 + Math.random()*30) },
+    { type: 'Exploit Attempt', detected: Math.floor(5 + Math.random()*15), blocked: Math.floor(4 + Math.random()*12) },
   ]
 }
 
