@@ -3,9 +3,8 @@ import { useState } from 'react'
 import {
   Card, CardContent, CardActions,
   TextField, Button, MenuItem, Typography,
-  Snackbar, Alert, Box, Chip, LinearProgress
+  Snackbar, Alert, Box, Chip, LinearProgress, Stack
 } from '@mui/material'
-import Grid from '@mui/material/Grid2'
 
 type Kind = 'False Positive' | 'False Negative' | 'Question'
 
@@ -60,8 +59,12 @@ ${details || '(none)'}
     <Box sx={{ display:'flex', flexDirection:'column', gap:3, p:3 }}>
       <Typography variant="h6">Apex AI — Triage</Typography>
 
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 7 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', md: 'row' }, 
+        gap: 2 
+      }}>
+        <Box sx={{ flex: { xs: 1, md: '1 1 58%' } }}>
           <Card>
             {loading && <LinearProgress />}
             <CardContent sx={{ display:'grid', gap:2 }}>
@@ -76,14 +79,25 @@ ${details || '(none)'}
                 ))}
               </TextField>
 
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 8 }}>
-                  <TextField label="Message Subject" fullWidth value={subject} onChange={e=>setSubject(e.target.value)} />
-                </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <TextField label="Sender" placeholder="user@domain.com" fullWidth value={sender} onChange={e=>setSender(e.target.value)} />
-                </Grid>
-              </Grid>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', sm: 'row' }, 
+                gap: 2 
+              }}>
+                <TextField 
+                  label="Message Subject" 
+                  sx={{ flex: { xs: 1, sm: '1 1 66%' } }}
+                  value={subject} 
+                  onChange={e=>setSubject(e.target.value)} 
+                />
+                <TextField 
+                  label="Sender" 
+                  placeholder="user@domain.com" 
+                  sx={{ flex: { xs: 1, sm: '1 1 34%' } }}
+                  value={sender} 
+                  onChange={e=>setSender(e.target.value)} 
+                />
+              </Box>
 
               <TextField
                 label="Details"
@@ -108,9 +122,9 @@ ${details || '(none)'}
               </Button>
             </CardActions>
           </Card>
-        </Grid>
+        </Box>
 
-        <Grid size={{ xs: 12, md: 5 }}>
+        <Box sx={{ flex: { xs: 1, md: '1 1 42%' } }}>
           <Card>
             <CardContent>
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb:1 }}>Result</Typography>
@@ -122,8 +136,8 @@ ${details || '(none)'}
               </Box>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       <Snackbar
         open={snack.open}
