@@ -96,45 +96,88 @@ export function QuarantineDeliveredBars() {
 export function CyberScoreDonut() {
   const score = mockCyberScore()
   const data = [{name:'Score', value:score}, {name:'Gap', value:100-score}]
+  
+  // Additional cyber metrics to fill the space
+  const metrics = [
+    { label: 'Protection Rate', value: '94.2%', color: '#10b981' },
+    { label: 'Response Time', value: '2.3m', color: UNCW_GOLD },
+    { label: 'False Positives', value: '0.8%', color: '#f97316' },
+    { label: 'Coverage', value: '99.1%', color: UNCW_TEAL }
+  ]
+  
   return (
     <div style={{ 
       backgroundColor: '#FFFFFF', 
-      borderRadius: 12, 
-      padding: 24, 
+      borderRadius: 16, 
+      padding: 32, 
       border: '2px solid #E0E4E8',
       height: 420,
       position: 'relative',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
     }}>
-      <div style={{ marginBottom: 16, color: '#1a1a1a', fontSize: '1.1rem', fontWeight: 600 }}>
-        Overall Cyber Score
-      </div>
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie data={data} dataKey="value" innerRadius="60%" outerRadius="85%" startAngle={90} endAngle={-270}>
-            <Cell fill={UNCW_TEAL} />
-            <Cell fill="#E0E4E8" />
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+      <div style={{ 
+        marginBottom: 24, 
+        color: '#1a1a1a', 
+        fontSize: '1.3rem', 
+        fontWeight: 700,
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        pointerEvents: 'none'
+        gap: 12
       }}>
-        <div style={{ fontSize: '4rem', fontWeight: 700, color: UNCW_TEAL, lineHeight: 1 }}>
-          {score}
+        <div style={{ width: 4, height: 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        Cyber Security Score
+      </div>
+      
+      {/* Donut Chart */}
+      <div style={{ position: 'relative', height: 200, marginBottom: 24 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={data} dataKey="value" innerRadius="45%" outerRadius="70%" startAngle={90} endAngle={-270}>
+              <Cell fill={UNCW_TEAL} />
+              <Cell fill="#E0E4E8" />
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+        
+        {/* Centered Score */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none'
+        }}>
+          <div style={{ fontSize: '3rem', fontWeight: 700, color: UNCW_TEAL, lineHeight: 1 }}>
+            {score}
+          </div>
+          <div style={{ fontSize: '1rem', fontWeight: 600, color: '#666' }}>
+            / 100
+          </div>
         </div>
-        <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#666', marginTop: 8 }}>
-          / 100
-        </div>
+      </div>
+      
+      {/* Metrics Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+        {metrics.map((metric, idx) => (
+          <div key={idx} style={{
+            textAlign: 'center',
+            padding: '12px 8px',
+            backgroundColor: '#F8FAFB',
+            borderRadius: 8,
+            border: '1px solid #E0E4E8'
+          }}>
+            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: metric.color, marginBottom: 4 }}>
+              {metric.value}
+            </div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {metric.label}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
