@@ -3,7 +3,7 @@ import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import Link from 'next/link'
 import Image from 'next/image'
 import CategoryCard from '@/components/CategoryCard'
-import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections } from '@/components/Charts.client'
+import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
 
 export default function Home() {
@@ -41,25 +41,48 @@ export default function Home() {
               </Typography>
             </Box>
           </Box>
-          <Link href="/triage" passHref legacyBehavior>
-            <Button 
-              variant="contained" 
-              component="a" 
-              size="large"
-              sx={{ 
-                bgcolor: '#007070', 
-                color: 'white',
-                px: 4,
-                py: 1.5,
-                fontSize: '1.1rem',
-                fontWeight: 600,
-                '&:hover': { bgcolor: '#005555' },
-                boxShadow: '0 4px 12px rgba(0, 112, 112, 0.3)'
-              }}
-            >
-              Triage
-            </Button>
-          </Link>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Link href="/investigations" passHref legacyBehavior>
+              <Button 
+                variant="outlined" 
+                component="a" 
+                size="large"
+                sx={{ 
+                  borderColor: '#007070',
+                  color: '#007070',
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1.1rem',
+                  fontWeight: 600,
+                  '&:hover': { 
+                    borderColor: '#005555',
+                    bgcolor: 'rgba(0, 112, 112, 0.05)'
+                  }
+                }}
+              >
+                Investigations
+              </Button>
+            </Link>
+            <Link href="/triage" passHref legacyBehavior>
+              <Button 
+                variant="contained" 
+                component="a" 
+                size="large"
+                sx={{ 
+                  bgcolor: '#007070', 
+                  color: 'white',
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1.1rem',
+                  fontWeight: 600,
+                  '&:hover': { bgcolor: '#005555' },
+                  boxShadow: '0 4px 12px rgba(0, 112, 112, 0.3)'
+                }}
+              >
+                Triage
+              </Button>
+            </Link>
+          </Box>
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -132,6 +155,9 @@ export default function Home() {
 
           {/* AI Threats */}
           <AIThreatsBar />
+
+          {/* AI Exploit Detection */}
+          <AIExploitDetectionChart />
 
           {/* EDR Section Header */}
           <Box sx={{ mt: 4, mb: 2 }}>
