@@ -3,7 +3,7 @@ import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import Link from 'next/link'
 import Image from 'next/image'
 import CategoryCard from '@/components/CategoryCard'
-import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines } from '@/components/Charts.client'
+import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
 
 export default function Home() {
@@ -133,8 +133,28 @@ export default function Home() {
           {/* AI Threats */}
           <AIThreatsBar />
 
-          {/* EDR Metrics */}
+          {/* EDR Section Header */}
+          <Box sx={{ mt: 4, mb: 2 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 1 }}>
+              Endpoint Detection & Response (EDR)
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#666' }}>
+              Real-time endpoint security monitoring, threat detection, and automated response across your infrastructure
+            </Typography>
+          </Box>
+
+          {/* EDR Metrics Timeline */}
           <EDRMetricsLines />
+
+          {/* EDR Additional Metrics */}
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+            gap: 3 
+          }}>
+            <EDREndpointStatus />
+            <EDRThreatDetections />
+          </Box>
         </Box>
       </Box>
     </Box>
