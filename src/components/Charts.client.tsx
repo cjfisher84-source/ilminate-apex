@@ -1,6 +1,6 @@
 'use client'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Legend, LineChart, Line, PieChart, Pie, Cell, Sankey } from 'recharts'
-import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes, mockGeoThreatMap, mockAIExploitDetection, mockCrossChannelTimeline } from '@/lib/mock'
+import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes, mockGeoThreatMap, mockAIExploitDetection, mockCrossChannelTimeline, mockThreatFamilies, mockPeerComparison } from '@/lib/mock'
 import { Box, Typography, Chip } from '@mui/material'
 
 const UNCW_TEAL = '#007070'
@@ -639,6 +639,176 @@ export function CrossChannelTimelineChart({ campaignId }: { campaignId: string }
           <Area type="monotone" dataKey="webPortal" name="Web Portal" stroke="#8b5cf6" fill="url(#colorSlack)" strokeWidth={2} />
           <Area type="monotone" dataKey="mobileApp" name="Mobile App" stroke={UNCW_GOLD} fill="url(#colorTeams)" strokeWidth={2} />
         </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  )
+}
+
+// New Threat Family Types Chart
+export function ThreatFamilyTypesChart() {
+  const data = mockThreatFamilies()
+  
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'Critical': return '#ef4444'
+      case 'High': return '#f97316'
+      case 'Medium': return '#eab308'
+      case 'Low': return '#10b981'
+      default: return '#6b7280'
+    }
+  }
+
+  const getTrendIcon = (trend: string) => {
+    switch (trend) {
+      case 'increasing': return '↗️'
+      case 'decreasing': return '↘️'
+      case 'stable': return '→'
+      default: return '→'
+    }
+  }
+
+  return (
+    <div style={{ 
+      backgroundColor: '#FFFFFF', 
+      borderRadius: 16, 
+      padding: 24, 
+      border: '2px solid #E0E4E8',
+      height: 420,
+      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
+      <div style={{ 
+        marginBottom: 20, 
+        color: '#1a1a1a', 
+        fontSize: '1.2rem', 
+        fontWeight: 700,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8
+      }}>
+        <div style={{ width: 3, height: 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
+        Threat Family Types
+      </div>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
+          <XAxis 
+            dataKey="name" 
+            tick={{ fontSize: 10, fill: '#666' }} 
+            angle={-45} 
+            textAnchor="end" 
+            height={80}
+            interval={0}
+          />
+          <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: '#FFFFFF', 
+              border: '2px solid #007070', 
+              borderRadius: 12, 
+              padding: 12,
+              fontSize: '12px'
+            }}
+            formatter={(value: any, name: string, props: any) => [
+              <div key="tooltip">
+                <div style={{ fontWeight: 700, marginBottom: 4 }}>{props.payload.name}</div>
+                <div style={{ marginBottom: 2 }}>Count: <strong>{value}</strong></div>
+                <div style={{ marginBottom: 2 }}>Percentage: <strong>{props.payload.percentage}%</strong></div>
+                <div style={{ marginBottom: 2 }}>Severity: <span style={{ color: getSeverityColor(props.payload.severity) }}><strong>{props.payload.severity}</strong></span></div>
+                <div style={{ marginBottom: 2 }}>Trend: {getTrendIcon(props.payload.trend)} <strong>{props.payload.trend}</strong></div>
+                <div style={{ fontSize: '11px', color: '#666', marginTop: 4 }}>{props.payload.description}</div>
+              </div>
+            ]}
+          />
+          <Bar 
+            dataKey="count" 
+            fill="#ef4444"
+            radius={[4, 4, 0, 0]}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  )
+}
+
+// New Peer Comparison Chart
+export function PeerComparisonChart() {
+  const data = mockPeerComparison()
+  
+  const getTrendColor = (trend: string) => {
+    switch (trend) {
+      case 'better': return '#10b981'
+      case 'worse': return '#ef4444'
+      case 'average': return '#eab308'
+      default: return '#6b7280'
+    }
+  }
+
+  const getPercentileColor = (percentile: number) => {
+    if (percentile <= 25) return '#10b981' // Excellent (top 25%)
+    if (percentile <= 50) return '#eab308' // Good (25-50%)
+    if (percentile <= 75) return '#f97316' // Average (50-75%)
+    return '#ef4444' // Below average (75%+)
+  }
+
+  return (
+    <div style={{ 
+      backgroundColor: '#FFFFFF', 
+      borderRadius: 16, 
+      padding: 24, 
+      border: '2px solid #E0E4E8',
+      height: 420,
+      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
+      <div style={{ 
+        marginBottom: 20, 
+        color: '#1a1a1a', 
+        fontSize: '1.2rem', 
+        fontWeight: 700,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8
+      }}>
+        <div style={{ width: 3, height: 20, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        Customer vs Peers Comparison
+      </div>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
+          <XAxis 
+            dataKey="metric" 
+            tick={{ fontSize: 10, fill: '#666' }} 
+            angle={-45} 
+            textAnchor="end" 
+            height={80}
+            interval={0}
+          />
+          <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: '#FFFFFF', 
+              border: '2px solid #007070', 
+              borderRadius: 12, 
+              padding: 12,
+              fontSize: '12px'
+            }}
+            formatter={(value: any, name: string, props: any) => [
+              <div key="tooltip">
+                <div style={{ fontWeight: 700, marginBottom: 4 }}>{props.payload.metric}</div>
+                <div style={{ marginBottom: 2 }}>Your Org: <strong>{props.payload.customer}</strong></div>
+                <div style={{ marginBottom: 2 }}>Industry Peers: <strong>{props.payload.verticalPeers}</strong></div>
+                <div style={{ marginBottom: 2 }}>Regional Peers: <strong>{props.payload.regionalPeers}</strong></div>
+                <div style={{ marginBottom: 2 }}>Percentile: <span style={{ color: getPercentileColor(props.payload.customerPercentile) }}><strong>{props.payload.customerPercentile}th</strong></span></div>
+                <div style={{ marginBottom: 2 }}>Trend: <span style={{ color: getTrendColor(props.payload.trend) }}><strong>{props.payload.trend}</strong></span></div>
+              </div>
+            ]}
+          />
+          <Legend wrapperStyle={{ paddingTop: 16 }} />
+          <Bar dataKey="customer" name="Your Organization" fill={UNCW_TEAL} radius={[4, 4, 0, 0]} />
+          <Bar dataKey="verticalPeers" name="Industry Peers" fill="#f97316" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="regionalPeers" name="Regional Peers" fill="#6b7280" radius={[4, 4, 0, 0]} />
+        </BarChart>
       </ResponsiveContainer>
     </div>
   )
