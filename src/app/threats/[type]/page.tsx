@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from 'recharts'
-import { ThreatInteractionMap } from '@/components/Charts.client'
+import { GeoThreatMap } from '@/components/Charts.client'
 
 const UNCW_TEAL = '#007070'
 const UNCW_GOLD = '#FFD700'
@@ -325,8 +325,8 @@ export default function ThreatDetailPage() {
             </TableContainer>
           </Card>
 
-          {/* Interaction Map */}
-          <ThreatInteractionMap campaignId={`${type}-latest`} />
+          {/* Global Threat Origins Map */}
+          <GeoThreatMap />
         </Box>
       </Box>
     </Box>

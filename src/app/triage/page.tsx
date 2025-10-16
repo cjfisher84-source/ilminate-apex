@@ -155,12 +155,12 @@ ${details || '(none)'}
                 />
               </Box>
 
-              <TextField
-                label="Details"
-                placeholder="Explain why this is FP/FN or provide context. Include timestamps, headers, URLs, etc."
-                multiline minRows={6} fullWidth
-                value={details} onChange={e=>setDetails(e.target.value)}
-              />
+                <TextField 
+                  label="Threat Description" 
+                  placeholder="Describe the threat you received. Example: 'We received 10 emails today asking for gift cards. The sender looked like someone we know but we're not sure.' Include timestamps, headers, URLs, etc." 
+                  multiline minRows={6} fullWidth
+                  value={details} onChange={e=>setDetails(e.target.value)} 
+                />
 
               <Box sx={{ display:'flex', gap:1, flexWrap:'wrap' }}>
                 <Chip label="SPF/DKIM/DMARC" sx={{ bgcolor: '#007070', color: 'white', fontWeight: 600 }} />

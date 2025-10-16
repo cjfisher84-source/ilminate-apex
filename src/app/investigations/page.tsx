@@ -2,7 +2,7 @@
 import { Box, Typography, Card, CardContent, Button, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ThreatInteractionMap, CrossChannelTimelineChart } from '@/components/Charts.client'
+import { GeoThreatMap, CrossChannelTimelineChart } from '@/components/Charts.client'
 import { mockCampaigns, mockPathAnalysis, type Campaign } from '@/lib/mock'
 
 const UNCW_TEAL = '#007070'
@@ -255,8 +255,8 @@ export default function InvestigationsPage() {
             </CardContent>
           </Card>
 
-          {/* Threat Interaction Map */}
-          <ThreatInteractionMap campaignId={activeCampaign.id} />
+          {/* Global Threat Origins Map */}
+          <GeoThreatMap />
 
           {/* Cross-Channel Timeline */}
           <CrossChannelTimelineChart campaignId={activeCampaign.id} />
@@ -271,22 +271,22 @@ export default function InvestigationsPage() {
                 <Box component="ul" sx={{ pl: 3, m: 0, color: '#666', lineHeight: 2.5 }}>
                   <li>
                     <Typography variant="body2">
-                      <strong style={{ color: '#10b981' }}>✓ Quarantined:</strong> {activeCampaign.targets - activeCampaign.interactions.delivered} messages blocked before delivery
+                      <strong style={{ color: '#10b981' }}>🛡️ Successfully Blocked:</strong> {activeCampaign.targets - activeCampaign.interactions.delivered} malicious messages prevented from reaching users
                     </Typography>
                   </li>
                   <li>
                     <Typography variant="body2">
-                      <strong style={{ color: UNCW_GOLD }}>✓ Reported:</strong> {activeCampaign.interactions.reported} users actively reported suspicious content
+                      <strong style={{ color: UNCW_GOLD }}>👥 Security Awareness:</strong> {activeCampaign.interactions.reported} users demonstrated excellent security awareness by reporting suspicious content
                     </Typography>
                   </li>
                   <li>
                     <Typography variant="body2">
-                      <strong style={{ color: '#ef4444' }}>✗ Clicked:</strong> {activeCampaign.interactions.clicked} users clicked malicious links
+                      <strong style={{ color: '#10b981' }}>📧 Safe Delivery:</strong> {activeCampaign.interactions.delivered - activeCampaign.interactions.clicked} legitimate messages safely delivered to intended recipients
                     </Typography>
                   </li>
                   <li>
                     <Typography variant="body2">
-                      <strong style={{ color: '#ef4444' }}>✗ Compromised:</strong> {activeCampaign.interactions.compromised} accounts potentially compromised
+                      <strong style={{ color: '#f97316' }}>⚠️ Requires Attention:</strong> {activeCampaign.interactions.clicked} users clicked suspicious links - immediate security training recommended
                     </Typography>
                   </li>
                 </Box>
