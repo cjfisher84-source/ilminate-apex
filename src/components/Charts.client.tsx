@@ -551,33 +551,37 @@ export function AIExploitDetectionChart() {
     <div style={{ 
       backgroundColor: '#FFFFFF', 
       borderRadius: 16, 
-      padding: 32, 
+      padding: 24, 
       border: '2px solid #E0E4E8',
-      height: 520,
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+      height: 320,
+      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       <div style={{ 
-        marginBottom: 24, 
+        marginBottom: 16, 
         color: '#1a1a1a', 
-        fontSize: '1.3rem', 
+        fontSize: '1.1rem', 
         fontWeight: 700,
         display: 'flex',
         alignItems: 'center',
-        gap: 12
+        gap: 8
       }}>
-        <div style={{ width: 4, height: 28, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
+        <div style={{ width: 3, height: 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
         AI Exploit Detection & Prevention
       </div>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 100 }} layout="horizontal">
-          <XAxis type="number" tick={{ fontSize: 11, fill: '#666' }} />
-          <YAxis type="category" dataKey="category" tick={{ fontSize: 11, fill: '#666' }} width={150} />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend wrapperStyle={{ paddingTop: 20 }} />
-          <Bar dataKey="detected" name="Detected" fill="#ef4444" radius={[0, 8, 8, 0]} />
-          <Bar dataKey="blocked" name="Blocked" fill={UNCW_TEAL} radius={[0, 8, 8, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 20 }} layout="horizontal">
+            <XAxis type="number" tick={{ fontSize: 10, fill: '#666' }} />
+            <YAxis type="category" dataKey="category" tick={{ fontSize: 10, fill: '#666' }} width={140} />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend wrapperStyle={{ paddingTop: 10, fontSize: '12px' }} />
+            <Bar dataKey="detected" name="Detected" fill="#ef4444" radius={[0, 4, 4, 0]} />
+            <Bar dataKey="blocked" name="Blocked" fill={UNCW_TEAL} radius={[0, 4, 4, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }
