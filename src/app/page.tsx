@@ -3,7 +3,7 @@ import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import Link from 'next/link'
 import Image from 'next/image'
 import CategoryCard from '@/components/CategoryCard'
-import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart, GeoThreatMap, CrossChannelTimelineChart } from '@/components/Charts.client'
+import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart, GeoThreatMap, CrossChannelTimelineChart, ThreatFamilyTypesChart, PeerComparisonChart } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
 
 const UNCW_TEAL = '#007070'
@@ -242,8 +242,15 @@ export default function Home() {
           {/* Timeline */}
           <TimelineArea />
 
-          {/* Quarantined vs Delivered */}
-          <QuarantineDeliveredBars />
+          {/* Threat Family Types and Peer Comparison */}
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+            gap: 3 
+          }}>
+            <ThreatFamilyTypesChart />
+            <PeerComparisonChart />
+          </Box>
 
           {/* Domain / Brand Abuse (DMARC value) */}
           <TableContainer component={Paper} sx={{ 

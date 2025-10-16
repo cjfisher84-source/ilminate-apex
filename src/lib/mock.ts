@@ -492,3 +492,107 @@ export function mockPathAnalysis(campaignId: string) {
   }
 }
 
+// New mock data for threat families
+export interface ThreatFamily {
+  name: string
+  count: number
+  percentage: number
+  trend: 'increasing' | 'decreasing' | 'stable'
+  severity: 'Critical' | 'High' | 'Medium' | 'Low'
+  description: string
+}
+
+export function mockThreatFamilies(): ThreatFamily[] {
+  const families = [
+    { name: 'Info Stealers', baseCount: 450, severity: 'Critical' as const, description: 'Malware designed to steal sensitive information like passwords, credit cards, and personal data' },
+    { name: 'Credential Phishing', baseCount: 380, severity: 'High' as const, description: 'Sophisticated phishing campaigns targeting login credentials and authentication tokens' },
+    { name: 'RATs (Remote Access)', baseCount: 290, severity: 'Critical' as const, description: 'Remote Access Trojans providing unauthorized access to compromised systems' },
+    { name: 'Banking Trojans', baseCount: 220, severity: 'High' as const, description: 'Specialized malware targeting financial institutions and online banking systems' },
+    { name: 'TOADs (Threats on Demand)', baseCount: 180, severity: 'Medium' as const, description: 'On-demand threat delivery systems used for targeted attacks' },
+    { name: 'Ransomware Families', baseCount: 150, severity: 'Critical' as const, description: 'Various ransomware strains including LockBit, Conti, and BlackCat variants' },
+    { name: 'APT Groups', baseCount: 120, severity: 'High' as const, description: 'Advanced Persistent Threat groups with nation-state or organized crime backing' },
+    { name: 'Adware/PUP', baseCount: 95, severity: 'Low' as const, description: 'Potentially Unwanted Programs and aggressive advertising software' }
+  ]
+
+  const total = families.reduce((sum, f) => sum + f.baseCount, 0)
+  
+  return families.map(family => {
+    const count = Math.floor(family.baseCount * (0.8 + Math.random() * 0.4))
+    const percentage = Math.round((count / total) * 100 * 10) / 10
+    const trends: ('increasing' | 'decreasing' | 'stable')[] = ['increasing', 'decreasing', 'stable']
+    const trend = trends[Math.floor(Math.random() * 3)]
+    
+    return {
+      name: family.name,
+      count,
+      percentage,
+      trend,
+      severity: family.severity,
+      description: family.description
+    }
+  }).sort((a, b) => b.count - a.count)
+}
+
+// New mock data for peer comparison
+export interface PeerComparison {
+  metric: string
+  customer: number
+  verticalPeers: number
+  regionalPeers: number
+  customerPercentile: number
+  trend: 'better' | 'worse' | 'average'
+}
+
+export function mockPeerComparison(): PeerComparison[] {
+  return [
+    {
+      metric: 'Attack Frequency (per day)',
+      customer: Math.floor(45 + Math.random() * 25),
+      verticalPeers: Math.floor(60 + Math.random() * 40),
+      regionalPeers: Math.floor(55 + Math.random() * 35),
+      customerPercentile: Math.floor(25 + Math.random() * 20), // 25-45th percentile (better than average)
+      trend: 'better'
+    },
+    {
+      metric: 'Credential Phishing Rate',
+      customer: Math.round((2.1 + Math.random() * 1.5) * 10) / 10,
+      verticalPeers: Math.round((3.8 + Math.random() * 2.2) * 10) / 10,
+      regionalPeers: Math.round((3.2 + Math.random() * 1.8) * 10) / 10,
+      customerPercentile: Math.floor(30 + Math.random() * 15), // 30-45th percentile
+      trend: 'better'
+    },
+    {
+      metric: 'Ransomware Attempts',
+      customer: Math.floor(3 + Math.random() * 4),
+      verticalPeers: Math.floor(8 + Math.random() * 12),
+      regionalPeers: Math.floor(6 + Math.random() * 8),
+      customerPercentile: Math.floor(20 + Math.random() * 15), // 20-35th percentile
+      trend: 'better'
+    },
+    {
+      metric: 'Info Stealer Detection',
+      customer: Math.floor(12 + Math.random() * 8),
+      verticalPeers: Math.floor(18 + Math.random() * 12),
+      regionalPeers: Math.floor(15 + Math.random() * 10),
+      customerPercentile: Math.floor(35 + Math.random() * 20), // 35-55th percentile
+      trend: 'average'
+    },
+    {
+      metric: 'APT Group Activity',
+      customer: Math.floor(2 + Math.random() * 3),
+      verticalPeers: Math.floor(5 + Math.random() * 8),
+      regionalPeers: Math.floor(4 + Math.random() * 6),
+      customerPercentile: Math.floor(25 + Math.random() * 20), // 25-45th percentile
+      trend: 'better'
+    },
+    {
+      metric: 'Time to Detection (hours)',
+      customer: Math.round((1.2 + Math.random() * 0.8) * 10) / 10,
+      verticalPeers: Math.round((2.8 + Math.random() * 1.5) * 10) / 10,
+      regionalPeers: Math.round((2.1 + Math.random() * 1.2) * 10) / 10,
+      customerPercentile: Math.floor(15 + Math.random() * 15), // 15-30th percentile (excellent)
+      trend: 'better'
+    }
+  ]
+}
+
