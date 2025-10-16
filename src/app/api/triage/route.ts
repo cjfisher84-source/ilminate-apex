@@ -131,48 +131,70 @@ ${(details || '').slice(0, 1200)}
 `
     
     // Enhanced recommendations based on risk
-    if (analysis.riskScore >= 50) {
-      summary += `⚠️  IMMEDIATE ACTIONS REQUIRED:
-
-🔴 CRITICAL (Within 1 hour):
-• Quarantine this message and all similar emails immediately
-• Search for similar patterns: executive names from free email domains
-• Alert the impersonated executive (${Object.values(analysis.indicators).find(i => i.detected)?.description || 'N/A'})
-• Notify all employees about active impersonation attempt
-• DO NOT action any financial requests from this sender
-
-🟡 SHORT-TERM (Within 24 hours):
-• Create transport rule: Block/flag executive names from external domains
-• Enable external sender warnings for all inbound email
-• Review and tighten DMARC policy (consider p=quarantine or p=reject)
-• Check for any similar messages in the past 30 days
-
-🟢 LONG-TERM:
-• Implement executive impersonation protection rules
-• Deploy anti-phishing training focused on BEC tactics
-• Enable advanced threat protection features
-• Establish out-of-band verification for financial requests
-
-⚠️  DO NOT:
-• Allow-list this sender
-• Reply to this email
-• Process any financial/payroll changes without verbal confirmation`
-    } else if (analysis.riskScore >= 30) {
-      summary += `Recommendation:
-• Review message for additional suspicious indicators
-• Verify sender authenticity through alternate channel (phone call)
-• Monitor for similar patterns
-• Consider adding sender verification rules
-• If suspicious: quarantine similar messages, tighten policy, notify users
-• If benign: add allow-list rule with scope/time-bound review`
-    } else {
-      summary += `Recommendation:
-• If suspicious: quarantine similar messages, tighten policy, notify users
-• If benign: add allow-list rule with scope/time-bound review
-• Monitor sender reputation and historical patterns`
+    let recommendations = {
+      critical: [] as string[],
+      shortTerm: [] as string[],
+      longTerm: [] as string[],
+      doNot: [] as string[],
+      general: [] as string[]
     }
     
-    return NextResponse.json({ ok: true, summary })
+    if (analysis.riskScore >= 50) {
+      recommendations.critical = [
+        'Quarantine this message and all similar emails immediately',
+        'Search for similar patterns: executive names from free email domains',
+        `Alert the impersonated executive about this spoofing attempt`,
+        'Notify all employees about active impersonation attempt',
+        'DO NOT action any financial requests from this sender'
+      ]
+      recommendations.shortTerm = [
+        'Create transport rule: Block/flag executive names from external domains',
+        'Enable external sender warnings for all inbound email',
+        'Review and tighten DMARC policy (consider p=quarantine or p=reject)',
+        'Check for any similar messages in the past 30 days'
+      ]
+      recommendations.longTerm = [
+        'Implement executive impersonation protection rules',
+        'Deploy anti-phishing training focused on BEC tactics',
+        'Enable advanced threat protection features',
+        'Establish out-of-band verification for financial requests'
+      ]
+      recommendations.doNot = [
+        'Allow-list this sender',
+        'Reply to this email',
+        'Process any financial/payroll changes without verbal confirmation'
+      ]
+    } else if (analysis.riskScore >= 30) {
+      recommendations.general = [
+        'Review message for additional suspicious indicators',
+        'Verify sender authenticity through alternate channel (phone call)',
+        'Monitor for similar patterns',
+        'Consider adding sender verification rules',
+        'If suspicious: quarantine similar messages, tighten policy, notify users',
+        'If benign: add allow-list rule with scope/time-bound review'
+      ]
+    } else {
+      recommendations.general = [
+        'If suspicious: quarantine similar messages, tighten policy, notify users',
+        'If benign: add allow-list rule with scope/time-bound review',
+        'Monitor sender reputation and historical patterns'
+      ]
+    }
+    
+    // Return structured data for beautiful UI rendering
+    return NextResponse.json({ 
+      ok: true, 
+      summary,
+      structured: {
+        classification: analysis.classification,
+        riskScore: analysis.riskScore,
+        severity: analysis.riskScore >= 70 ? 'CRITICAL' : analysis.riskScore >= 50 ? 'HIGH' : analysis.riskScore >= 30 ? 'MEDIUM' : 'LOW',
+        indicators: detectedIndicators,
+        checks,
+        notes: (details || '').slice(0, 1200),
+        recommendations
+      }
+    })
   } catch (e: any) {
     return NextResponse.json({ ok:false, error: e?.message || 'Unexpected error' }, { status: 500 })
   }

@@ -3,12 +3,23 @@ import { useState } from 'react'
 import {
   Card, CardContent, CardActions,
   TextField, Button, MenuItem, Typography,
-  Snackbar, Alert, Box, Chip, LinearProgress
+  Snackbar, Alert, Box, Chip, LinearProgress, Tabs, Tab
 } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
+import TriageResults from '@/components/TriageResults'
 
 type Kind = 'False Positive' | 'False Negative' | 'Question'
+
+interface StructuredData {
+  classification: string
+  riskScore: number
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
+  indicators: any[]
+  checks: string[]
+  notes: string
+  recommendations: any
+}
 
 export default function TriagePage() {
   const [kind, setKind] = useState<Kind>('False Positive')
@@ -17,6 +28,8 @@ export default function TriagePage() {
   const [details, setDetails] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<string>('')
+  const [structured, setStructured] = useState<StructuredData | null>(null)
+  const [viewMode, setViewMode] = useState<'visual' | 'raw'>('visual')
   const [snack, setSnack] = useState<{open:boolean; msg:string; sev:'success'|'error'|'info'}>({open:false,msg:'',sev:'success'})
 
   const disabled = loading || (!subject.trim() && !details.trim())
@@ -24,6 +37,7 @@ export default function TriagePage() {
   async function runTriage() {
     setLoading(true)
     setResult('')
+    setStructured(null)
     try {
       const endpoint = process.env.NEXT_PUBLIC_TRIAGE_URL || '/api/triage'
       const res = await fetch(endpoint, {
@@ -34,6 +48,9 @@ export default function TriagePage() {
       if (!res.ok) throw new Error(`Triage API ${res.status}`)
       const data = await res.json()
       setResult(data.summary || 'Completed.')
+      if (data.structured) {
+        setStructured(data.structured)
+      }
       setSnack({ open:true, msg:'Apex triage completed', sev:'success' })
     } catch (e:any) {
       setSnack({ open:true, msg: e?.message || 'Triage failed', sev:'error' })
@@ -210,22 +227,63 @@ ${details || '(none)'}
             boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
           }}>
             <CardContent>
-              <Typography variant="subtitle2" sx={{ mb:1, color: '#666', fontWeight: 700, textTransform: 'uppercase' }}>
-                Result
-              </Typography>
-              <Box component="pre" sx={{
-                p:2, 
-                border:'2px solid #E0E4E8', 
-                borderRadius:2,
-                bgcolor: '#F8FAFB', 
-                overflow:'auto', 
-                whiteSpace:'pre-wrap', 
-                minHeight: 240,
-                color: '#1a1a1a',
-                fontSize: '0.9rem'
-              }}>
-                {result || 'Run the analysis to see a summary.'}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 700, textTransform: 'uppercase' }}>
+                  Analysis Result
+                </Typography>
+                {structured && (
+                  <Tabs 
+                    value={viewMode} 
+                    onChange={(_, val) => setViewMode(val)}
+                    sx={{ minHeight: 32 }}
+                  >
+                    <Tab label="Visual" value="visual" sx={{ minHeight: 32, py: 0.5, fontSize: '0.85rem' }} />
+                    <Tab label="Raw" value="raw" sx={{ minHeight: 32, py: 0.5, fontSize: '0.85rem' }} />
+                  </Tabs>
+                )}
               </Box>
+              
+              {!result && !structured && (
+                <Box sx={{
+                  p: 4,
+                  textAlign: 'center',
+                  color: '#9CA3AF',
+                  minHeight: 240,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  gap: 2
+                }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Ready to Analyze
+                  </Typography>
+                  <Typography variant="body2">
+                    Fill in the threat details and click "Run Apex AI Analysis" to see results
+                  </Typography>
+                </Box>
+              )}
+
+              {structured && viewMode === 'visual' ? (
+                <Box sx={{ maxHeight: 600, overflow: 'auto' }}>
+                  <TriageResults structured={structured} />
+                </Box>
+              ) : result && viewMode === 'raw' ? (
+                <Box component="pre" sx={{
+                  p: 2, 
+                  border: '2px solid #E0E4E8', 
+                  borderRadius: 2,
+                  bgcolor: '#F8FAFB', 
+                  overflow: 'auto', 
+                  whiteSpace: 'pre-wrap', 
+                  minHeight: 240,
+                  maxHeight: 600,
+                  color: '#1a1a1a',
+                  fontSize: '0.85rem'
+                }}>
+                  {result}
+                </Box>
+              ) : null}
             </CardContent>
           </Card>
         </Box>
