@@ -3,7 +3,7 @@ import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import Link from 'next/link'
 import Image from 'next/image'
 import CategoryCard from '@/components/CategoryCard'
-import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart } from '@/components/Charts.client'
+import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart, GeoThreatMap, CrossChannelTimelineChart } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
 
 const UNCW_TEAL = '#007070'
@@ -131,9 +131,9 @@ export default function Home() {
               <Box sx={{ 
                 backgroundColor: '#FFFFFF', 
                 borderRadius: 16, 
-                padding: 32, 
+                padding: 24, 
                 border: '2px solid #E0E4E8',
-                height: 420,
+                height: 320,
                 boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
                 display: 'flex',
                 flexDirection: 'column',
@@ -141,33 +141,33 @@ export default function Home() {
                 alignItems: 'center',
                 textAlign: 'center'
               }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 1.5 }}>
                   Security Posture
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#666', mb: 3, lineHeight: 1.6 }}>
+                <Typography variant="body2" sx={{ color: '#666', mb: 2, lineHeight: 1.5, fontSize: '0.85rem' }}>
                   Your organization's security posture is being continuously monitored and improved through advanced threat detection and response capabilities.
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, bgcolor: '#F8FAFB', borderRadius: 2 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>Threats Blocked Today</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#10b981' }}>1,247</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: '#F8FAFB', borderRadius: 2 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Threats Blocked Today</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#10b981', fontSize: '1.1rem' }}>1,247</Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, bgcolor: '#F8FAFB', borderRadius: 2 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>Active Monitoring</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL }}>24/7</Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: '#F8FAFB', borderRadius: 2 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Active Monitoring</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, fontSize: '1.1rem' }}>24/7</Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, bgcolor: '#F8FAFB', borderRadius: 2 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>Last Incident</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_GOLD }}>2h ago</Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: '#F8FAFB', borderRadius: 2 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Last Incident</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_GOLD, fontSize: '1.1rem' }}>2h ago</Typography>
                   </Box>
                 </Box>
               </Box>
               <Box sx={{ 
                 backgroundColor: '#FFFFFF', 
                 borderRadius: 16, 
-                padding: 32, 
+                padding: 24, 
                 border: '2px solid #E0E4E8',
-                height: 420,
+                height: 320,
                 boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
                 display: 'flex',
                 flexDirection: 'column',
@@ -175,16 +175,17 @@ export default function Home() {
                 alignItems: 'center',
                 textAlign: 'center'
               }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 1.5 }}>
                   Quick Actions
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
                   <Button 
                     variant="contained" 
                     sx={{ 
                       bgcolor: UNCW_TEAL, 
                       color: 'white',
-                      py: 1.5,
+                      py: 1,
+                      fontSize: '0.85rem',
                       fontWeight: 600,
                       '&:hover': { bgcolor: '#005555' }
                     }}
@@ -196,7 +197,8 @@ export default function Home() {
                     sx={{ 
                       borderColor: UNCW_TEAL,
                       color: UNCW_TEAL,
-                      py: 1.5,
+                      py: 1,
+                      fontSize: '0.85rem',
                       fontWeight: 600,
                       '&:hover': { 
                         borderColor: '#005555',
@@ -211,7 +213,8 @@ export default function Home() {
                     sx={{ 
                       borderColor: UNCW_GOLD,
                       color: UNCW_GOLD,
-                      py: 1.5,
+                      py: 1,
+                      fontSize: '0.85rem',
                       fontWeight: 600,
                       '&:hover': { 
                         borderColor: '#E6C200',

@@ -1,6 +1,6 @@
 'use client'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Legend, LineChart, Line, PieChart, Pie, Cell, Sankey } from 'recharts'
-import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes, mockThreatInteractionMap, mockAIExploitDetection, mockCrossChannelTimeline } from '@/lib/mock'
+import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes, mockGeoThreatMap, mockAIExploitDetection, mockCrossChannelTimeline } from '@/lib/mock'
 import { Box, Typography, Chip } from '@mui/material'
 
 const UNCW_TEAL = '#007070'
@@ -109,32 +109,32 @@ export function CyberScoreDonut() {
     <div style={{ 
       backgroundColor: '#FFFFFF', 
       borderRadius: 16, 
-      padding: 32, 
+      padding: 24, 
       border: '2px solid #E0E4E8',
-      height: 420,
+      height: 320,
       position: 'relative',
       boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
       display: 'flex',
       flexDirection: 'column'
     }}>
       <div style={{ 
-        marginBottom: 24, 
+        marginBottom: 16, 
         color: '#1a1a1a', 
-        fontSize: '1.3rem', 
+        fontSize: '1.1rem', 
         fontWeight: 700,
         display: 'flex',
         alignItems: 'center',
-        gap: 12
+        gap: 8
       }}>
-        <div style={{ width: 4, height: 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        <div style={{ width: 3, height: 20, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
         Cyber Security Score
       </div>
       
       {/* Donut Chart */}
       <div style={{ 
         position: 'relative', 
-        height: 200, 
-        marginBottom: 24,
+        height: 140, 
+        marginBottom: 16,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -169,7 +169,7 @@ export function CyberScoreDonut() {
           height: 'auto'
         }}>
           <div style={{ 
-            fontSize: '2.5rem', 
+            fontSize: '2rem', 
             fontWeight: 700, 
             color: UNCW_TEAL, 
             lineHeight: 1,
@@ -180,7 +180,7 @@ export function CyberScoreDonut() {
             {score}
           </div>
           <div style={{ 
-            fontSize: '0.9rem', 
+            fontSize: '0.8rem', 
             fontWeight: 600, 
             color: '#666',
             textAlign: 'center',
@@ -195,22 +195,22 @@ export function CyberScoreDonut() {
       </div>
       
       {/* Metrics Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, flex: 1 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, flex: 1 }}>
         {metrics.map((metric, idx) => (
           <div key={idx} style={{
             textAlign: 'center',
-            padding: '12px 8px',
+            padding: '8px 6px',
             backgroundColor: '#F8FAFB',
-            borderRadius: 8,
+            borderRadius: 6,
             border: '1px solid #E0E4E8',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center'
           }}>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: metric.color, marginBottom: 4 }}>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: metric.color, marginBottom: 2 }}>
               {metric.value}
             </div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <div style={{ fontSize: '0.6rem', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
               {metric.label}
             </div>
           </div>
@@ -405,18 +405,14 @@ export function EDRThreatDetections() {
   )
 }
 
-export function ThreatInteractionMap({ campaignId }: { campaignId: string }) {
-  const interactions = mockThreatInteractionMap(campaignId)
+export function GeoThreatMap() {
+  const geoThreats = mockGeoThreatMap()
   
-  const actionCounts = interactions.reduce((acc, int) => {
-    acc[int.action] = (acc[int.action] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
-  
-  const outcomeColors = {
-    safe: '#10b981',
-    prevented: UNCW_GOLD,
-    compromised: '#ef4444'
+  const severityColors = {
+    Critical: '#ef4444',
+    High: '#f97316',
+    Medium: UNCW_GOLD,
+    Low: '#10b981'
   }
   
   return (
@@ -438,72 +434,65 @@ export function ThreatInteractionMap({ campaignId }: { campaignId: string }) {
         gap: 12
       }}>
         <div style={{ width: 4, height: 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
-        Threat Interaction Map
+        Global Threat Origins Map
       </div>
       
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-          {Object.entries(actionCounts).map(([action, count]) => (
-            <Box key={action} sx={{ textAlign: 'center' }}>
-              <Box sx={{
-                width: 100,
-                height: 100,
-                borderRadius: '50%',
-                bgcolor: action === 'reported' ? UNCW_GOLD : action === 'clicked' ? '#ef4444' : UNCW_TEAL,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-              }}>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>{count}</Typography>
-                <Typography variant="caption" sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>
-                  {action}
-                </Typography>
-              </Box>
-            </Box>
-          ))}
-        </Box>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
-          {Object.entries(interactions.reduce((acc, int) => {
-            acc[int.outcome] = (acc[int.outcome] || 0) + 1
-            return acc
-          }, {} as Record<string, number>)).map(([outcome, count]) => (
-            <Chip 
-              key={outcome}
-              label={`${outcome.toUpperCase()}: ${count}`}
-              sx={{ 
-                bgcolor: outcomeColors[outcome as keyof typeof outcomeColors],
-                color: 'white',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                px: 2,
-                py: 2.5
-              }}
-            />
-          ))}
+      {/* Threat Summary */}
+      <Box sx={{ mb: 3, p: 3, bgcolor: '#F8FAFB', borderRadius: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: UNCW_TEAL }}>
+          🌍 Threat Origins by Geography
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#666', mb: 2, lineHeight: 1.6 }}>
+          Real-time view of threat origins showing countries attempting to spoof your domain and target your organization.
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+          <Chip label={`${geoThreats.length} Countries`} sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600 }} />
+          <Chip label={`${geoThreats.reduce((sum, t) => sum + t.threatCount, 0).toLocaleString()} Total Threats`} sx={{ bgcolor: '#ef4444', color: 'white', fontWeight: 600 }} />
+          <Chip label={`${geoThreats.filter(t => t.severity === 'Critical').length} Critical Sources`} sx={{ bgcolor: '#f97316', color: 'white', fontWeight: 600 }} />
         </Box>
       </Box>
       
-      <Box sx={{ mt: 3, p: 2, bgcolor: '#F8FAFB', borderRadius: 2 }}>
-        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2, color: '#666' }}>
-          CHANNEL BREAKDOWN
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          {Object.entries(interactions.reduce((acc, int) => {
-            acc[int.channel] = (acc[int.channel] || 0) + 1
-            return acc
-          }, {} as Record<string, number>)).map(([channel, count]) => (
-            <Chip 
-              key={channel}
-              label={`${channel}: ${count}`}
-              variant="outlined"
-              sx={{ borderColor: UNCW_TEAL, color: UNCW_TEAL, fontWeight: 600 }}
-            />
-          ))}
-        </Box>
+      {/* Threat List */}
+      <Box sx={{ maxHeight: 300, overflowY: 'auto' }}>
+        {geoThreats.map((threat, idx) => (
+          <Box key={idx} sx={{ 
+            p: 2, 
+            mb: 2, 
+            border: '1px solid #E0E4E8', 
+            borderRadius: 2,
+            '&:hover': { bgcolor: '#F8FAFB' }
+          }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                  {threat.country}
+                </Typography>
+                <Chip 
+                  label={threat.severity}
+                  size="small"
+                  sx={{ 
+                    bgcolor: severityColors[threat.severity],
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '0.7rem'
+                  }}
+                />
+              </Box>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL }}>
+                {threat.threatCount}
+              </Typography>
+            </Box>
+            <Typography variant="body2" sx={{ color: '#666', mb: 1, fontSize: '0.85rem' }}>
+              <strong>Domain:</strong> {threat.domain}
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#666', mb: 1, fontSize: '0.85rem' }}>
+              <strong>Threat Types:</strong> {threat.threatTypes.join(', ')}
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem', lineHeight: 1.4 }}>
+              {threat.description}
+            </Typography>
+          </Box>
+        ))}
       </Box>
     </div>
   )
@@ -529,14 +518,20 @@ export function AIExploitDetectionChart() {
           <Typography variant="body2" sx={{ color: '#666', mb: 2, lineHeight: 1.6 }}>
             {item.description}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
-            <Chip label={`Detected: ${item.detected}`} size="small" sx={{ bgcolor: '#ef4444', color: 'white', fontWeight: 600 }} />
-            <Chip label={`Blocked: ${item.blocked}`} size="small" sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600 }} />
+          <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+            <Chip label={`Detected: ${item.detected}`} size="small" sx={{ bgcolor: '#ef4444', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
+            <Chip label={`Blocked: ${item.blocked}`} size="small" sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
             <Chip label={item.severity} size="small" sx={{ 
               bgcolor: item.severity === 'Critical' ? '#ef4444' : item.severity === 'High' ? '#f97316' : '#FFD700',
               color: 'white',
-              fontWeight: 600
+              fontWeight: 600,
+              fontSize: '0.7rem'
             }} />
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+            <Chip label={`Trend: ${item.trend}`} size="small" sx={{ bgcolor: '#8b5cf6', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
+            <Chip label={`Success: ${item.success_rate}`} size="small" sx={{ bgcolor: '#10b981', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
+            <Chip label={`Block Time: ${item.avg_block_time}`} size="small" sx={{ bgcolor: '#f97316', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
           </Box>
           <Typography variant="caption" sx={{ fontWeight: 700, color: '#666', display: 'block', mb: 0.5 }}>
             Examples:
@@ -636,9 +631,9 @@ export function CrossChannelTimelineChart({ campaignId }: { campaignId: string }
           <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }} />
           <Legend wrapperStyle={{ paddingTop: 16 }} />
           <Area type="monotone" dataKey="email" name="Email" stroke={UNCW_TEAL} fill="url(#colorEmail)" strokeWidth={2} />
-          <Area type="monotone" dataKey="teams" name="Teams" stroke={UNCW_GOLD} fill="url(#colorTeams)" strokeWidth={2} />
-          <Area type="monotone" dataKey="slack" name="Slack" stroke="#8b5cf6" fill="url(#colorSlack)" strokeWidth={2} />
           <Area type="monotone" dataKey="aiAssistant" name="AI Assistant" stroke="#ef4444" fill="url(#colorAI)" strokeWidth={2} />
+          <Area type="monotone" dataKey="webPortal" name="Web Portal" stroke="#8b5cf6" fill="url(#colorSlack)" strokeWidth={2} />
+          <Area type="monotone" dataKey="mobileApp" name="Mobile App" stroke={UNCW_GOLD} fill="url(#colorTeams)" strokeWidth={2} />
         </AreaChart>
       </ResponsiveContainer>
     </div>
