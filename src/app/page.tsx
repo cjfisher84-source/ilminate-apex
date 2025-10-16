@@ -14,6 +14,14 @@ export default function Home() {
   const abuse = mockDomainAbuse()
 
   return (
+    <>
+      <style jsx global>{`
+        .security-posture-card,
+        .quick-actions-card {
+          padding: 24px !important;
+          border-radius: 16px !important;
+        }
+      `}</style>
     <Box sx={{ minHeight: '100vh', bgcolor: '#F5F7FA', color: '#1a1a1a', p: 4 }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header with Logo */}
@@ -128,19 +136,20 @@ export default function Home() {
               gap: 3 
             }}>
               <CyberScoreDonut />
-              <Box sx={{ 
-                backgroundColor: '#FFFFFF', 
-                borderRadius: 16, 
-                padding: 24, 
-                border: '2px solid #E0E4E8',
-                height: 320,
-                boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center'
-              }}>
+              <Box 
+                className="security-posture-card"
+                sx={{ 
+                  backgroundColor: '#FFFFFF', 
+                  border: '2px solid #E0E4E8',
+                  height: 320,
+                  boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center'
+                }}
+              >
                 <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 1.5 }}>
                   Security Posture
                 </Typography>
@@ -162,19 +171,20 @@ export default function Home() {
                   </Box>
                 </Box>
               </Box>
-              <Box sx={{ 
-                backgroundColor: '#FFFFFF', 
-                borderRadius: 16, 
-                padding: 24, 
-                border: '2px solid #E0E4E8',
-                height: 320,
-                boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center'
-              }}>
+              <Box 
+                className="quick-actions-card"
+                sx={{ 
+                  backgroundColor: '#FFFFFF', 
+                  border: '2px solid #E0E4E8',
+                  height: 320,
+                  boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center'
+                }}
+              >
                 <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 1.5 }}>
                   Quick Actions
                 </Typography>
@@ -313,6 +323,7 @@ export default function Home() {
         </Box>
       </Box>
     </Box>
+    </>
   )
 }
 
