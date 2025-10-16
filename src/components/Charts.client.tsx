@@ -2,6 +2,8 @@
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Legend, LineChart, Line, PieChart, Pie, Cell, Sankey } from 'recharts'
 import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes, mockGeoThreatMap, mockAIExploitDetection, mockCrossChannelTimeline, mockThreatFamilies, mockPeerComparison } from '@/lib/mock'
 import { Box, Typography, Chip } from '@mui/material'
+import { useEffect, useState, useRef } from 'react'
+import '../../styles/reports.css'
 
 const UNCW_TEAL = '#007070'
 const UNCW_GOLD = '#FFD700'
@@ -500,6 +502,24 @@ export function GeoThreatMap() {
 
 export function AIExploitDetectionChart() {
   const data = mockAIExploitDetection()
+  const [ready, setReady] = useState(false)
+  const slotRef = useRef<HTMLDivElement | null>(null)
+  
+  // Debug: log container size to verify non-zero
+  useEffect(() => {
+    if (!slotRef.current) return
+    const el = slotRef.current
+    const logSize = () => {
+      const r = el.getBoundingClientRect()
+      console.debug("[AI-Exploit] chart-slot size", { width: r.width, height: r.height })
+    }
+    const ro = new ResizeObserver(logSize)
+    ro.observe(el)
+    logSize()
+    return () => ro.disconnect()
+  }, [])
+  
+  useEffect(() => setReady(true), [])
   
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -570,18 +590,20 @@ export function AIExploitDetectionChart() {
         <div style={{ width: 3, height: 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
         AI Exploit Detection & Prevention
       </div>
-      <div style={{ flex: 1, minHeight: 0 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 20 }} layout="horizontal">
-            <XAxis type="number" tick={{ fontSize: 10, fill: '#666' }} />
-            <YAxis type="category" dataKey="category" tick={{ fontSize: 10, fill: '#666' }} width={140} />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend wrapperStyle={{ paddingTop: 10, fontSize: '12px' }} />
-            <Bar dataKey="detected" name="Detected" fill="#ef4444" radius={[0, 4, 4, 0]} />
-            <Bar dataKey="blocked" name="Blocked" fill={UNCW_TEAL} radius={[0, 4, 4, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {ready && (
+        <div className="chart-slot" ref={slotRef}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 20 }} layout="horizontal">
+              <XAxis type="number" tick={{ fontSize: 10, fill: '#666' }} />
+              <YAxis type="category" dataKey="category" tick={{ fontSize: 10, fill: '#666' }} width={140} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend wrapperStyle={{ paddingTop: 10, fontSize: '12px' }} />
+              <Bar dataKey="detected" name="Detected" fill="#ef4444" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="blocked" name="Blocked" fill={UNCW_TEAL} radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   )
 }

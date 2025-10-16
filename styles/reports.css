@@ -1,0 +1,6 @@
+.chart-slot {
+  height: 260px;     /* adjust 220–320px to taste */
+  width: 100%;
+  position: relative; /* harmless; avoids stacking oddities */
+  z-index: 1;
+}
