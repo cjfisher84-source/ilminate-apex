@@ -1,13 +1,15 @@
 'use client'
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, useTheme } from '@mui/material'
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
 import CategoryCard from '@/components/CategoryCard'
 import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart, GeoThreatMap, CrossChannelTimelineChart, ThreatFamilyTypesChart, PeerComparisonChart } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
 
+const UNCW_TEAL = '#007070'
+const UNCW_GOLD = '#FFD700'
+
 export default function Home() {
-  const theme = useTheme()
   const cats = mockCategoryCounts()
   const abuse = mockDomainAbuse()
 
@@ -20,7 +22,7 @@ export default function Home() {
           border-radius: 16px !important;
         }
       `}</style>
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', p: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#F5F7FA', color: '#1a1a1a', p: 4 }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header with Logo */}
         <Box sx={{ 
@@ -29,8 +31,7 @@ export default function Home() {
           alignItems: 'center', 
           mb: 4,
           pb: 3,
-          borderBottom: 2,
-          borderColor: 'primary.main'
+          borderBottom: '2px solid #007070'
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
             {/* Ilminate Logo */}
@@ -43,10 +44,10 @@ export default function Home() {
                       style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
                     />
             <Box>
-              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: 'text.primary' }}>
-                Ilminate <span style={{ color: theme.palette.primary.main }}>APEX</span>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: '#1a1a1a' }}>
+                Ilminate <span style={{ color: '#007070' }}>APEX</span>
               </Typography>
-              <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+              <Typography variant="subtitle1" sx={{ color: '#666', fontWeight: 500 }}>
                 Advanced Protection & Exposure Intelligence
               </Typography>
             </Box>
@@ -57,12 +58,17 @@ export default function Home() {
                 variant="outlined" 
                 component="a" 
                 size="large"
-                color="primary"
                 sx={{ 
+                  borderColor: '#007070',
+                  color: '#007070',
                   px: 4,
                   py: 1.5,
                   fontSize: '1.1rem',
-                  fontWeight: 600
+                  fontWeight: 600,
+                  '&:hover': { 
+                    borderColor: '#005555',
+                    bgcolor: 'rgba(0, 112, 112, 0.05)'
+                  }
                 }}
               >
                 Investigations
@@ -73,13 +79,15 @@ export default function Home() {
                 variant="contained" 
                 component="a" 
                 size="large"
-                color="primary"
                 sx={{ 
+                  bgcolor: '#007070', 
+                  color: 'white',
                   px: 4,
                   py: 1.5,
                   fontSize: '1.1rem',
                   fontWeight: 600,
-                  boxShadow: 3
+                  '&:hover': { bgcolor: '#005555' },
+                  boxShadow: '0 4px 12px rgba(0, 112, 112, 0.3)'
                 }}
               >
                 Triage
@@ -92,10 +100,10 @@ export default function Home() {
           {/* Threat Categories Section */}
           <Box>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 1 }}>
                 Threat Categories
               </Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+              <Typography variant="body1" sx={{ color: '#666' }}>
                 Overview of threat types detected across your environment
               </Typography>
             </Box>
@@ -115,10 +123,10 @@ export default function Home() {
           {/* Cyber Score Section */}
           <Box>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 1 }}>
                 Security Performance
               </Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+              <Typography variant="body1" sx={{ color: '#666' }}>
                 Overall cyber security score and key performance metrics
               </Typography>
             </Box>
@@ -131,11 +139,10 @@ export default function Home() {
               <Box 
                 className="security-posture-card"
                 sx={{ 
-                  backgroundColor: 'background.paper', 
-                  border: 2,
-                  borderColor: 'divider',
+                  backgroundColor: '#FFFFFF', 
+                  border: '2px solid #E0E4E8',
                   height: 320,
-                  boxShadow: 2,
+                  boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
@@ -143,35 +150,34 @@ export default function Home() {
                   textAlign: 'center'
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', mb: 1.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 1.5 }}>
                   Security Posture
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2, lineHeight: 1.5, fontSize: '0.85rem' }}>
+                <Typography variant="body2" sx={{ color: '#666', mb: 2, lineHeight: 1.5, fontSize: '0.85rem' }}>
                   Your organization's security posture is being continuously monitored and improved through advanced threat detection and response capabilities.
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'background.default', borderRadius: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: '#F8FAFB', borderRadius: 2 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Threats Blocked Today</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main', fontSize: '1.1rem' }}>1,247</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#10b981', fontSize: '1.1rem' }}>1,247</Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'background.default', borderRadius: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: '#F8FAFB', borderRadius: 2 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Active Monitoring</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', fontSize: '1.1rem' }}>24/7</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, fontSize: '1.1rem' }}>24/7</Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'background.default', borderRadius: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: '#F8FAFB', borderRadius: 2 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Last Incident</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'secondary.main', fontSize: '1.1rem' }}>2h ago</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_GOLD, fontSize: '1.1rem' }}>2h ago</Typography>
                   </Box>
                 </Box>
               </Box>
               <Box 
                 className="quick-actions-card"
                 sx={{ 
-                  backgroundColor: 'background.paper', 
-                  border: 2,
-                  borderColor: 'divider',
+                  backgroundColor: '#FFFFFF', 
+                  border: '2px solid #E0E4E8',
                   height: 320,
-                  boxShadow: 2,
+                  boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
@@ -179,39 +185,51 @@ export default function Home() {
                   textAlign: 'center'
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', mb: 1.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 1.5 }}>
                   Quick Actions
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
                   <Button 
                     variant="contained" 
-                    color="primary"
                     sx={{ 
+                      bgcolor: UNCW_TEAL, 
+                      color: 'white',
                       py: 1,
                       fontSize: '0.85rem',
-                      fontWeight: 600
+                      fontWeight: 600,
+                      '&:hover': { bgcolor: '#005555' }
                     }}
                   >
                     View All Threats
                   </Button>
                   <Button 
                     variant="outlined" 
-                    color="primary"
                     sx={{ 
+                      borderColor: UNCW_TEAL,
+                      color: UNCW_TEAL,
                       py: 1,
                       fontSize: '0.85rem',
-                      fontWeight: 600
+                      fontWeight: 600,
+                      '&:hover': { 
+                        borderColor: '#005555',
+                        bgcolor: 'rgba(0, 112, 112, 0.05)'
+                      }
                     }}
                   >
                     Run Security Scan
                   </Button>
                   <Button 
                     variant="outlined" 
-                    color="secondary"
                     sx={{ 
+                      borderColor: UNCW_GOLD,
+                      color: UNCW_GOLD,
                       py: 1,
                       fontSize: '0.85rem',
-                      fontWeight: 600
+                      fontWeight: 600,
+                      '&:hover': { 
+                        borderColor: '#E6C200',
+                        bgcolor: 'rgba(255, 215, 0, 0.05)'
+                      }
                     }}
                   >
                     Generate Report
@@ -236,42 +254,41 @@ export default function Home() {
 
           {/* Domain / Brand Abuse (DMARC value) */}
           <TableContainer component={Paper} sx={{ 
-            bgcolor: 'background.paper', 
-            border: 2,
-            borderColor: 'divider',
+            bgcolor: '#FFFFFF', 
+            border: '2px solid #E0E4E8',
             borderRadius: 3,
-            boxShadow: 2
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
           }}>
-            <Box sx={{ p: 2, borderBottom: 2, borderColor: 'primary.main', bgcolor: 'background.default' }}>
-              <Typography variant="subtitle1" sx={{ color: 'text.primary', fontWeight: 600 }}>
+            <Box sx={{ p: 2, borderBottom: '2px solid #007070', bgcolor: '#F8FAFB' }}>
+              <Typography variant="subtitle1" sx={{ color: '#1a1a1a', fontWeight: 600 }}>
                 Domain / Brand Abuse — showing the value of DMARC
               </Typography>
             </Box>
             <Table>
               <TableHead>
-                <TableRow sx={{ bgcolor: 'background.default' }}>
-                  <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                <TableRow sx={{ bgcolor: '#F8FAFB' }}>
+                  <TableCell sx={{ color: '#666', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
                     Impersonating Domain
                   </TableCell>
-                  <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                  <TableCell sx={{ color: '#666', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
                     First Seen
                   </TableCell>
-                  <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                  <TableCell sx={{ color: '#666', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
                     Messages
                   </TableCell>
-                  <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                  <TableCell sx={{ color: '#666', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
                     DMARC Alignment
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {abuse.map((r, idx) => (
-                  <TableRow key={idx} sx={{ '&:hover': { bgcolor: 'background.default' }, '&:last-child td': { borderBottom: 0 } }}>
-                    <TableCell sx={{ color: 'text.primary', fontWeight: 500 }}>
+                  <TableRow key={idx} sx={{ '&:hover': { bgcolor: '#F8FAFB' }, '&:last-child td': { borderBottom: 0 } }}>
+                    <TableCell sx={{ color: '#1a1a1a', fontWeight: 500 }}>
                       <Link 
                         href={`/dmarc/${encodeURIComponent(r.domain)}`}
                         style={{ 
-                          color: theme.palette.primary.main, 
+                          color: '#007070', 
                           textDecoration: 'none',
                           fontWeight: 600
                         }}
@@ -281,10 +298,10 @@ export default function Home() {
                         {r.domain}
                       </Link>
                     </TableCell>
-                    <TableCell sx={{ color: 'text.secondary' }}>{r.firstSeen}</TableCell>
-                    <TableCell sx={{ color: 'text.primary', fontWeight: 600 }}>{r.messages.toLocaleString()}</TableCell>
+                    <TableCell sx={{ color: '#666' }}>{r.firstSeen}</TableCell>
+                    <TableCell sx={{ color: '#1a1a1a', fontWeight: 600 }}>{r.messages.toLocaleString()}</TableCell>
                     <TableCell sx={{ 
-                      color: r.dmarcAligned === 'Aligned' ? 'success.main' : 'error.main',
+                      color: r.dmarcAligned === 'Aligned' ? '#10b981' : '#ef4444',
                       fontWeight: 700
                     }}>
                       {r.dmarcAligned}
@@ -303,10 +320,10 @@ export default function Home() {
 
           {/* EDR Section Header */}
           <Box sx={{ mt: 4, mb: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 1 }}>
               Endpoint Detection & Response (EDR)
             </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+            <Typography variant="body1" sx={{ color: '#666' }}>
               Real-time endpoint security monitoring, threat detection, and automated response across your infrastructure
             </Typography>
           </Box>

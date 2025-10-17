@@ -5,7 +5,7 @@ import {
   TextField, Button, MenuItem, Typography,
   Snackbar, Alert, Box, Chip, LinearProgress, Tabs, Tab,
   Dialog, DialogTitle, DialogContent, DialogActions, IconButton,
-  List, ListItem, ListItemIcon, ListItemText
+  List, ListItem, ListItemIcon, ListItemText, useTheme
 } from '@mui/material'
 import {
   Security as SecurityIcon,
@@ -103,6 +103,7 @@ const securityChecks: SecurityCheck[] = [
 ]
 
 export default function TriagePage() {
+  const theme = useTheme()
   const [kind, setKind] = useState<Kind>('False Positive')
   const [subject, setSubject] = useState('')
   const [sender, setSender] = useState('')
@@ -168,7 +169,7 @@ ${details || '(none)'}
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#F5F7FA', p: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: 4 }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header with Logo */}
         <Box sx={{ 
@@ -177,7 +178,8 @@ ${details || '(none)'}
           alignItems: 'center', 
           mb: 4,
           pb: 3,
-          borderBottom: '2px solid #007070'
+          borderBottom: 2,
+          borderColor: 'primary.main'
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
             {/* Ilminate Logo */}
@@ -190,10 +192,10 @@ ${details || '(none)'}
               style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
             />
             <Box>
-              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: '#1a1a1a' }}>
-                Apex AI <span style={{ color: '#007070' }}>Triage</span>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: 'text.primary' }}>
+                Apex AI <span style={{ color: theme.palette.primary.main }}>Triage</span>
               </Typography>
-              <Typography variant="subtitle1" sx={{ color: '#666', fontWeight: 500 }}>
+              <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                 Intelligent Threat Analysis & Investigation
               </Typography>
             </Box>
@@ -203,17 +205,12 @@ ${details || '(none)'}
               variant="outlined" 
               component="a" 
               size="large"
+              color="primary"
               sx={{ 
-                borderColor: '#007070',
-                color: '#007070',
                 px: 4,
                 py: 1.5,
                 fontSize: '1.1rem',
-                fontWeight: 600,
-                '&:hover': { 
-                  borderColor: '#005555',
-                  bgcolor: 'rgba(0, 112, 112, 0.05)'
-                }
+                fontWeight: 600
               }}
             >
               Dashboard
@@ -228,11 +225,12 @@ ${details || '(none)'}
         }}>
           <Box sx={{ flex: { xs: 1, md: '1 1 58%' } }}>
             <Card sx={{ 
-              bgcolor: '#FFFFFF',
-              border: '2px solid #E0E4E8',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+              bgcolor: 'background.paper',
+              border: 2,
+              borderColor: 'divider',
+              boxShadow: 2
             }}>
-              {loading && <LinearProgress sx={{ bgcolor: '#E0E4E8', '& .MuiLinearProgress-bar': { bgcolor: '#007070' } }} />}
+              {loading && <LinearProgress color="primary" />}
               <CardContent sx={{ display:'grid', gap:2 }}>
               <Typography variant="subtitle2" color="text.secondary">Report type</Typography>
               <TextField
@@ -311,12 +309,9 @@ ${details || '(none)'}
                 variant="contained" 
                 disabled={disabled} 
                 onClick={runTriage}
+                color="primary"
                 sx={{
-                  bgcolor: '#007070',
-                  color: 'white',
-                  fontWeight: 600,
-                  '&:hover': { bgcolor: '#005555' },
-                  '&:disabled': { bgcolor: '#E0E4E8', color: '#999' }
+                  fontWeight: 600
                 }}
               >
                 Run Apex AI Analysis
@@ -324,14 +319,9 @@ ${details || '(none)'}
               <Button 
                 variant="outlined" 
                 onClick={draftEmail}
+                color="secondary"
                 sx={{
-                  borderColor: '#FFD700',
-                  color: '#E6C200',
-                  fontWeight: 600,
-                  '&:hover': { 
-                    borderColor: '#E6C200',
-                    bgcolor: 'rgba(255, 215, 0, 0.05)'
-                  }
+                  fontWeight: 600
                 }}
               >
                 Email triage@ilminate.com
@@ -342,13 +332,14 @@ ${details || '(none)'}
 
         <Box sx={{ flex: { xs: 1, md: '1 1 42%' } }}>
           <Card sx={{ 
-            bgcolor: '#FFFFFF',
-            border: '2px solid #E0E4E8',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+            bgcolor: 'background.paper',
+            border: 2,
+            borderColor: 'divider',
+            boxShadow: 2
           }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 700, textTransform: 'uppercase' }}>
+                <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase' }}>
                   Analysis Result
                 </Typography>
                 {structured && (
@@ -367,7 +358,7 @@ ${details || '(none)'}
                 <Box sx={{
                   p: 4,
                   textAlign: 'center',
-                  color: '#9CA3AF',
+                  color: 'text.secondary',
                   minHeight: 240,
                   display: 'flex',
                   alignItems: 'center',
@@ -391,14 +382,15 @@ ${details || '(none)'}
               ) : result && viewMode === 'raw' ? (
                 <Box component="pre" sx={{
                   p: 2, 
-                  border: '2px solid #E0E4E8', 
+                  border: 2, 
+                  borderColor: 'divider',
                   borderRadius: 2,
-                  bgcolor: '#F8FAFB', 
+                  bgcolor: 'background.default', 
                   overflow: 'auto', 
                   whiteSpace: 'pre-wrap', 
                   minHeight: 240,
                   maxHeight: 600,
-                  color: '#1a1a1a',
+                  color: 'text.primary',
                   fontSize: '0.85rem'
                 }}>
                   {result}
@@ -430,7 +422,8 @@ ${details || '(none)'}
         PaperProps={{
           sx: {
             borderRadius: 3,
-            border: '2px solid #007070'
+            border: 2,
+            borderColor: 'primary.main'
           }
         }}
       >
@@ -473,20 +466,20 @@ ${details || '(none)'}
               </IconButton>
             </DialogTitle>
             <DialogContent sx={{ pt: 3 }}>
-              <Typography variant="body1" sx={{ mb: 2, color: '#666', fontWeight: 600 }}>
+              <Typography variant="body1" sx={{ mb: 2, color: 'text.secondary', fontWeight: 600 }}>
                 What This Check Does:
               </Typography>
-              <List sx={{ bgcolor: '#F8FAFB', borderRadius: 2, p: 2 }}>
+              <List sx={{ bgcolor: 'background.default', borderRadius: 2, p: 2 }}>
                 {selectedCheck.details.map((detail, idx) => (
                   <ListItem key={idx} sx={{ px: 0, py: 1, alignItems: 'flex-start' }}>
                     <ListItemIcon sx={{ minWidth: 36, mt: 0.5 }}>
-                      <CheckCircleIcon sx={{ color: '#007070', fontSize: '1.3rem' }} />
+                      <CheckCircleIcon sx={{ color: 'primary.main', fontSize: '1.3rem' }} />
                     </ListItemIcon>
                     <ListItemText 
                       primary={detail}
                       primaryTypographyProps={{ 
                         fontSize: '0.95rem',
-                        color: '#1a1a1a',
+                        color: 'text.primary',
                         lineHeight: 1.6
                       }}
                     />
@@ -504,12 +497,10 @@ ${details || '(none)'}
               <Button 
                 onClick={handleDialogClose}
                 variant="contained"
+                color="primary"
                 sx={{
-                  bgcolor: '#007070',
-                  color: 'white',
                   fontWeight: 600,
-                  px: 4,
-                  '&:hover': { bgcolor: '#005555' }
+                  px: 4
                 }}
               >
                 Got It
