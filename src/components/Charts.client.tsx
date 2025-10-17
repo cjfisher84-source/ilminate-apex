@@ -744,9 +744,12 @@ export function ThreatFamilyTypesChart() {
           />
           <Bar 
             dataKey="count" 
-            fill="#ef4444"
             radius={[4, 4, 0, 0]}
-          />
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={getSeverityColor(entry.severity)} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
