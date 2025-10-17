@@ -11,6 +11,7 @@ const config: Config = {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
+        'uncw-teal': '#007070', // UNCW brand teal
       },
     },
   },

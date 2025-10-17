@@ -284,7 +284,20 @@ export default function Home() {
               <TableBody>
                 {abuse.map((r, idx) => (
                   <TableRow key={idx} sx={{ '&:hover': { bgcolor: '#F8FAFB' }, '&:last-child td': { borderBottom: 0 } }}>
-                    <TableCell sx={{ color: '#1a1a1a', fontWeight: 500 }}>{r.domain}</TableCell>
+                    <TableCell sx={{ color: '#1a1a1a', fontWeight: 500 }}>
+                      <Link 
+                        href={`/dmarc/${encodeURIComponent(r.domain)}`}
+                        style={{ 
+                          color: '#007070', 
+                          textDecoration: 'none',
+                          fontWeight: 600
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                        onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                      >
+                        {r.domain}
+                      </Link>
+                    </TableCell>
                     <TableCell sx={{ color: '#666' }}>{r.firstSeen}</TableCell>
                     <TableCell sx={{ color: '#1a1a1a', fontWeight: 600 }}>{r.messages.toLocaleString()}</TableCell>
                     <TableCell sx={{ 
