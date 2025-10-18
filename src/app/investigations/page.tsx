@@ -4,14 +4,20 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { GeoThreatMap, CrossChannelTimelineChart } from '@/components/Charts.client'
 import { mockCampaigns, mockPathAnalysis, type Campaign } from '@/lib/mock'
+import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
 
 const UNCW_TEAL = '#007070'
 const UNCW_GOLD = '#FFD700'
 
 export default function InvestigationsPage() {
+  const isMobile = useIsMobile()
   const campaigns = mockCampaigns()
   const activeCampaign = campaigns.find(c => c.status === 'active') || campaigns[0]
   const pathData = mockPathAnalysis(activeCampaign.id)
+  
+  const containerPadding = getResponsivePadding(isMobile)
+  const headerGap = getResponsiveSpacing(isMobile, 2, 3)
+  const logoSize = getResponsiveImageSize(isMobile, 100)
 
   const getStatusColor = (status: string) => {
     switch(status) {
@@ -23,32 +29,49 @@ export default function InvestigationsPage() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#F5F7FA', p: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#F5F7FA', p: containerPadding }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header */}
         <Box sx={{ 
           display: 'flex', 
+          flexDirection: isMobile ? 'column' : 'row',
           justifyContent: 'space-between', 
-          alignItems: 'center', 
-          mb: 4,
-          pb: 3,
-          borderBottom: '2px solid #007070'
+          alignItems: isMobile ? 'flex-start' : 'center', 
+          mb: isMobile ? 3 : 4,
+          pb: isMobile ? 2 : 3,
+          borderBottom: '2px solid #007070',
+          gap: isMobile ? 2 : 0
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: headerGap }}>
             <Image 
               src="/ilminate-logo.png" 
               alt="Ilminate Logo" 
-              width={100} 
-              height={100}
+              width={logoSize} 
+              height={logoSize}
               priority
               style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
             />
             <Box>
-              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: '#1a1a1a' }}>
+              <Typography 
+                variant="h3" 
+                sx={{ 
+                  fontWeight: 700, 
+                  mb: 0.5, 
+                  color: '#1a1a1a',
+                  fontSize: getResponsiveFontSize(isMobile, 'h3')
+                }}
+              >
                 Campaign <span style={{ color: UNCW_TEAL }}>Investigations</span>
               </Typography>
-              <Typography variant="subtitle1" sx={{ color: '#666', fontWeight: 500 }}>
-                Cross-Channel Threat Analysis & Investigation
+              <Typography 
+                variant="subtitle1" 
+                sx={{ 
+                  color: '#666', 
+                  fontWeight: 500,
+                  fontSize: getResponsiveFontSize(isMobile, 'subtitle1')
+                }}
+              >
+                {isMobile ? 'Threat Analysis' : 'Cross-Channel Threat Analysis & Investigation'}
               </Typography>
             </Box>
           </Box>
@@ -56,13 +79,15 @@ export default function InvestigationsPage() {
             <Button 
               variant="outlined" 
               component="a" 
-              size="large"
+              size={isMobile ? 'medium' : 'large'}
+              fullWidth={isMobile}
+              className={isMobile ? 'mobile-touch-target' : ''}
               sx={{ 
                 borderColor: UNCW_TEAL,
                 color: UNCW_TEAL,
-                px: 4,
-                py: 1.5,
-                fontSize: '1.1rem',
+                px: isMobile ? 3 : 4,
+                py: isMobile ? 1.2 : 1.5,
+                fontSize: isMobile ? '1rem' : '1.1rem',
                 fontWeight: 600,
                 '&:hover': { 
                   borderColor: '#005555',
@@ -75,61 +100,70 @@ export default function InvestigationsPage() {
           </Link>
         </Box>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 2.5 : 3 }}>
           {/* Active Campaigns Overview */}
-          <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
-            <Box sx={{ p: 3, borderBottom: '2px solid #007070', bgcolor: '#F8FAFB' }}>
-              <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
-                Active & Recent Campaigns
-              </Typography>
-            </Box>
-            <TableContainer>
-              <Table>
+          <Box className={isMobile ? 'mobile-table-wrapper' : ''}>
+            <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
+              <Box sx={{ p: isMobile ? 2 : 3, borderBottom: '2px solid #007070', bgcolor: '#F8FAFB' }}>
+                <Typography 
+                  variant="h5" 
+                  sx={{ 
+                    fontWeight: 700, 
+                    color: '#1a1a1a',
+                    fontSize: isMobile ? '1.25rem' : '1.5rem'
+                  }}
+                >
+                  {isMobile ? 'Campaigns' : 'Active & Recent Campaigns'}
+                </Typography>
+              </Box>
+              <TableContainer>
+              <Table sx={{ minWidth: isMobile ? 800 : 'auto' }}>
                 <TableHead>
                   <TableRow sx={{ bgcolor: '#F8FAFB' }}>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Campaign Name</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Type</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Channels</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Targets</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Compromised</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Campaign Name</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Type</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Channels</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Targets</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Compromised</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {campaigns.map((campaign) => (
                     <TableRow key={campaign.id} sx={{ '&:hover': { bgcolor: '#F8FAFB' } }}>
-                      <TableCell sx={{ color: '#1a1a1a', fontWeight: 600 }}>{campaign.name}</TableCell>
-                      <TableCell>
+                      <TableCell sx={{ color: '#1a1a1a', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>{campaign.name}</TableCell>
+                      <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
                         <Chip 
                           label={campaign.threatType}
                           size="small"
-                          sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600 }}
+                          sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600, fontSize: isMobile ? '0.7rem' : '0.8rem' }}
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
                         <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                           {campaign.channels.map(ch => (
                             <Chip key={ch} label={ch} size="small" variant="outlined" sx={{ fontSize: '0.7rem' }} />
                           ))}
                         </Box>
                       </TableCell>
-                      <TableCell sx={{ color: '#1a1a1a', fontWeight: 600 }}>{campaign.targets}</TableCell>
-                      <TableCell>
+                      <TableCell sx={{ color: '#1a1a1a', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>{campaign.targets}</TableCell>
+                      <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
                         <Chip 
                           label={campaign.interactions.compromised}
                           size="small"
                           sx={{ 
                             bgcolor: campaign.interactions.compromised > 0 ? '#ef4444' : '#10b981',
                             color: 'white',
-                            fontWeight: 700
+                            fontWeight: 700,
+                            fontSize: isMobile ? '0.7rem' : '0.8rem'
                           }}
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
                         <Chip 
                           label={campaign.status}
                           size="small"
-                          sx={{ bgcolor: getStatusColor(campaign.status), color: 'white', fontWeight: 600 }}
+                          sx={{ bgcolor: getStatusColor(campaign.status), color: 'white', fontWeight: 600, fontSize: isMobile ? '0.7rem' : '0.8rem' }}
                         />
                       </TableCell>
                     </TableRow>
@@ -138,6 +172,7 @@ export default function InvestigationsPage() {
               </Table>
             </TableContainer>
           </Card>
+          </Box>
 
           {/* Featured Campaign Analysis */}
           <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
@@ -155,10 +190,18 @@ export default function InvestigationsPage() {
             <CardContent sx={{ p: 4 }}>
               {/* Source Analysis */}
               <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 2 }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 700, 
+                    color: UNCW_TEAL, 
+                    mb: 2,
+                    fontSize: isMobile ? '1.1rem' : '1.25rem'
+                  }}
+                >
                   📍 Source Analysis
                 </Typography>
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 2 }}>
                   <Box sx={{ p: 2, bgcolor: '#F8FAFB', borderRadius: 2 }}>
                     <Typography variant="caption" sx={{ color: '#666', fontWeight: 600, display: 'block', mb: 0.5 }}>
                       IP ADDRESS
