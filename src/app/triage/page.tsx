@@ -18,6 +18,7 @@ import {
 import Link from 'next/link'
 import Image from 'next/image'
 import TriageResults from '@/components/TriageResults'
+import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
 
 type Kind = 'False Positive' | 'False Negative' | 'Question'
 
@@ -104,6 +105,7 @@ const securityChecks: SecurityCheck[] = [
 
 export default function TriagePage() {
   const theme = useTheme()
+  const isMobile = useIsMobile()
   const [kind, setKind] = useState<Kind>('False Positive')
   const [subject, setSubject] = useState('')
   const [sender, setSender] = useState('')
@@ -116,6 +118,9 @@ export default function TriagePage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedCheck, setSelectedCheck] = useState<SecurityCheck | null>(null)
 
+  const containerPadding = getResponsivePadding(isMobile)
+  const headerGap = getResponsiveSpacing(isMobile, 2, 3)
+  const logoSize = getResponsiveImageSize(isMobile, 100)
   const disabled = loading || (!subject.trim() && !details.trim())
 
   async function runTriage() {
@@ -169,34 +174,51 @@ ${details || '(none)'}
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: containerPadding }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header with Logo */}
         <Box sx={{ 
           display: 'flex', 
+          flexDirection: isMobile ? 'column' : 'row',
           justifyContent: 'space-between', 
-          alignItems: 'center', 
-          mb: 4,
-          pb: 3,
+          alignItems: isMobile ? 'flex-start' : 'center', 
+          mb: isMobile ? 3 : 4,
+          pb: isMobile ? 2 : 3,
           borderBottom: 2,
-          borderColor: 'primary.main'
+          borderColor: 'primary.main',
+          gap: isMobile ? 2 : 0
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: headerGap }}>
             {/* Ilminate Logo */}
             <Image 
               src="/ilminate-logo.png" 
               alt="Ilminate Logo" 
-              width={100} 
-              height={100}
+              width={logoSize} 
+              height={logoSize}
               priority
               style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
             />
             <Box>
-              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: 'text.primary' }}>
+              <Typography 
+                variant="h3" 
+                sx={{ 
+                  fontWeight: 700, 
+                  mb: 0.5, 
+                  color: 'text.primary',
+                  fontSize: getResponsiveFontSize(isMobile, 'h3')
+                }}
+              >
                 Apex AI <span style={{ color: theme.palette.primary.main }}>Triage</span>
               </Typography>
-              <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                Intelligent Threat Analysis & Investigation
+              <Typography 
+                variant="subtitle1" 
+                sx={{ 
+                  color: 'text.secondary', 
+                  fontWeight: 500,
+                  fontSize: getResponsiveFontSize(isMobile, 'subtitle1')
+                }}
+              >
+                {isMobile ? 'Threat Analysis' : 'Intelligent Threat Analysis & Investigation'}
               </Typography>
             </Box>
           </Box>
@@ -204,12 +226,14 @@ ${details || '(none)'}
             <Button 
               variant="outlined" 
               component="a" 
-              size="large"
+              size={isMobile ? 'medium' : 'large'}
               color="primary"
+              fullWidth={isMobile}
+              className={isMobile ? 'mobile-touch-target' : ''}
               sx={{ 
-                px: 4,
-                py: 1.5,
-                fontSize: '1.1rem',
+                px: isMobile ? 3 : 4,
+                py: isMobile ? 1.2 : 1.5,
+                fontSize: isMobile ? '1rem' : '1.1rem',
                 fontWeight: 600
               }}
             >
@@ -232,11 +256,20 @@ ${details || '(none)'}
             }}>
               {loading && <LinearProgress color="primary" />}
               <CardContent sx={{ display:'grid', gap:2 }}>
-              <Typography variant="subtitle2" color="text.secondary">Report type</Typography>
+              <Typography 
+                variant="subtitle2" 
+                color="text.secondary"
+                sx={{ fontSize: isMobile ? '0.8rem' : '0.875rem' }}
+              >
+                Report type
+              </Typography>
               <TextField
                 select fullWidth label="Triage Type"
                 value={kind}
                 onChange={e=>setKind(e.target.value as Kind)}
+                InputProps={{
+                  sx: { fontSize: isMobile ? '16px' : 'inherit' }
+                }}
               >
                 {(['False Positive','False Negative','Question'] as Kind[]).map(k => (
                   <MenuItem key={k} value={k}>{k}</MenuItem>
@@ -252,22 +285,32 @@ ${details || '(none)'}
                   label="Message Subject" 
                   sx={{ flex: { xs: 1, sm: '1 1 66%' } }}
                   value={subject} 
-                  onChange={e=>setSubject(e.target.value)} 
+                  onChange={e=>setSubject(e.target.value)}
+                  InputProps={{
+                    sx: { fontSize: isMobile ? '16px' : 'inherit' }
+                  }}
                 />
                 <TextField 
                   label="Sender" 
                   placeholder="user@domain.com" 
                   sx={{ flex: { xs: 1, sm: '1 1 34%' } }}
                   value={sender} 
-                  onChange={e=>setSender(e.target.value)} 
+                  onChange={e=>setSender(e.target.value)}
+                  InputProps={{
+                    sx: { fontSize: isMobile ? '16px' : 'inherit' }
+                  }}
                 />
               </Box>
 
                 <TextField 
                   label="Threat Description" 
                   placeholder="Describe the threat you received. Example: 'We received 10 emails today asking for gift cards. The sender looked like someone we know but we're not sure.' Include timestamps, headers, URLs, etc." 
-                  multiline minRows={6} fullWidth
-                  value={details} onChange={e=>setDetails(e.target.value)} 
+                  multiline minRows={isMobile ? 4 : 6} fullWidth
+                  value={details} 
+                  onChange={e=>setDetails(e.target.value)}
+                  InputProps={{
+                    sx: { fontSize: isMobile ? '16px' : 'inherit' }
+                  }}
                 />
 
               <Box>
@@ -304,12 +347,18 @@ ${details || '(none)'}
                 </Box>
               </Box>
             </CardContent>
-            <CardActions sx={{ p:2, gap:1 }}>
+            <CardActions sx={{ 
+              p: 2, 
+              gap: 1,
+              flexDirection: isMobile ? 'column' : 'row'
+            }}>
               <Button 
                 variant="contained" 
                 disabled={disabled} 
                 onClick={runTriage}
                 color="primary"
+                fullWidth={isMobile}
+                className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{
                   fontWeight: 600
                 }}
@@ -320,6 +369,8 @@ ${details || '(none)'}
                 variant="outlined" 
                 onClick={draftEmail}
                 color="secondary"
+                fullWidth={isMobile}
+                className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{
                   fontWeight: 600
                 }}

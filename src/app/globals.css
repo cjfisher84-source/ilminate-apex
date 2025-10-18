@@ -24,3 +24,116 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ============================================
+   MOBILE OPTIMIZATIONS (Feature Flag: MOBILE_TWEAKS)
+   ============================================ */
+
+/* Mobile-specific utility classes */
+@media (max-width: 768px) {
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Improve touch targets - minimum 44x44px */
+  .mobile-touch-target {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 12px !important;
+  }
+  
+  /* Responsive text sizing */
+  .mobile-text-sm {
+    font-size: 0.875rem !important;
+  }
+  
+  .mobile-text-base {
+    font-size: 1rem !important;
+  }
+  
+  /* Reduce padding on mobile */
+  .mobile-p-sm {
+    padding: 0.5rem !important;
+  }
+  
+  .mobile-p-md {
+    padding: 1rem !important;
+  }
+  
+  /* Hide on mobile */
+  .mobile-hidden {
+    display: none !important;
+  }
+  
+  /* Stack on mobile */
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+  
+  /* Full width on mobile */
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  /* Responsive tables - allow horizontal scroll */
+  .mobile-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Chart containers - prevent overflow */
+  .mobile-chart-container {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  /* Reduce chart heights on mobile */
+  .mobile-chart-height {
+    height: 300px !important;
+    min-height: 300px !important;
+  }
+  
+  /* Improve button spacing */
+  .mobile-button-spacing {
+    margin: 0.5rem 0 !important;
+  }
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Improve layout shift (CLS) */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Chart slot for responsive sizing */
+.chart-slot {
+  width: 100%;
+  flex: 1;
+  min-height: 200px;
+  position: relative;
+}
+
+/* Optimize fonts for mobile */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  input,
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+}
+

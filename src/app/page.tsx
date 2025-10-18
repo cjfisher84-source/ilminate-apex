@@ -5,63 +5,94 @@ import Image from 'next/image'
 import CategoryCard from '@/components/CategoryCard'
 import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart, GeoThreatMap, CrossChannelTimelineChart, ThreatFamilyTypesChart, PeerComparisonChart } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
+import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
 
 export default function Home() {
   const theme = useTheme()
+  const isMobile = useIsMobile()
   const cats = mockCategoryCounts()
   const abuse = mockDomainAbuse()
+  
+  const containerPadding = getResponsivePadding(isMobile)
+  const headerGap = getResponsiveSpacing(isMobile, 2, 3)
+  const sectionGap = getResponsiveSpacing(isMobile, 3, 4)
+  const logoSize = getResponsiveImageSize(isMobile, 100)
 
   return (
     <>
       <style jsx global>{`
         .security-posture-card,
         .quick-actions-card {
-          padding: 24px !important;
+          padding: ${isMobile ? '16px' : '24px'} !important;
           border-radius: 16px !important;
         }
       `}</style>
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', p: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', p: containerPadding }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header with Logo */}
         <Box sx={{ 
           display: 'flex', 
+          flexDirection: isMobile ? 'column' : 'row',
           justifyContent: 'space-between', 
-          alignItems: 'center', 
-          mb: 4,
-          pb: 3,
+          alignItems: isMobile ? 'flex-start' : 'center', 
+          mb: isMobile ? 3 : 4,
+          pb: isMobile ? 2 : 3,
           borderBottom: 2,
-          borderColor: 'primary.main'
+          borderColor: 'primary.main',
+          gap: isMobile ? 2 : 0
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: headerGap }}>
             {/* Ilminate Logo */}
-                    <Image 
-                      src="/ilminate-logo.png" 
-                      alt="Ilminate Logo" 
-                      width={100} 
-                      height={100}
-                      priority
-                      style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
-                    />
+            <Image 
+              src="/ilminate-logo.png" 
+              alt="Ilminate Logo" 
+              width={logoSize} 
+              height={logoSize}
+              priority
+              style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
+            />
             <Box>
-              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: 'text.primary' }}>
+              <Typography 
+                variant="h3" 
+                sx={{ 
+                  fontWeight: 700, 
+                  mb: 0.5, 
+                  color: 'text.primary',
+                  fontSize: getResponsiveFontSize(isMobile, 'h3')
+                }}
+              >
                 Ilminate <span style={{ color: theme.palette.primary.main }}>APEX</span>
               </Typography>
-              <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                Advanced Protection & Exposure Intelligence
+              <Typography 
+                variant="subtitle1" 
+                sx={{ 
+                  color: 'text.secondary', 
+                  fontWeight: 500,
+                  fontSize: getResponsiveFontSize(isMobile, 'subtitle1')
+                }}
+              >
+                {isMobile ? 'Advanced Protection' : 'Advanced Protection & Exposure Intelligence'}
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            gap: isMobile ? 1.5 : 2,
+            width: isMobile ? '100%' : 'auto',
+            flexDirection: isMobile ? 'column' : 'row'
+          }}>
             <Link href="/investigations" passHref legacyBehavior>
               <Button 
                 variant="outlined" 
                 component="a" 
-                size="large"
+                size={isMobile ? 'medium' : 'large'}
                 color="primary"
+                fullWidth={isMobile}
+                className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{ 
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1.1rem',
+                  px: isMobile ? 3 : 4,
+                  py: isMobile ? 1.2 : 1.5,
+                  fontSize: isMobile ? '1rem' : '1.1rem',
                   fontWeight: 600
                 }}
               >
@@ -72,12 +103,14 @@ export default function Home() {
               <Button 
                 variant="contained" 
                 component="a" 
-                size="large"
+                size={isMobile ? 'medium' : 'large'}
                 color="primary"
+                fullWidth={isMobile}
+                className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{ 
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1.1rem',
+                  px: isMobile ? 3 : 4,
+                  py: isMobile ? 1.2 : 1.5,
+                  fontSize: isMobile ? '1rem' : '1.1rem',
                   fontWeight: 600,
                   boxShadow: 3
                 }}
@@ -88,14 +121,28 @@ export default function Home() {
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: sectionGap }}>
           {/* Threat Categories Section */}
           <Box>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
+            <Box sx={{ mb: isMobile ? 2 : 3 }}>
+              <Typography 
+                variant="h4" 
+                sx={{ 
+                  fontWeight: 700, 
+                  color: 'text.primary', 
+                  mb: 1,
+                  fontSize: getResponsiveFontSize(isMobile, 'h4')
+                }}
+              >
                 Threat Categories
               </Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: 'text.secondary',
+                  fontSize: getResponsiveFontSize(isMobile, 'body1')
+                }}
+              >
                 Overview of threat types detected across your environment
               </Typography>
             </Box>
@@ -114,11 +161,25 @@ export default function Home() {
 
           {/* Cyber Score Section */}
           <Box>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
+            <Box sx={{ mb: isMobile ? 2 : 3 }}>
+              <Typography 
+                variant="h4" 
+                sx={{ 
+                  fontWeight: 700, 
+                  color: 'text.primary', 
+                  mb: 1,
+                  fontSize: getResponsiveFontSize(isMobile, 'h4')
+                }}
+              >
                 Security Performance
               </Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: 'text.secondary',
+                  fontSize: getResponsiveFontSize(isMobile, 'body1')
+                }}
+              >
                 Overall cyber security score and key performance metrics
               </Typography>
             </Box>
@@ -235,65 +296,114 @@ export default function Home() {
           </Box>
 
           {/* Domain / Brand Abuse (DMARC value) */}
-          <TableContainer component={Paper} sx={{ 
-            bgcolor: 'background.paper', 
-            border: 2,
-            borderColor: 'divider',
-            borderRadius: 3,
-            boxShadow: 2
-          }}>
-            <Box sx={{ p: 2, borderBottom: 2, borderColor: 'primary.main', bgcolor: 'background.default' }}>
-              <Typography variant="subtitle1" sx={{ color: 'text.primary', fontWeight: 600 }}>
-                Domain / Brand Abuse — showing the value of DMARC
-              </Typography>
-            </Box>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: 'background.default' }}>
-                  <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
-                    Impersonating Domain
-                  </TableCell>
-                  <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
-                    First Seen
-                  </TableCell>
-                  <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
-                    Messages
-                  </TableCell>
-                  <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>
-                    DMARC Alignment
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {abuse.map((r, idx) => (
-                  <TableRow key={idx} sx={{ '&:hover': { bgcolor: 'background.default' }, '&:last-child td': { borderBottom: 0 } }}>
-                    <TableCell sx={{ color: 'text.primary', fontWeight: 500 }}>
-                      <Link 
-                        href={`/dmarc/${encodeURIComponent(r.domain)}`}
-                        style={{ 
-                          color: theme.palette.primary.main, 
-                          textDecoration: 'none',
-                          fontWeight: 600
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                        onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                      >
-                        {r.domain}
-                      </Link>
-                    </TableCell>
-                    <TableCell sx={{ color: 'text.secondary' }}>{r.firstSeen}</TableCell>
-                    <TableCell sx={{ color: 'text.primary', fontWeight: 600 }}>{r.messages.toLocaleString()}</TableCell>
+          <Box className={isMobile ? 'mobile-table-wrapper' : ''}>
+            <TableContainer component={Paper} sx={{ 
+              bgcolor: 'background.paper', 
+              border: 2,
+              borderColor: 'divider',
+              borderRadius: 3,
+              boxShadow: 2
+            }}>
+              <Box sx={{ p: isMobile ? 1.5 : 2, borderBottom: 2, borderColor: 'primary.main', bgcolor: 'background.default' }}>
+                <Typography 
+                  variant="subtitle1" 
+                  sx={{ 
+                    color: 'text.primary', 
+                    fontWeight: 600,
+                    fontSize: isMobile ? '0.95rem' : '1rem'
+                  }}
+                >
+                  Domain / Brand Abuse — {isMobile ? 'DMARC' : 'showing the value of DMARC'}
+                </Typography>
+              </Box>
+              <Table sx={{ minWidth: isMobile ? 600 : 'auto' }}>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
                     <TableCell sx={{ 
-                      color: r.dmarcAligned === 'Aligned' ? 'success.main' : 'error.main',
-                      fontWeight: 700
+                      color: 'text.secondary', 
+                      fontSize: isMobile ? '0.7rem' : '0.75rem', 
+                      textTransform: 'uppercase', 
+                      fontWeight: 700,
+                      padding: isMobile ? '8px' : '16px'
                     }}>
-                      {r.dmarcAligned}
+                      Impersonating Domain
+                    </TableCell>
+                    <TableCell sx={{ 
+                      color: 'text.secondary', 
+                      fontSize: isMobile ? '0.7rem' : '0.75rem', 
+                      textTransform: 'uppercase', 
+                      fontWeight: 700,
+                      padding: isMobile ? '8px' : '16px'
+                    }}>
+                      First Seen
+                    </TableCell>
+                    <TableCell sx={{ 
+                      color: 'text.secondary', 
+                      fontSize: isMobile ? '0.7rem' : '0.75rem', 
+                      textTransform: 'uppercase', 
+                      fontWeight: 700,
+                      padding: isMobile ? '8px' : '16px'
+                    }}>
+                      Messages
+                    </TableCell>
+                    <TableCell sx={{ 
+                      color: 'text.secondary', 
+                      fontSize: isMobile ? '0.7rem' : '0.75rem', 
+                      textTransform: 'uppercase', 
+                      fontWeight: 700,
+                      padding: isMobile ? '8px' : '16px'
+                    }}>
+                      DMARC
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {abuse.map((r, idx) => (
+                    <TableRow key={idx} sx={{ '&:hover': { bgcolor: 'background.default' }, '&:last-child td': { borderBottom: 0 } }}>
+                      <TableCell sx={{ 
+                        color: 'text.primary', 
+                        fontWeight: 500,
+                        padding: isMobile ? '8px' : '16px',
+                        fontSize: isMobile ? '0.85rem' : '0.875rem'
+                      }}>
+                        <Link 
+                          href={`/dmarc/${encodeURIComponent(r.domain)}`}
+                          style={{ 
+                            color: theme.palette.primary.main, 
+                            textDecoration: 'none',
+                            fontWeight: 600
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                          onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                        >
+                          {r.domain}
+                        </Link>
+                      </TableCell>
+                      <TableCell sx={{ 
+                        color: 'text.secondary',
+                        padding: isMobile ? '8px' : '16px',
+                        fontSize: isMobile ? '0.85rem' : '0.875rem'
+                      }}>{r.firstSeen}</TableCell>
+                      <TableCell sx={{ 
+                        color: 'text.primary', 
+                        fontWeight: 600,
+                        padding: isMobile ? '8px' : '16px',
+                        fontSize: isMobile ? '0.85rem' : '0.875rem'
+                      }}>{r.messages.toLocaleString()}</TableCell>
+                      <TableCell sx={{ 
+                        color: r.dmarcAligned === 'Aligned' ? 'success.main' : 'error.main',
+                        fontWeight: 700,
+                        padding: isMobile ? '8px' : '16px',
+                        fontSize: isMobile ? '0.85rem' : '0.875rem'
+                      }}>
+                        {r.dmarcAligned}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
 
           {/* AI Threats */}
           <AIThreatsBar />
@@ -302,12 +412,26 @@ export default function Home() {
           <AIExploitDetectionChart />
 
           {/* EDR Section Header */}
-          <Box sx={{ mt: 4, mb: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
-              Endpoint Detection & Response (EDR)
+          <Box sx={{ mt: isMobile ? 2 : 4, mb: 2 }}>
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                fontWeight: 700, 
+                color: 'text.primary', 
+                mb: 1,
+                fontSize: getResponsiveFontSize(isMobile, 'h4')
+              }}
+            >
+              {isMobile ? 'EDR' : 'Endpoint Detection & Response (EDR)'}
             </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              Real-time endpoint security monitoring, threat detection, and automated response across your infrastructure
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                color: 'text.secondary',
+                fontSize: getResponsiveFontSize(isMobile, 'body1')
+              }}
+            >
+              Real-time endpoint security monitoring{isMobile ? '' : ', threat detection, and automated response across your infrastructure'}
             </Typography>
           </Box>
 
