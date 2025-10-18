@@ -245,14 +245,20 @@ ${details || '(none)'}
         <Box sx={{ 
           display: 'flex', 
           flexDirection: { xs: 'column', md: 'row' }, 
-          gap: 3
+          gap: 3,
+          width: '100%'
         }}>
-          <Box sx={{ flex: { xs: 1, md: '1 1 58%' } }}>
+          <Box sx={{ 
+            flex: { xs: 1, md: '1 1 58%' },
+            width: isMobile ? '100%' : 'auto',
+            minWidth: 0
+          }}>
             <Card sx={{ 
               bgcolor: 'background.paper',
               border: 2,
               borderColor: 'divider',
-              boxShadow: 2
+              boxShadow: 2,
+              width: '100%'
             }}>
               {loading && <LinearProgress color="primary" />}
               <CardContent sx={{ display:'grid', gap:2 }}>
@@ -381,12 +387,17 @@ ${details || '(none)'}
           </Card>
         </Box>
 
-        <Box sx={{ flex: { xs: 1, md: '1 1 42%' } }}>
+        <Box sx={{ 
+          flex: { xs: 1, md: '1 1 42%' },
+          width: isMobile ? '100%' : 'auto',
+          minWidth: 0
+        }}>
           <Card sx={{ 
             bgcolor: 'background.paper',
             border: 2,
             borderColor: 'divider',
-            boxShadow: 2
+            boxShadow: 2,
+            width: '100%'
           }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
