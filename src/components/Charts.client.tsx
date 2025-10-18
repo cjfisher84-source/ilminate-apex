@@ -181,10 +181,11 @@ export function CyberScoreDonut() {
           textAlign: 'center',
           pointerEvents: 'none',
           width: 'auto',
-          height: 'auto'
+          height: 'auto',
+          maxWidth: '80px'
         }}>
           <div style={{ 
-            fontSize: '2rem', 
+            fontSize: '1.75rem', 
             fontWeight: 700, 
             color: UNCW_TEAL, 
             lineHeight: 1,
@@ -195,14 +196,14 @@ export function CyberScoreDonut() {
             {score}
           </div>
           <div style={{ 
-            fontSize: '0.8rem', 
+            fontSize: '0.75rem', 
             fontWeight: 600, 
             color: '#666',
             textAlign: 'center',
-            lineHeight: 1,
+            lineHeight: 1.2,
             margin: 0,
             padding: 0,
-            marginTop: '-2px'
+            marginTop: '2px'
           }}>
             / 100
           </div>

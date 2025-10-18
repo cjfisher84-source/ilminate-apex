@@ -9,7 +9,8 @@ interface ThemeProviderProps {
 }
 
 export default function ThemeProvider({ children }: ThemeProviderProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  // Default to dark mode to match the rest of the application
+  const [isDarkMode, setIsDarkMode] = useState(true)
 
   useEffect(() => {
     // Check system preference on mount
