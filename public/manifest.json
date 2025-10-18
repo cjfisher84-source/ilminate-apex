@@ -1,0 +1,17 @@
+{
+  "name": "Ilminate APEX",
+  "short_name": "APEX",
+  "description": "AI-powered cybersecurity analysis and triage system",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F7FA",
+  "theme_color": "#007070",
+  "icons": [
+    {
+      "src": "/ilminate-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+

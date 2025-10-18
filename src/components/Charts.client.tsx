@@ -3,6 +3,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, 
 import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes, mockGeoThreatMap, mockAIExploitDetection, mockCrossChannelTimeline, mockThreatFamilies, mockPeerComparison } from '@/lib/mock'
 import { Box, Typography, Chip } from '@mui/material'
 import { useEffect, useState, useRef } from 'react'
+import { useIsMobile, getResponsiveChartHeight } from '@/lib/mobileUtils'
 import '../../styles/reports.css'
 
 const UNCW_TEAL = '#007070'
@@ -11,31 +12,36 @@ const TEAL_LIGHT = '#4DB8B8'
 const GOLD_DARK = '#E6C200'
 
 export function TimelineArea() {
+  const isMobile = useIsMobile()
   const data = mockTimeline30d()
+  const chartHeight = getResponsiveChartHeight(isMobile, 520)
+  
   return (
-    <div style={{ 
-      backgroundColor: '#FFFFFF', 
-      borderRadius: 16, 
-      padding: 32, 
-      border: '2px solid #E0E4E8',
-      height: 520,
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
-      transition: 'all 0.3s ease'
-    }}>
+    <div 
+      className={isMobile ? 'mobile-chart-container' : ''}
+      style={{ 
+        backgroundColor: '#FFFFFF', 
+        borderRadius: 16, 
+        padding: isMobile ? 16 : 32, 
+        border: '2px solid #E0E4E8',
+        height: chartHeight,
+        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+        transition: 'all 0.3s ease'
+      }}>
       <div style={{ 
-        marginBottom: 24, 
+        marginBottom: isMobile ? 16 : 24, 
         color: '#1a1a1a', 
-        fontSize: '1.3rem', 
+        fontSize: isMobile ? '1.1rem' : '1.3rem', 
         fontWeight: 700,
         display: 'flex',
         alignItems: 'center',
-        gap: 12
+        gap: isMobile ? 8 : 12
       }}>
-        <div style={{ width: 4, height: 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
-        Threat Timeline — last 30 days
+        <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        {isMobile ? 'Threat Timeline (30d)' : 'Threat Timeline — last 30 days'}
       </div>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+        <AreaChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: 0 }}>
           <defs>
             <linearGradient id="colorQuarantined" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={UNCW_TEAL} stopOpacity={0.4}/>
@@ -46,12 +52,19 @@ export function TimelineArea() {
               <stop offset="95%" stopColor={UNCW_GOLD} stopOpacity={0.05}/>
             </linearGradient>
           </defs>
-          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#999' }} angle={-45} textAnchor="end" height={60} />
-          <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
-          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }} />
-          <Legend wrapperStyle={{ paddingTop: 20 }} />
-          <Area type="monotone" dataKey="quarantined" name="Quarantined" stroke={UNCW_TEAL} strokeWidth={3} fill="url(#colorQuarantined)" />
-          <Area type="monotone" dataKey="delivered" name="Delivered" stroke={UNCW_GOLD} strokeWidth={3} fill="url(#colorDelivered)" />
+          <XAxis 
+            dataKey="date" 
+            tick={{ fontSize: isMobile ? 9 : 11, fill: '#999' }} 
+            angle={-45} 
+            textAnchor="end" 
+            height={isMobile ? 50 : 60}
+            interval={isMobile ? 'preserveStartEnd' : 0}
+          />
+          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} width={isMobile ? 35 : 50} />
+          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem' }} />
+          <Legend wrapperStyle={{ paddingTop: isMobile ? 12 : 20, fontSize: isMobile ? '0.8rem' : '1rem' }} />
+          <Area type="monotone" dataKey="quarantined" name="Quarantined" stroke={UNCW_TEAL} strokeWidth={isMobile ? 2 : 3} fill="url(#colorQuarantined)" />
+          <Area type="monotone" dataKey="delivered" name="Delivered" stroke={UNCW_GOLD} strokeWidth={isMobile ? 2 : 3} fill="url(#colorDelivered)" />
         </AreaChart>
       </ResponsiveContainer>
     </div>
@@ -223,7 +236,10 @@ export function CyberScoreDonut() {
 }
 
 export function AIThreatsBar() {
+  const isMobile = useIsMobile()
   const data = mockAIThreats()
+  const chartHeight = getResponsiveChartHeight(isMobile, 500)
+  
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
@@ -249,30 +265,43 @@ export function AIThreatsBar() {
   }
 
   return (
-    <div style={{ 
-      backgroundColor: '#FFFFFF', 
-      borderRadius: 16, 
-      padding: 32, 
-      border: '2px solid #E0E4E8',
-      height: 500,
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
-    }}>
+    <div 
+      className={isMobile ? 'mobile-chart-container' : ''}
+      style={{ 
+        backgroundColor: '#FFFFFF', 
+        borderRadius: 16, 
+        padding: isMobile ? 16 : 32, 
+        border: '2px solid #E0E4E8',
+        height: chartHeight,
+        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+      }}>
       <div style={{ 
-        marginBottom: 24, 
+        marginBottom: isMobile ? 16 : 24, 
         color: '#1a1a1a', 
-        fontSize: '1.3rem', 
+        fontSize: isMobile ? '1.1rem' : '1.3rem', 
         fontWeight: 700,
         display: 'flex',
         alignItems: 'center',
-        gap: 12
+        gap: isMobile ? 8 : 12
       }}>
-        <div style={{ width: 4, height: 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
         AI Threats Breakdown
       </div>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 80 }}>
-          <XAxis dataKey="type" tick={{ fontSize: 11, fill: '#666' }} angle={-20} textAnchor="end" height={80} />
-          <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} label={{ value: 'Incidents', angle: -90, position: 'insideLeft', fill: '#666' }} />
+        <BarChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: isMobile ? 60 : 80 }}>
+          <XAxis 
+            dataKey="type" 
+            tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} 
+            angle={-20} 
+            textAnchor="end" 
+            height={isMobile ? 60 : 80}
+            interval={0}
+          />
+          <YAxis 
+            tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} 
+            width={isMobile ? 35 : 50} 
+            label={isMobile ? undefined : { value: 'Incidents', angle: -90, position: 'insideLeft', fill: '#666' }} 
+          />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
         </BarChart>
@@ -282,37 +311,49 @@ export function AIThreatsBar() {
 }
 
 export function EDRMetricsLines() {
+  const isMobile = useIsMobile()
   const data = mockEDRMetrics30d()
+  const chartHeight = getResponsiveChartHeight(isMobile, 520)
+  
   return (
-    <div style={{ 
-      backgroundColor: '#FFFFFF', 
-      borderRadius: 16, 
-      padding: 32, 
-      border: '2px solid #E0E4E8',
-      height: 520,
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
-    }}>
+    <div 
+      className={isMobile ? 'mobile-chart-container' : ''}
+      style={{ 
+        backgroundColor: '#FFFFFF', 
+        borderRadius: 16, 
+        padding: isMobile ? 16 : 32, 
+        border: '2px solid #E0E4E8',
+        height: chartHeight,
+        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+      }}>
       <div style={{ 
-        marginBottom: 24, 
+        marginBottom: isMobile ? 16 : 24, 
         color: '#1a1a1a', 
-        fontSize: '1.3rem', 
+        fontSize: isMobile ? '1.1rem' : '1.3rem', 
         fontWeight: 700,
         display: 'flex',
         alignItems: 'center',
-        gap: 12
+        gap: isMobile ? 8 : 12
       }}>
-        <div style={{ width: 4, height: 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
-        EDR Metrics — last 30 days
+        <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        {isMobile ? 'EDR Metrics (30d)' : 'EDR Metrics — last 30 days'}
       </div>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#999' }} angle={-45} textAnchor="end" height={60} />
-          <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
-          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }} />
-          <Legend wrapperStyle={{ paddingTop: 20 }} />
-          <Line type="monotone" dataKey="detections" name="Detections" stroke={UNCW_TEAL} strokeWidth={3} dot={{ fill: UNCW_TEAL, r: 4 }} />
-          <Line type="monotone" dataKey="blocked" name="Blocked" stroke={UNCW_GOLD} strokeWidth={3} dot={{ fill: UNCW_GOLD, r: 4 }} />
-          <Line type="monotone" dataKey="endpointsOnline" name="Endpoints Online" stroke="#666" strokeWidth={2} dot={{ fill: '#666', r: 3 }} />
+        <LineChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: 0 }}>
+          <XAxis 
+            dataKey="date" 
+            tick={{ fontSize: isMobile ? 9 : 11, fill: '#999' }} 
+            angle={-45} 
+            textAnchor="end" 
+            height={isMobile ? 50 : 60}
+            interval={isMobile ? 'preserveStartEnd' : 0}
+          />
+          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} width={isMobile ? 35 : 50} />
+          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem' }} />
+          <Legend wrapperStyle={{ paddingTop: isMobile ? 12 : 20, fontSize: isMobile ? '0.75rem' : '1rem' }} />
+          <Line type="monotone" dataKey="detections" name="Detections" stroke={UNCW_TEAL} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_TEAL, r: isMobile ? 3 : 4 }} />
+          <Line type="monotone" dataKey="blocked" name="Blocked" stroke={UNCW_GOLD} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_GOLD, r: isMobile ? 3 : 4 }} />
+          <Line type="monotone" dataKey="endpointsOnline" name={isMobile ? 'Online' : 'Endpoints Online'} stroke="#666" strokeWidth={isMobile ? 1.5 : 2} dot={{ fill: '#666', r: isMobile ? 2 : 3 }} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -320,28 +361,32 @@ export function EDRMetricsLines() {
 }
 
 export function EDREndpointStatus() {
+  const isMobile = useIsMobile()
   const data = mockEDREndpointBreakdown()
   const total = data.reduce((sum, item) => sum + item.count, 0)
+  const chartHeight = getResponsiveChartHeight(isMobile, 420)
   
   return (
-    <div style={{ 
-      backgroundColor: '#FFFFFF', 
-      borderRadius: 16, 
-      padding: 32, 
-      border: '2px solid #E0E4E8',
-      height: 420,
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
-    }}>
+    <div 
+      className={isMobile ? 'mobile-chart-container' : ''}
+      style={{ 
+        backgroundColor: '#FFFFFF', 
+        borderRadius: 16, 
+        padding: isMobile ? 16 : 32, 
+        border: '2px solid #E0E4E8',
+        height: chartHeight,
+        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+      }}>
       <div style={{ 
-        marginBottom: 24, 
+        marginBottom: isMobile ? 16 : 24, 
         color: '#1a1a1a', 
-        fontSize: '1.3rem', 
+        fontSize: isMobile ? '1.1rem' : '1.3rem', 
         fontWeight: 700,
         display: 'flex',
         alignItems: 'center',
-        gap: 12
+        gap: isMobile ? 8 : 12
       }}>
-        <div style={{ width: 4, height: 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
         EDR Endpoint Status
       </div>
       <ResponsiveContainer width="100%" height="100%">
@@ -352,17 +397,18 @@ export function EDREndpointStatus() {
             nameKey="status"
             cx="50%" 
             cy="50%" 
-            outerRadius={120}
-            label={(entry) => `${entry.status}: ${entry.count}`}
+            outerRadius={isMobile ? 80 : 120}
+            label={isMobile ? false : (entry) => `${entry.status}: ${entry.count}`}
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }} />
+          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem' }} />
+          {isMobile && <Legend wrapperStyle={{ fontSize: '0.75rem' }} />}
         </PieChart>
       </ResponsiveContainer>
-      <div style={{ textAlign: 'center', marginTop: 16, fontSize: '1.1rem', fontWeight: 600, color: '#666' }}>
+      <div style={{ textAlign: 'center', marginTop: isMobile ? 8 : 16, fontSize: isMobile ? '0.95rem' : '1.1rem', fontWeight: 600, color: '#666' }}>
         Total Endpoints: {total}
       </div>
     </div>
@@ -668,7 +714,9 @@ export function CrossChannelTimelineChart({ campaignId }: { campaignId: string }
 
 // New Threat Family Types Chart
 export function ThreatFamilyTypesChart() {
+  const isMobile = useIsMobile()
   const data = mockThreatFamilies()
+  const chartHeight = getResponsiveChartHeight(isMobile, 420)
   
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -690,39 +738,41 @@ export function ThreatFamilyTypesChart() {
   }
 
   return (
-    <div style={{ 
-      backgroundColor: '#FFFFFF', 
-      borderRadius: 16, 
-      padding: 24, 
-      border: '2px solid #E0E4E8',
-      height: 420,
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div 
+      className={isMobile ? 'mobile-chart-container' : ''}
+      style={{ 
+        backgroundColor: '#FFFFFF', 
+        borderRadius: 16, 
+        padding: isMobile ? 16 : 24, 
+        border: '2px solid #E0E4E8',
+        height: chartHeight,
+        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
       <div style={{ 
-        marginBottom: 20, 
+        marginBottom: isMobile ? 12 : 20, 
         color: '#1a1a1a', 
-        fontSize: '1.2rem', 
+        fontSize: isMobile ? '1.05rem' : '1.2rem', 
         fontWeight: 700,
         display: 'flex',
         alignItems: 'center',
-        gap: 8
+        gap: isMobile ? 6 : 8
       }}>
-        <div style={{ width: 3, height: 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
+        <div style={{ width: 3, height: isMobile ? 16 : 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
         Threat Family Types
       </div>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
+        <BarChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: isMobile ? 50 : 60 }}>
           <XAxis 
             dataKey="name" 
-            tick={{ fontSize: 10, fill: '#666' }} 
+            tick={{ fontSize: isMobile ? 8 : 10, fill: '#666' }} 
             angle={-45} 
             textAnchor="end" 
-            height={80}
+            height={isMobile ? 60 : 80}
             interval={0}
           />
-          <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
+          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} width={isMobile ? 35 : 50} />
           <Tooltip 
             contentStyle={{ 
               backgroundColor: '#FFFFFF', 
