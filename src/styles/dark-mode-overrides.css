@@ -101,10 +101,31 @@
   background-color: transparent !important;
 }
 
-/* Chart containers should never show white */
+/* Chart containers should never show white or grey */
 [class*="chart-container"],
 [class*="Chart"],
 .chart-slot {
   background-color: transparent !important;
+}
+
+/* Force ALL backgrounds to be dark or transparent */
+* {
+  background-color: transparent !important;
+}
+
+/* Restore dark backgrounds for specific elements */
+body,
+.MuiPaper-root,
+.MuiCard-root,
+.MuiTableContainer-root,
+.MuiDialog-paper,
+.MuiMenu-paper,
+.MuiPopover-paper {
+  background-color: #0f172a !important;
+}
+
+.MuiPaper-root.MuiCard-root,
+.MuiPaper-root.MuiTableContainer-root {
+  background-color: #1e293b !important;
 }
 
