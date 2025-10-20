@@ -643,8 +643,8 @@ export function AIExploitDetectionChart() {
               {item.description}
             </div>
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
-              <Chip label={`${item.detected}`} size="small" sx={{ bgcolor: '#ef4444', color: 'white', fontWeight: 600, fontSize: '0.6rem', height: 20 }} />
-              <Chip label={`${item.blocked}`} size="small" sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600, fontSize: '0.6rem', height: 20 }} />
+              <Chip label={`Detected: ${item.detected}`} size="small" sx={{ bgcolor: '#ef4444', color: 'white', fontWeight: 600, fontSize: '0.6rem', height: 20 }} />
+              <Chip label={`Blocked: ${item.blocked}`} size="small" sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600, fontSize: '0.6rem', height: 20 }} />
               <Chip label={item.severity} size="small" sx={{ 
                 bgcolor: item.severity === 'Critical' ? '#ef4444' : item.severity === 'High' ? '#f97316' : '#FFD700',
                 color: 'white',

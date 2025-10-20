@@ -38,9 +38,18 @@
   color: #f1f5f9 !important;
 }
 
-/* Table row hover states - prevent grey overlay */
+/* Table row hover states - remove grey background completely */
 .MuiTableRow-root:hover {
-  background-color: rgba(0, 168, 168, 0.08) !important;
+  background-color: transparent !important;
+}
+
+/* Remove all hover backgrounds from charts and tables */
+.MuiTableRow-root:hover,
+.MuiTableCell-root:hover,
+.recharts-wrapper:hover,
+.recharts-surface:hover,
+[class*="chart"]:hover {
+  background-color: transparent !important;
 }
 
 /* Chart containers should never show white */
