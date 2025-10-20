@@ -138,7 +138,15 @@
 /* Ensure chart containers are transparent */
 [class*="chart-container"],
 [class*="Chart"],
-.chart-slot {
+.chart-slot,
+div[style*="backgroundColor"][style*="background.paper"],
+div[style*="backgroundColor"][style*="#1e293b"] {
+  background-color: transparent !important;
+}
+
+/* Target specific chart wrapper divs */
+div[style*="borderRadius: 16"][style*="padding"],
+div[style*="borderRadius: 16"][style*="boxShadow"] {
   background-color: transparent !important;
 }
 
