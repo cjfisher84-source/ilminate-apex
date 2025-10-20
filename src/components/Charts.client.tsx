@@ -193,14 +193,14 @@ export function CyberScoreDonut() {
           pointerEvents: 'none',
           width: 'auto',
           height: 'auto',
-          maxWidth: '100px',
+          maxWidth: '90px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <div style={{ 
-            fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+            fontSize: '1.4rem',
             fontWeight: 800, 
             color: UNCW_TEAL, 
             lineHeight: 1,
@@ -209,7 +209,7 @@ export function CyberScoreDonut() {
             padding: 0,
             whiteSpace: 'nowrap'
           }}>
-            {score}<span style={{ fontSize: '0.7em', opacity: 0.8 }}>/100</span>
+            {score}<span style={{ fontSize: '0.6em', opacity: 0.8, fontWeight: 600 }}>/100</span>
           </div>
         </div>
       </div>
@@ -250,31 +250,6 @@ export function AIThreatsBar() {
     log.chart('AIThreatsBar mounted', { isMobile, theme: theme.palette.mode })
   }, [isMobile, theme.palette.mode])
   
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload
-      return (
-        <div style={{
-          backgroundColor: theme.palette.background.paper,
-          border: `2px solid ${UNCW_TEAL}`,
-          borderRadius: 12,
-          padding: 16,
-          maxWidth: 300,
-          color: theme.palette.text.primary
-        }}>
-          <div style={{ fontWeight: 700, color: UNCW_TEAL, marginBottom: 8 }}>{data.type}</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 8 }}>{data.count} incidents</div>
-          <div style={{ fontSize: '0.9rem', color: theme.palette.text.secondary, marginBottom: 8 }}>{data.description}</div>
-          <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
-            <span style={{ fontWeight: 600 }}>Severity: <span style={{ color: data.severity === 'Critical' ? '#ef4444' : data.severity === 'High' ? '#f97316' : '#FFD700' }}>{data.severity}</span></span>
-            <span style={{ fontWeight: 600 }}>Trend: <span style={{ color: data.trend === 'Increasing' ? '#ef4444' : '#10b981' }}>{data.trend}</span></span>
-          </div>
-        </div>
-      )
-    }
-    return null
-  }
-
   return (
     <div 
       className={isMobile ? 'mobile-chart-container' : ''}
@@ -298,25 +273,72 @@ export function AIThreatsBar() {
         <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
         AI Threats Breakdown
       </div>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: isMobile ? 60 : 80 }}>
-          <XAxis 
-            dataKey="type" 
-            tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} 
-            angle={-20} 
-            textAnchor="end" 
-            height={isMobile ? 60 : 80}
-            interval={0}
-          />
-          <YAxis 
-            tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} 
-            width={isMobile ? 35 : 50} 
-            label={isMobile ? undefined : { value: 'Incidents', angle: -90, position: 'insideLeft', fill: theme.palette.text.secondary }} 
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="count" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+      
+      {/* Always-visible data cards instead of hover-only */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))', 
+        gap: 16, 
+        flex: 1,
+        overflowY: 'auto'
+      }}>
+        {data.map((item, idx) => (
+          <div key={idx} style={{
+            backgroundColor: theme.palette.background.default,
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: 12,
+            padding: 16,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12
+          }}>
+            <div style={{ 
+              fontWeight: 700, 
+              color: UNCW_TEAL, 
+              fontSize: '1rem',
+              marginBottom: 4
+            }}>
+              {item.type}
+            </div>
+            <div style={{ 
+              fontSize: '1.5rem', 
+              fontWeight: 700, 
+              marginBottom: 8,
+              color: theme.palette.text.primary
+            }}>
+              {item.count} incidents
+            </div>
+            <div style={{ 
+              color: theme.palette.text.secondary, 
+              fontSize: '0.9rem', 
+              marginBottom: 8,
+              lineHeight: 1.4
+            }}>
+              {item.description}
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ 
+                fontWeight: 600, 
+                fontSize: '0.85rem',
+                color: theme.palette.text.secondary
+              }}>
+                Severity: <span style={{ 
+                  color: item.severity === 'Critical' ? '#ef4444' : item.severity === 'High' ? '#f97316' : '#FFD700' 
+                }}>{item.severity}</span>
+              </span>
+              <span style={{ 
+                fontWeight: 600, 
+                fontSize: '0.85rem',
+                color: theme.palette.text.secondary
+              }}>
+                Trend: <span style={{ 
+                  color: item.trend === 'Increasing' ? '#ef4444' : '#10b981' 
+                }}>{item.trend}</span>
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -575,71 +597,10 @@ export function GeoThreatMap() {
 export function AIExploitDetectionChart() {
   const theme = useTheme()
   const data = mockAIExploitDetection()
-  const [ready, setReady] = useState(false)
-  const slotRef = useRef<HTMLDivElement | null>(null)
   
-  // Debug: log container size to verify non-zero
   useEffect(() => {
-    if (!slotRef.current) return
-    const el = slotRef.current
-    const logSize = () => {
-      const r = el.getBoundingClientRect()
-      log.chart('AIExploitDetectionChart chart-slot size', { width: r.width, height: r.height, theme: theme.palette.mode })
-    }
-    const ro = new ResizeObserver(logSize)
-    ro.observe(el)
-    logSize()
-    return () => ro.disconnect()
-  }, [theme.palette.mode])
-  
-  useEffect(() => setReady(true), [])
-  
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const item = payload[0].payload
-      return (
-        <div style={{
-          backgroundColor: theme.palette.background.paper,
-          border: `2px solid ${UNCW_TEAL}`,
-          borderRadius: 12,
-          padding: 16,
-          maxWidth: 350,
-          color: theme.palette.text.primary
-        }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 1 }}>
-            {item.category}
-          </Typography>
-          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 2, lineHeight: 1.6 }}>
-            {item.description}
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-            <Chip label={`Detected: ${item.detected}`} size="small" sx={{ bgcolor: '#ef4444', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
-            <Chip label={`Blocked: ${item.blocked}`} size="small" sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
-            <Chip label={item.severity} size="small" sx={{ 
-              bgcolor: item.severity === 'Critical' ? '#ef4444' : item.severity === 'High' ? '#f97316' : '#FFD700',
-              color: 'white',
-              fontWeight: 600,
-              fontSize: '0.7rem'
-            }} />
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-            <Chip label={`Trend: ${item.trend}`} size="small" sx={{ bgcolor: '#8b5cf6', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
-            <Chip label={`Success: ${item.success_rate}`} size="small" sx={{ bgcolor: '#10b981', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
-            <Chip label={`Block Time: ${item.avg_block_time}`} size="small" sx={{ bgcolor: '#f97316', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
-          </Box>
-          <Typography variant="caption" sx={{ fontWeight: 700, color: theme.palette.text.secondary, display: 'block', mb: 0.5 }}>
-            Examples:
-          </Typography>
-          {item.examples.map((ex: string, idx: number) => (
-            <Typography key={idx} variant="caption" sx={{ display: 'block', color: theme.palette.text.secondary, fontStyle: 'italic', mb: 0.5 }}>
-              • {ex}
-            </Typography>
-          ))}
-        </div>
-      )
-    }
-    return null
-  }
+    log.chart('AIExploitDetectionChart mounted', { dataLength: data.length, theme: theme.palette.mode })
+  }, [data.length, theme.palette.mode])
   
   return (
     <div style={{ 
@@ -647,7 +608,7 @@ export function AIExploitDetectionChart() {
       borderRadius: 16, 
       padding: 24, 
       border: `2px solid ${theme.palette.divider}`,
-      height: 320,
+      height: 400,
       boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
       display: 'flex',
       flexDirection: 'column'
@@ -664,20 +625,80 @@ export function AIExploitDetectionChart() {
         <div style={{ width: 3, height: 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
         AI Exploit Detection & Prevention
       </div>
-      {ready && (
-        <div className="chart-slot" ref={slotRef}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 20 }} layout="horizontal">
-              <XAxis type="number" tick={{ fontSize: 10, fill: theme.palette.text.secondary }} />
-              <YAxis type="category" dataKey="category" tick={{ fontSize: 10, fill: theme.palette.text.secondary }} width={140} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ paddingTop: 10, fontSize: '12px' }} />
-              <Bar dataKey="detected" name="Detected" fill="#ef4444" radius={[0, 4, 4, 0]} />
-              <Bar dataKey="blocked" name="Blocked" fill={UNCW_TEAL} radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      
+      {/* Always-visible data cards instead of hover-only */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+        gap: 16, 
+        flex: 1,
+        overflowY: 'auto'
+      }}>
+        {data.map((item, idx) => (
+          <div key={idx} style={{
+            backgroundColor: theme.palette.background.default,
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: 12,
+            padding: 16,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12
+          }}>
+            <div style={{ 
+              fontWeight: 700, 
+              color: UNCW_TEAL, 
+              fontSize: '1rem',
+              marginBottom: 4
+            }}>
+              {item.category}
+            </div>
+            <div style={{ 
+              color: theme.palette.text.secondary, 
+              fontSize: '0.85rem', 
+              lineHeight: 1.4,
+              marginBottom: 8
+            }}>
+              {item.description}
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+              <Chip label={`Detected: ${item.detected}`} size="small" sx={{ bgcolor: '#ef4444', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
+              <Chip label={`Blocked: ${item.blocked}`} size="small" sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
+              <Chip label={item.severity} size="small" sx={{ 
+                bgcolor: item.severity === 'Critical' ? '#ef4444' : item.severity === 'High' ? '#f97316' : '#FFD700',
+                color: 'white',
+                fontWeight: 600,
+                fontSize: '0.7rem'
+              }} />
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+              <Chip label={`Trend: ${item.trend}`} size="small" sx={{ bgcolor: '#8b5cf6', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
+              <Chip label={`Success: ${item.success_rate}`} size="small" sx={{ bgcolor: '#10b981', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
+              <Chip label={`Block Time: ${item.avg_block_time}`} size="small" sx={{ bgcolor: '#f97316', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
+            </div>
+            <div style={{ marginTop: 'auto' }}>
+              <div style={{ 
+                fontWeight: 600, 
+                color: theme.palette.text.secondary, 
+                fontSize: '0.75rem',
+                marginBottom: 4
+              }}>
+                Examples:
+              </div>
+              {item.examples.slice(0, 2).map((ex: string, exIdx: number) => (
+                <div key={exIdx} style={{ 
+                  color: theme.palette.text.secondary, 
+                  fontSize: '0.7rem', 
+                  fontStyle: 'italic', 
+                  marginBottom: 2,
+                  lineHeight: 1.3
+                }}>
+                  • {ex}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
