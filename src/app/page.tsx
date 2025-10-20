@@ -3,6 +3,7 @@ import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import Link from 'next/link'
 import Image from 'next/image'
 import CategoryCard from '@/components/CategoryCard'
+import SecurityAssistant from '@/components/SecurityAssistant'
 import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart, GeoThreatMap, CrossChannelTimelineChart, ThreatFamilyTypesChart, PeerComparisonChart } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
 import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
@@ -225,60 +226,7 @@ export default function Home() {
                   </Box>
                 </Box>
               </Box>
-              <Box 
-                className="quick-actions-card"
-                sx={{ 
-                  backgroundColor: 'background.paper', 
-                  border: 2,
-                  borderColor: 'divider',
-                  height: 320,
-                  boxShadow: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  textAlign: 'center'
-                }}
-              >
-                <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', mb: 1.5 }}>
-                  Quick Actions
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
-                  <Button 
-                    variant="contained" 
-                    color="primary"
-                    sx={{ 
-                      py: 1,
-                      fontSize: '0.85rem',
-                      fontWeight: 600
-                    }}
-                  >
-                    View All Threats
-                  </Button>
-                  <Button 
-                    variant="outlined" 
-                    color="primary"
-                    sx={{ 
-                      py: 1,
-                      fontSize: '0.85rem',
-                      fontWeight: 600
-                    }}
-                  >
-                    Run Security Scan
-                  </Button>
-                  <Button 
-                    variant="outlined" 
-                    color="secondary"
-                    sx={{ 
-                      py: 1,
-                      fontSize: '0.85rem',
-                      fontWeight: 600
-                    }}
-                  >
-                    Generate Report
-                  </Button>
-                </Box>
-              </Box>
+              <SecurityAssistant />
             </Box>
           </Box>
 
