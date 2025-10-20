@@ -83,32 +83,32 @@ export function mockAIThreats(){
 }
 
 export function mockEDREndpointBreakdown(){
-  // EDR endpoint status distribution
+  // EDR endpoint status distribution - deterministic values
   return [
-    { status: 'Protected', count: Math.floor(220 + Math.random()*30), color: '#10b981' },
-    { status: 'Vulnerable', count: Math.floor(8 + Math.random()*15), color: '#ef4444' },
-    { status: 'Updating', count: Math.floor(5 + Math.random()*10), color: '#FFD700' },
-    { status: 'Offline', count: Math.floor(2 + Math.random()*8), color: '#9ca3af' },
+    { status: 'Protected', count: 235, color: '#10b981' },
+    { status: 'Vulnerable', count: 12, color: '#ef4444' },
+    { status: 'Updating', count: 8, color: '#FFD700' },
+    { status: 'Offline', count: 5, color: '#9ca3af' },
   ]
 }
 
 export function mockEDRThreatTypes(){
-  // EDR detected threat types
+  // EDR detected threat types - deterministic values
   return [
-    { type: 'Ransomware', detected: Math.floor(3 + Math.random()*12), blocked: Math.floor(2 + Math.random()*10) },
-    { type: 'Trojan', detected: Math.floor(8 + Math.random()*20), blocked: Math.floor(6 + Math.random()*18) },
-    { type: 'Suspicious Behavior', detected: Math.floor(15 + Math.random()*35), blocked: Math.floor(12 + Math.random()*30) },
-    { type: 'Exploit Attempt', detected: Math.floor(5 + Math.random()*15), blocked: Math.floor(4 + Math.random()*12) },
+    { type: 'Ransomware', detected: 8, blocked: 6 },
+    { type: 'Trojan', detected: 18, blocked: 15 },
+    { type: 'Suspicious Behavior', detected: 32, blocked: 27 },
+    { type: 'Exploit Attempt', detected: 12, blocked: 10 },
   ]
 }
 
 export function mockEDRMetrics30d(){
   const days = lastNDays(30)
-  return days.map(date => ({
+  return days.map((date, index) => ({
     date,
-    detections: Math.floor(Math.random()*30),
-    blocked: Math.floor(Math.random()*24),
-    endpointsOnline: Math.floor(200 + Math.random()*40),
+    detections: 15 + (index % 10), // Deterministic based on day index
+    blocked: 12 + (index % 8),
+    endpointsOnline: 220 + (index % 20),
   }))
 }
 
