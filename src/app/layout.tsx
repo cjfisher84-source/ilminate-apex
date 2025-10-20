@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import '@/styles/dark-mode-overrides.css'
+import '@/styles/globals.css'
 import ThemeProvider from '@/components/ThemeProvider'
 
 export const metadata: Metadata = {

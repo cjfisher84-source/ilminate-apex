@@ -67,7 +67,12 @@ export function TimelineArea() {
             interval={isMobile ? 'preserveStartEnd' : 0}
           />
           <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} width={isMobile ? 35 : 50} />
-          <Tooltip contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }} />
+          <Tooltip 
+            cursor={false}
+            contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }}
+            labelStyle={{ color: '#94a3b8' }}
+            itemStyle={{ color: '#f1f5f9' }}
+          />
           <Legend wrapperStyle={{ paddingTop: isMobile ? 12 : 20, fontSize: isMobile ? '0.8rem' : '1rem' }} />
           <Area type="monotone" dataKey="quarantined" name="Quarantined" stroke={UNCW_TEAL} strokeWidth={isMobile ? 2 : 3} fill="url(#colorQuarantined)" />
           <Area type="monotone" dataKey="delivered" name="Delivered" stroke={UNCW_GOLD} strokeWidth={isMobile ? 2 : 3} fill="url(#colorDelivered)" />
@@ -104,7 +109,12 @@ export function QuarantineDeliveredBars() {
         <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
           <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#999' }} hide />
           <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
-          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }} />
+          <Tooltip 
+            cursor={false}
+            contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }}
+            labelStyle={{ color: '#94a3b8' }}
+            itemStyle={{ color: '#f1f5f9' }}
+          />
           <Legend wrapperStyle={{ paddingTop: 16 }} />
           <Bar dataKey="quarantined" name="Quarantined" fill={UNCW_TEAL} radius={[6, 6, 0, 0]} />
           <Bar dataKey="delivered" name="Delivered" fill={UNCW_GOLD} radius={[6, 6, 0, 0]} />
@@ -317,7 +327,12 @@ export function AIThreatsBar() {
             width={isMobile ? 35 : 50} 
             label={isMobile ? undefined : { value: 'Incidents', angle: -90, position: 'insideLeft', fill: theme.palette.text.secondary }} 
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip 
+            cursor={false}
+            content={<CustomTooltip />}
+            labelStyle={{ color: '#94a3b8' }}
+            itemStyle={{ color: '#f1f5f9' }}
+          />
           <Bar dataKey="count" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
@@ -369,7 +384,12 @@ export function EDRMetricsLines() {
             interval={isMobile ? 'preserveStartEnd' : 0}
           />
           <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} width={isMobile ? 35 : 50} />
-          <Tooltip contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }} />
+          <Tooltip 
+            cursor={false}
+            contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }}
+            labelStyle={{ color: '#94a3b8' }}
+            itemStyle={{ color: '#f1f5f9' }}
+          />
           <Legend wrapperStyle={{ paddingTop: isMobile ? 12 : 20, fontSize: isMobile ? '0.75rem' : '1rem' }} />
           <Line type="monotone" dataKey="detections" name="Detections" stroke={UNCW_TEAL} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_TEAL, r: isMobile ? 3 : 4 }} />
           <Line type="monotone" dataKey="blocked" name="Blocked" stroke={UNCW_GOLD} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_GOLD, r: isMobile ? 3 : 4 }} />
@@ -429,7 +449,12 @@ export function EDREndpointStatus() {
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }} />
+          <Tooltip 
+            cursor={false}
+            contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }}
+            labelStyle={{ color: '#94a3b8' }}
+            itemStyle={{ color: '#f1f5f9' }}
+          />
           {isMobile && <Legend wrapperStyle={{ fontSize: '0.75rem' }} />}
         </PieChart>
       </ResponsiveContainer>
@@ -473,7 +498,12 @@ export function EDRThreatDetections() {
         <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
           <XAxis dataKey="type" tick={{ fontSize: 12, fill: theme.palette.text.secondary }} />
           <YAxis tick={{ fontSize: 11, fill: theme.palette.text.secondary }} width={50} />
-          <Tooltip contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, color: theme.palette.text.primary }} />
+          <Tooltip 
+            cursor={false}
+            contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, color: theme.palette.text.primary }}
+            labelStyle={{ color: '#94a3b8' }}
+            itemStyle={{ color: '#f1f5f9' }}
+          />
           <Legend wrapperStyle={{ paddingTop: 16 }} />
           <Bar dataKey="detected" name="Detected" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
           <Bar dataKey="blocked" name="Blocked" fill={UNCW_GOLD} radius={[8, 8, 0, 0]} />
@@ -738,7 +768,12 @@ export function CrossChannelTimelineChart({ campaignId }: { campaignId: string }
           </defs>
           <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#999' }} />
           <YAxis tick={{ fontSize: 11, fill: '#666' }} width={40} />
-          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }} />
+          <Tooltip 
+            cursor={false}
+            contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }}
+            labelStyle={{ color: '#94a3b8' }}
+            itemStyle={{ color: '#f1f5f9' }}
+          />
           <Legend wrapperStyle={{ paddingTop: 16 }} />
           <Area type="monotone" dataKey="email" name="Email" stroke={UNCW_TEAL} fill="url(#colorEmail)" strokeWidth={2} />
           <Area type="monotone" dataKey="aiAssistant" name="AI Assistant" stroke="#ef4444" fill="url(#colorAI)" strokeWidth={2} />

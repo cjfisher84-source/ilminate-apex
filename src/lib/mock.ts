@@ -8,13 +8,13 @@ export function lastNDays(n=30){
 }
 
 export function mockCategoryCounts(){
-  // Emulate last 24h totals (email + edr surfaced as top categories)
+  // Emulate last 24h totals (email + edr surfaced as top categories) - deterministic values
   return {
-    Phish: Math.floor(400+Math.random()*600),
-    Malware: Math.floor(120+Math.random()*240),
-    Spam: Math.floor(900+Math.random()*900),
-    BEC: Math.floor(40+Math.random()*120),
-    ATO: Math.floor(10+Math.random()*60),
+    Phish: 750,
+    Malware: 180,
+    Spam: 1350,
+    BEC: 100,
+    ATO: 40,
   }
 }
 
@@ -38,13 +38,13 @@ export function mockCyberScore(){
 }
 
 export function mockDomainAbuse(){
-  // domains seen sending "as you" -> shows DMARC value
+  // domains seen sending "as you" -> shows DMARC value - deterministic values
   const sample = ['ilminate-support.com','ilminate-login.net','apex-secure-mail.com','billing-ilminate.co','alerts-ilminate.io']
-  return sample.map(d => ({
+  return sample.map((d, index) => ({
     domain: d,
-    firstSeen: new Date(Date.now()-Math.floor(Math.random()*20)*86400000).toISOString().slice(0,10),
-    messages: Math.floor(10+Math.random()*280),
-    dmarcAligned: Math.random()<0.2 ? 'Aligned' : 'Fail'
+    firstSeen: new Date(Date.now() - (index + 1) * 86400000 * 3).toISOString().slice(0,10),
+    messages: 50 + (index * 30),
+    dmarcAligned: index < 1 ? 'Aligned' : 'Fail'
   }))
 }
 
