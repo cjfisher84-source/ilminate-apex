@@ -806,7 +806,11 @@ export function ThreatFamilyTypesChart() {
         Threat Family Types
       </div>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: isMobile ? 50 : 60 }}>
+        <BarChart 
+          data={data} 
+          margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: isMobile ? 50 : 60 }}
+          style={{ backgroundColor: 'transparent' }}
+        >
           <XAxis 
             dataKey="name" 
             tick={{ fontSize: isMobile ? 8 : 10, fill: theme.palette.text.secondary }} 

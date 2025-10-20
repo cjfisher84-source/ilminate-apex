@@ -52,7 +52,7 @@
   background-color: transparent !important;
 }
 
-/* Remove grey backgrounds from chart containers only */
+/* Remove ALL grey backgrounds from chart containers */
 .recharts-wrapper,
 .recharts-surface,
 .recharts-cartesian-axis,
@@ -67,18 +67,34 @@
 .recharts-active-dot,
 .recharts-layer,
 .recharts-cartesian-axis-tick,
-.recharts-cartesian-axis-tick-value {
+.recharts-cartesian-axis-tick-value,
+.recharts-cartesian-axis-domain,
+.recharts-cartesian-axis-line {
   background-color: transparent !important;
   background: transparent !important;
 }
 
-/* Keep tooltips visible with dark backgrounds */
+/* Force ALL chart elements to be transparent */
+.recharts-wrapper *,
+.recharts-surface *,
+[class*="recharts"] * {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+/* Tooltips with readable light text */
 .recharts-tooltip-wrapper,
 .recharts-default-tooltip {
   background-color: #1e293b !important;
   border: 2px solid #00a8a8 !important;
   border-radius: 12px !important;
   color: #f1f5f9 !important;
+}
+
+.recharts-tooltip-wrapper *,
+.recharts-default-tooltip * {
+  color: #f1f5f9 !important;
+  background-color: transparent !important;
 }
 
 .recharts-tooltip-cursor {
