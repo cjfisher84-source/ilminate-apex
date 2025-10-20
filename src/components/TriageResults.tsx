@@ -118,9 +118,9 @@ export default function TriageResults({ structured }: TriageResultsProps) {
 
       {/* Threat Indicators */}
       {structured.indicators && structured.indicators.length > 0 && (
-        <Card sx={{ bgcolor: '#FEF2F2', border: '2px solid #FCA5A5' }}>
+        <Card sx={{ bgcolor: 'background.paper', border: '2px solid #ef4444' }}>
           <CardContent>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#991B1B', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#ef4444', display: 'flex', alignItems: 'center', gap: 1 }}>
               <ErrorIcon /> Threat Indicators Detected
             </Typography>
             <List sx={{ p: 0 }}>
@@ -128,10 +128,11 @@ export default function TriageResults({ structured }: TriageResultsProps) {
                 <ListItem 
                   key={idx}
                   sx={{ 
-                    bgcolor: '#FFF', 
+                    bgcolor: 'background.default', 
                     mb: 1, 
                     borderRadius: 1,
-                    border: '1px solid #FCA5A5',
+                    border: '1px solid',
+                    borderColor: 'divider',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'flex-start'
@@ -148,11 +149,11 @@ export default function TriageResults({ structured }: TriageResultsProps) {
                         fontSize: '0.75rem'
                       }}
                     />
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
                       Indicator {idx + 1}
                     </Typography>
                   </Box>
-                  <Typography variant="body2" sx={{ color: '#1F2937', pl: 0 }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', pl: 0 }}>
                     {indicator.description}
                   </Typography>
                 </ListItem>
@@ -168,21 +169,22 @@ export default function TriageResults({ structured }: TriageResultsProps) {
           <AccordionSummary 
             expandIcon={<ExpandMoreIcon />}
             sx={{ 
-              bgcolor: '#FEF2F2',
-              '&:hover': { bgcolor: '#FEE2E2' }
+              bgcolor: 'background.paper',
+              borderLeft: '4px solid #DC2626',
+              '&:hover': { bgcolor: 'action.hover' }
             }}
           >
-            <Typography sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1, color: '#991B1B' }}>
+            <Typography sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1, color: '#DC2626' }}>
               <ErrorIcon sx={{ color: '#DC2626' }} /> CRITICAL Actions (Within 1 hour)
             </Typography>
           </AccordionSummary>
-          <AccordionDetails sx={{ bgcolor: '#FFF' }}>
+          <AccordionDetails sx={{ bgcolor: 'background.default' }}>
             <List dense>
               {structured.recommendations.critical.map((action, idx) => (
                 <ListItem key={idx}>
                   <ListItemText 
                     primary={action}
-                    primaryTypographyProps={{ fontSize: '0.95rem' }}
+                    primaryTypographyProps={{ fontSize: '0.95rem', color: 'text.primary' }}
                   />
                 </ListItem>
               ))}
@@ -197,21 +199,22 @@ export default function TriageResults({ structured }: TriageResultsProps) {
           <AccordionSummary 
             expandIcon={<ExpandMoreIcon />}
             sx={{ 
-              bgcolor: '#FFFBEB',
-              '&:hover': { bgcolor: '#FEF3C7' }
+              bgcolor: 'background.paper',
+              borderLeft: '4px solid #F59E0B',
+              '&:hover': { bgcolor: 'action.hover' }
             }}
           >
-            <Typography sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1, color: '#92400E' }}>
+            <Typography sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1, color: '#F59E0B' }}>
               <ScheduleIcon sx={{ color: '#F59E0B' }} /> Short-Term Actions (Within 24 hours)
             </Typography>
           </AccordionSummary>
-          <AccordionDetails sx={{ bgcolor: '#FFF' }}>
+          <AccordionDetails sx={{ bgcolor: 'background.default' }}>
             <List dense>
               {structured.recommendations.shortTerm.map((action, idx) => (
                 <ListItem key={idx}>
                   <ListItemText 
                     primary={action}
-                    primaryTypographyProps={{ fontSize: '0.95rem' }}
+                    primaryTypographyProps={{ fontSize: '0.95rem', color: 'text.primary' }}
                   />
                 </ListItem>
               ))}
@@ -226,21 +229,22 @@ export default function TriageResults({ structured }: TriageResultsProps) {
           <AccordionSummary 
             expandIcon={<ExpandMoreIcon />}
             sx={{ 
-              bgcolor: '#ECFDF5',
-              '&:hover': { bgcolor: '#D1FAE5' }
+              bgcolor: 'background.paper',
+              borderLeft: '4px solid #10B981',
+              '&:hover': { bgcolor: 'action.hover' }
             }}
           >
-            <Typography sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1, color: '#065F46' }}>
+            <Typography sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1, color: '#10B981' }}>
               <CheckCircleIcon sx={{ color: '#10B981' }} /> Long-Term Improvements
             </Typography>
           </AccordionSummary>
-          <AccordionDetails sx={{ bgcolor: '#FFF' }}>
+          <AccordionDetails sx={{ bgcolor: 'background.default' }}>
             <List dense>
               {structured.recommendations.longTerm.map((action, idx) => (
                 <ListItem key={idx}>
                   <ListItemText 
                     primary={action}
-                    primaryTypographyProps={{ fontSize: '0.95rem' }}
+                    primaryTypographyProps={{ fontSize: '0.95rem', color: 'text.primary' }}
                   />
                 </ListItem>
               ))}
@@ -251,17 +255,17 @@ export default function TriageResults({ structured }: TriageResultsProps) {
 
       {/* DO NOT Actions */}
       {structured.recommendations.doNot && structured.recommendations.doNot.length > 0 && (
-        <Card sx={{ bgcolor: '#FEF2F2', border: '2px solid #DC2626' }}>
+        <Card sx={{ bgcolor: 'background.paper', border: '2px solid #DC2626' }}>
           <CardContent>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#991B1B', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#DC2626', display: 'flex', alignItems: 'center', gap: 1 }}>
               <BlockIcon /> DO NOT
             </Typography>
-            <List dense sx={{ bgcolor: '#FFF', borderRadius: 1, p: 1 }}>
+            <List dense sx={{ bgcolor: 'background.default', borderRadius: 1, p: 1 }}>
               {structured.recommendations.doNot.map((action, idx) => (
                 <ListItem key={idx}>
                   <ListItemText 
                     primary={`❌ ${action}`}
-                    primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 600, color: '#991B1B' }}
+                    primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 600, color: '#DC2626' }}
                   />
                 </ListItem>
               ))}
@@ -272,17 +276,17 @@ export default function TriageResults({ structured }: TriageResultsProps) {
 
       {/* General Recommendations */}
       {structured.recommendations.general && structured.recommendations.general.length > 0 && (
-        <Card sx={{ bgcolor: '#F0F9FF', border: '2px solid #3B82F6' }}>
+        <Card sx={{ bgcolor: 'background.paper', border: '2px solid #3B82F6' }}>
           <CardContent>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#1E40AF', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#3B82F6', display: 'flex', alignItems: 'center', gap: 1 }}>
               <InfoIcon /> Recommendations
             </Typography>
-            <List dense sx={{ bgcolor: '#FFF', borderRadius: 1, p: 1 }}>
+            <List dense sx={{ bgcolor: 'background.default', borderRadius: 1, p: 1 }}>
               {structured.recommendations.general.map((action, idx) => (
                 <ListItem key={idx}>
                   <ListItemText 
                     primary={action}
-                    primaryTypographyProps={{ fontSize: '0.95rem' }}
+                    primaryTypographyProps={{ fontSize: '0.95rem', color: 'text.primary' }}
                   />
                 </ListItem>
               ))}
