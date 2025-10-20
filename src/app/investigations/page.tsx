@@ -29,7 +29,7 @@ export default function InvestigationsPage() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#F5F7FA', p: containerPadding }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: containerPadding }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header */}
         <Box sx={{ 
@@ -39,7 +39,8 @@ export default function InvestigationsPage() {
           alignItems: isMobile ? 'flex-start' : 'center', 
           mb: isMobile ? 3 : 4,
           pb: isMobile ? 2 : 3,
-          borderBottom: '2px solid #007070',
+          borderBottom: '2px solid',
+          borderColor: 'primary.main',
           gap: isMobile ? 2 : 0
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: headerGap }}>
@@ -57,7 +58,7 @@ export default function InvestigationsPage() {
                 sx={{ 
                   fontWeight: 700, 
                   mb: 0.5, 
-                  color: '#1a1a1a',
+                  color: 'text.primary',
                   fontSize: getResponsiveFontSize(isMobile, 'h3')
                 }}
               >
@@ -66,7 +67,7 @@ export default function InvestigationsPage() {
               <Typography 
                 variant="subtitle1" 
                 sx={{ 
-                  color: '#666', 
+                  color: 'text.secondary', 
                   fontWeight: 500,
                   fontSize: getResponsiveFontSize(isMobile, 'subtitle1')
                 }}
@@ -103,13 +104,13 @@ export default function InvestigationsPage() {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 2.5 : 3 }}>
           {/* Active Campaigns Overview */}
           <Box className={isMobile ? 'mobile-table-wrapper' : ''}>
-            <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
-              <Box sx={{ p: isMobile ? 2 : 3, borderBottom: '2px solid #007070', bgcolor: '#F8FAFB' }}>
+            <Card sx={{ bgcolor: 'background.paper', border: '2px solid', borderColor: 'divider', boxShadow: 2 }}>
+              <Box sx={{ p: isMobile ? 2 : 3, borderBottom: '2px solid', borderColor: 'primary.main', bgcolor: 'background.default' }}>
                 <Typography 
                   variant="h5" 
                   sx={{ 
                     fontWeight: 700, 
-                    color: '#1a1a1a',
+                    color: 'text.primary',
                     fontSize: isMobile ? '1.25rem' : '1.5rem'
                   }}
                 >
@@ -119,19 +120,19 @@ export default function InvestigationsPage() {
               <TableContainer>
               <Table sx={{ minWidth: isMobile ? 800 : 'auto' }}>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F8FAFB' }}>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Campaign Name</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Type</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Channels</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Targets</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Compromised</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Status</TableCell>
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Campaign Name</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Type</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Channels</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Targets</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Compromised</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: isMobile ? '0.7rem' : '0.75rem', textTransform: 'uppercase', padding: isMobile ? '8px' : '16px' }}>Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {campaigns.map((campaign) => (
-                    <TableRow key={campaign.id} sx={{ '&:hover': { bgcolor: '#F8FAFB' } }}>
-                      <TableCell sx={{ color: '#1a1a1a', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>{campaign.name}</TableCell>
+                    <TableRow key={campaign.id} sx={{ '&:hover': { bgcolor: 'action.hover' } }}>
+                      <TableCell sx={{ color: 'text.primary', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>{campaign.name}</TableCell>
                       <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
                         <Chip 
                           label={campaign.threatType}
@@ -146,7 +147,7 @@ export default function InvestigationsPage() {
                           ))}
                         </Box>
                       </TableCell>
-                      <TableCell sx={{ color: '#1a1a1a', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>{campaign.targets}</TableCell>
+                      <TableCell sx={{ color: 'text.primary', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>{campaign.targets}</TableCell>
                       <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
                         <Chip 
                           label={campaign.interactions.compromised}
@@ -175,10 +176,10 @@ export default function InvestigationsPage() {
           </Box>
 
           {/* Featured Campaign Analysis */}
-          <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
-            <Box sx={{ p: 3, borderBottom: '2px solid #007070', bgcolor: '#F8FAFB' }}>
+          <Card sx={{ bgcolor: 'background.paper', border: '2px solid', borderColor: 'divider', boxShadow: 2 }}>
+            <Box sx={{ p: 3, borderBottom: '2px solid', borderColor: 'primary.main', bgcolor: 'background.default' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
                   Featured Investigation: {activeCampaign.name}
                 </Typography>
                 <Chip 
@@ -202,27 +203,27 @@ export default function InvestigationsPage() {
                   📍 Source Analysis
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 2 }}>
-                  <Box sx={{ p: 2, bgcolor: '#F8FAFB', borderRadius: 2 }}>
-                    <Typography variant="caption" sx={{ color: '#666', fontWeight: 600, display: 'block', mb: 0.5 }}>
+                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mb: 0.5 }}>
                       IP ADDRESS
                     </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 700, fontFamily: 'monospace' }}>
+                    <Typography variant="body1" sx={{ fontWeight: 700, fontFamily: 'monospace', color: 'text.primary' }}>
                       {activeCampaign.source.ip}
                     </Typography>
                   </Box>
-                  <Box sx={{ p: 2, bgcolor: '#F8FAFB', borderRadius: 2 }}>
-                    <Typography variant="caption" sx={{ color: '#666', fontWeight: 600, display: 'block', mb: 0.5 }}>
+                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mb: 0.5 }}>
                       GEOLOCATION
                     </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 700, color: 'text.primary' }}>
                       {activeCampaign.source.geo}
                     </Typography>
                   </Box>
-                  <Box sx={{ p: 2, bgcolor: '#F8FAFB', borderRadius: 2 }}>
-                    <Typography variant="caption" sx={{ color: '#666', fontWeight: 600, display: 'block', mb: 0.5 }}>
+                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mb: 0.5 }}>
                       DOMAIN
                     </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 700, fontSize: '0.9rem' }}>
+                    <Typography variant="body1" sx={{ fontWeight: 700, fontSize: '0.9rem', color: 'text.primary' }}>
                       {activeCampaign.source.domain}
                     </Typography>
                   </Box>
@@ -269,27 +270,27 @@ export default function InvestigationsPage() {
                   💥 Exposure Analysis
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 2 }}>
-                  <Box sx={{ p: 2, bgcolor: '#F8FAFB', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h3" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2, textAlign: 'center' }}>
+                    <Typography variant="h3" sx={{ fontWeight: 700, color: 'text.primary' }}>
                       {pathData.exposure.usersTargeted}
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#666', fontWeight: 600 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                       Users Targeted
                     </Typography>
                   </Box>
-                  <Box sx={{ p: 2, bgcolor: '#F8FAFB', borderRadius: 2, textAlign: 'center' }}>
+                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2, textAlign: 'center' }}>
                     <Typography variant="h3" sx={{ fontWeight: 700, color: UNCW_GOLD }}>
                       {pathData.exposure.usersOpened}
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#666', fontWeight: 600 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                       Users Opened
                     </Typography>
                   </Box>
-                  <Box sx={{ p: 2, bgcolor: '#F8FAFB', borderRadius: 2, textAlign: 'center' }}>
+                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2, textAlign: 'center' }}>
                     <Typography variant="h3" sx={{ fontWeight: 700, color: '#ef4444' }}>
                       {pathData.exposure.credentialsCompromised}
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#666', fontWeight: 600 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                       Credentials Compromised
                     </Typography>
                   </Box>
@@ -306,12 +307,12 @@ export default function InvestigationsPage() {
 
           {/* Campaign Summary Cards */}
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3 }}>
-            <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
+            <Card sx={{ bgcolor: 'background.paper', border: '2px solid', borderColor: 'divider', boxShadow: 2 }}>
               <CardContent sx={{ p: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, color: UNCW_TEAL }}>
                   What Happened vs What Didn't
                 </Typography>
-                <Box component="ul" sx={{ pl: 3, m: 0, color: '#666', lineHeight: 2.5 }}>
+                <Box component="ul" sx={{ pl: 3, m: 0, color: 'text.secondary', lineHeight: 2.5 }}>
                   <li>
                     <Typography variant="body2">
                       <strong style={{ color: '#10b981' }}>🛡️ Successfully Blocked:</strong> {activeCampaign.targets - activeCampaign.interactions.delivered} malicious messages prevented from reaching users
@@ -336,12 +337,12 @@ export default function InvestigationsPage() {
               </CardContent>
             </Card>
 
-            <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
+            <Card sx={{ bgcolor: 'background.paper', border: '2px solid', borderColor: 'divider', boxShadow: 2 }}>
               <CardContent sx={{ p: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, color: UNCW_GOLD }}>
                   Investigation Insights
                 </Typography>
-                <Box component="ul" sx={{ pl: 3, m: 0, color: '#666', lineHeight: 2.5 }}>
+                <Box component="ul" sx={{ pl: 3, m: 0, color: 'text.secondary', lineHeight: 2.5 }}>
                   <li>
                     <Typography variant="body2">
                       Campaign leveraged <strong>{activeCampaign.channels.length} channels</strong> for maximum reach
