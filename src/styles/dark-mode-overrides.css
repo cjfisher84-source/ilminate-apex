@@ -52,6 +52,37 @@
   background-color: transparent !important;
 }
 
+/* Remove ALL grey backgrounds from Recharts components */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-cartesian-axis,
+.recharts-cartesian-grid,
+.recharts-bar,
+.recharts-bar-rectangle,
+.recharts-tooltip-wrapper,
+.recharts-default-tooltip,
+.recharts-tooltip-cursor,
+.recharts-reference-line,
+.recharts-area,
+.recharts-area-dots,
+.recharts-line,
+.recharts-dot,
+.recharts-active-dot,
+.recharts-layer,
+.recharts-cartesian-axis-tick,
+.recharts-cartesian-axis-tick-value {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+/* Force chart backgrounds to be transparent */
+.recharts-wrapper *,
+.recharts-surface *,
+[class*="recharts"] * {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
 /* Chart containers should never show white */
 [class*="chart-container"],
 [class*="Chart"],
