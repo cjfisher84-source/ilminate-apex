@@ -279,7 +279,7 @@ export function AIThreatsBar() {
     <div 
       className={isMobile ? 'mobile-chart-container' : ''}
       style={{ 
-        backgroundColor: theme.palette.background.paper, 
+        backgroundColor: 'transparent', 
         borderRadius: 16, 
         padding: isMobile ? 16 : 32, 
         border: `2px solid ${theme.palette.divider}`,
