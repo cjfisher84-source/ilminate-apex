@@ -238,7 +238,12 @@ export default function ThreatDetailPage() {
                   <LineChart data={timeline} margin={{ top: 10, right: 20, left: 0, bottom: 40 }}>
                     <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#666' }} angle={-45} textAnchor="end" height={60} />
                     <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
-                    <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }} />
+                    <Tooltip 
+                      cursor={false}
+                      contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }}
+                      labelStyle={{ color: '#94a3b8' }}
+                      itemStyle={{ color: '#f1f5f9' }}
+                    />
                     <Legend wrapperStyle={{ paddingTop: 20 }} />
                     <Line type="monotone" dataKey="detected" name="Detected" stroke={UNCW_TEAL} strokeWidth={3} dot={{ fill: UNCW_TEAL, r: 4 }} />
                     <Line type="monotone" dataKey="blocked" name="Blocked" stroke={UNCW_GOLD} strokeWidth={3} dot={{ fill: UNCW_GOLD, r: 4 }} />

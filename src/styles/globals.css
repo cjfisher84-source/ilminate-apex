@@ -1,0 +1,7 @@
+/* Recharts: nuke the hover cursor overlay anywhere */
+.recharts-tooltip-cursor,
+.recharts-tooltip-cursor rect,
+.recharts-tooltip-cursor-line {
+  fill: transparent !important;
+  stroke: transparent !important;
+}
