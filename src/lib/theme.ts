@@ -118,5 +118,43 @@ export const darkTheme = createTheme({
       main: '#3b82f6',
     },
   },
+  components: {
+    ...commonThemeOptions.components,
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          // Disable the white gradient overlay that MUI adds in dark mode
+          backgroundImage: 'none !important',
+          backgroundColor: '#1e293b',
+          borderColor: '#334155',
+        },
+      },
+    },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1e293b',
+          borderColor: '#334155',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1e293b',
+          borderColor: '#334155',
+          borderRadius: 16,
+        },
+      },
+    },
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: '#0f172a',
+          color: '#f1f5f9',
+        },
+      },
+    },
+  },
 })
 
