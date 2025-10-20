@@ -503,24 +503,25 @@ export interface ThreatFamily {
 }
 
 export function mockThreatFamilies(): ThreatFamily[] {
+  // Use deterministic values to prevent hydration mismatch
   const families = [
-    { name: 'Info Stealers', baseCount: 450, severity: 'Critical' as const, description: 'Malware designed to steal sensitive information like passwords, credit cards, and personal data' },
-    { name: 'Credential Phishing', baseCount: 380, severity: 'High' as const, description: 'Sophisticated phishing campaigns targeting login credentials and authentication tokens' },
-    { name: 'RATs (Remote Access)', baseCount: 290, severity: 'Critical' as const, description: 'Remote Access Trojans providing unauthorized access to compromised systems' },
-    { name: 'Banking Trojans', baseCount: 220, severity: 'High' as const, description: 'Specialized malware targeting financial institutions and online banking systems' },
-    { name: 'TOADs (Threats on Demand)', baseCount: 180, severity: 'Medium' as const, description: 'On-demand threat delivery systems used for targeted attacks' },
-    { name: 'Ransomware Families', baseCount: 150, severity: 'Critical' as const, description: 'Various ransomware strains including LockBit, Conti, and BlackCat variants' },
-    { name: 'APT Groups', baseCount: 120, severity: 'High' as const, description: 'Advanced Persistent Threat groups with nation-state or organized crime backing' },
-    { name: 'Adware/PUP', baseCount: 95, severity: 'Low' as const, description: 'Potentially Unwanted Programs and aggressive advertising software' }
+    { name: 'Info Stealers', baseCount: 450, severity: 'Critical' as const, description: 'Malware designed to steal sensitive information like passwords, credit cards, and personal data', multiplier: 0.9 },
+    { name: 'Credential Phishing', baseCount: 380, severity: 'High' as const, description: 'Sophisticated phishing campaigns targeting login credentials and authentication tokens', multiplier: 0.85 },
+    { name: 'RATs (Remote Access)', baseCount: 290, severity: 'Critical' as const, description: 'Remote Access Trojans providing unauthorized access to compromised systems', multiplier: 0.95 },
+    { name: 'Banking Trojans', baseCount: 220, severity: 'High' as const, description: 'Specialized malware targeting financial institutions and online banking systems', multiplier: 0.88 },
+    { name: 'TOADs (Threats on Demand)', baseCount: 180, severity: 'Medium' as const, description: 'On-demand threat delivery systems used for targeted attacks', multiplier: 0.82 },
+    { name: 'Ransomware Families', baseCount: 150, severity: 'Critical' as const, description: 'Various ransomware strains including LockBit, Conti, and BlackCat variants', multiplier: 0.92 },
+    { name: 'APT Groups', baseCount: 120, severity: 'High' as const, description: 'Advanced Persistent Threat groups with nation-state or organized crime backing', multiplier: 0.87 },
+    { name: 'Adware/PUP', baseCount: 95, severity: 'Low' as const, description: 'Potentially Unwanted Programs and aggressive advertising software', multiplier: 0.80 }
   ]
 
-  const total = families.reduce((sum, f) => sum + f.baseCount, 0)
+  const total = families.reduce((sum, f) => sum + f.baseCount * f.multiplier, 0)
   
-  return families.map(family => {
-    const count = Math.floor(family.baseCount * (0.8 + Math.random() * 0.4))
+  return families.map((family, index) => {
+    const count = Math.floor(family.baseCount * family.multiplier)
     const percentage = Math.round((count / total) * 100 * 10) / 10
     const trends: ('increasing' | 'decreasing' | 'stable')[] = ['increasing', 'decreasing', 'stable']
-    const trend = trends[Math.floor(Math.random() * 3)]
+    const trend = trends[index % 3] // Deterministic trend based on index
     
     return {
       name: family.name,
