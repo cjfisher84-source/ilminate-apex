@@ -49,32 +49,32 @@ export function mockDomainAbuse(){
 }
 
 export function mockAIThreats(){
-  // breakdown of AI-related threat techniques detected with context
+  // breakdown of AI-related threat techniques detected with context - deterministic values
   return [
     { 
       type:'Prompt Poisoning', 
-      count: Math.floor(5+Math.random()*30),
+      count: 7,
       description: 'Attempts to manipulate AI systems through carefully crafted prompts',
       severity: 'High',
       trend: 'Increasing'
     },
     { 
       type:'LLM-Evasion Text', 
-      count: Math.floor(10+Math.random()*40),
+      count: 25,
       description: 'Text designed to bypass language model filters and detection',
       severity: 'Medium',
       trend: 'Stable'
     },
     { 
       type:'AI-Generated Phish', 
-      count: Math.floor(30+Math.random()*80),
+      count: 65,
       description: 'Sophisticated phishing emails created using AI language models',
       severity: 'Critical',
       trend: 'Increasing'
     },
     { 
       type:'Image Deepfake', 
-      count: Math.floor(5+Math.random()*20),
+      count: 12,
       description: 'Manipulated images created with AI for impersonation attacks',
       severity: 'High',
       trend: 'Emerging'
