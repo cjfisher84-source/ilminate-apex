@@ -170,7 +170,7 @@ export function CyberScoreDonut() {
             <Pie 
               data={data} 
               dataKey="value" 
-              innerRadius="45%" 
+              innerRadius="50%" 
               outerRadius="70%" 
               startAngle={90} 
               endAngle={-270}
@@ -193,14 +193,14 @@ export function CyberScoreDonut() {
           pointerEvents: 'none',
           width: 'auto',
           height: 'auto',
-          maxWidth: '120px',
+          maxWidth: '100px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <div style={{ 
-            fontSize: '1.8rem',
+            fontSize: '1.6rem',
             fontWeight: 800, 
             color: UNCW_TEAL, 
             lineHeight: 1,
