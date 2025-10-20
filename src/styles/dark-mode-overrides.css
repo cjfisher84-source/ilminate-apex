@@ -52,16 +52,13 @@
   background-color: transparent !important;
 }
 
-/* Remove ALL grey backgrounds from Recharts components */
+/* Remove grey backgrounds from chart containers only */
 .recharts-wrapper,
 .recharts-surface,
 .recharts-cartesian-axis,
 .recharts-cartesian-grid,
 .recharts-bar,
 .recharts-bar-rectangle,
-.recharts-tooltip-wrapper,
-.recharts-default-tooltip,
-.recharts-tooltip-cursor,
 .recharts-reference-line,
 .recharts-area,
 .recharts-area-dots,
@@ -75,12 +72,17 @@
   background: transparent !important;
 }
 
-/* Force chart backgrounds to be transparent */
-.recharts-wrapper *,
-.recharts-surface *,
-[class*="recharts"] * {
+/* Keep tooltips visible with dark backgrounds */
+.recharts-tooltip-wrapper,
+.recharts-default-tooltip {
+  background-color: #1e293b !important;
+  border: 2px solid #00a8a8 !important;
+  border-radius: 12px !important;
+  color: #f1f5f9 !important;
+}
+
+.recharts-tooltip-cursor {
   background-color: transparent !important;
-  background: transparent !important;
 }
 
 /* Chart containers should never show white */
