@@ -46,7 +46,7 @@ const securityChecks: SecurityCheck[] = [
     id: 'spf-dkim-dmarc',
     label: 'SPF/DKIM/DMARC',
     icon: SecurityIcon,
-    color: '#007070',
+    color: '#00d4d4',
     description: 'Email Authentication Protocols',
     details: [
       'SPF (Sender Policy Framework): Verifies the sending server is authorized to send email on behalf of the domain',
@@ -60,7 +60,7 @@ const securityChecks: SecurityCheck[] = [
     id: 'suspicious-links',
     label: 'Suspicious Links',
     icon: LinkIcon,
-    color: '#FFD700',
+    color: '#fbbf24',
     description: 'URL & Link Analysis',
     details: [
       'Scans for malicious, phishing, or compromised URLs',
@@ -75,7 +75,7 @@ const securityChecks: SecurityCheck[] = [
     id: 'attachment-heuristics',
     label: 'Attachment Heuristics',
     icon: AttachFileIcon,
-    color: '#007070',
+    color: '#a855f7',
     description: 'Attachment Threat Detection',
     details: [
       'Detects macro-enabled documents (Excel, Word, PowerPoint) often used for malware delivery',
@@ -90,7 +90,7 @@ const securityChecks: SecurityCheck[] = [
     id: 'sender-reputation',
     label: 'Sender Reputation',
     icon: PersonSearchIcon,
-    color: '#FFD700',
+    color: '#22c55e',
     description: 'Sender Identity & History',
     details: [
       'Analyzes sender domain reputation and email history',
@@ -326,6 +326,8 @@ ${details || '(none)'}
                 <Box sx={{ display:'flex', gap:1, flexWrap:'wrap' }}>
                   {securityChecks.map((check) => {
                     const CheckIcon = check.icon
+                    // Determine if we need dark text (for bright yellow)
+                    const needsDarkText = check.color === '#fbbf24'
                     return (
                       <Chip 
                         key={check.id}
@@ -334,17 +336,19 @@ ${details || '(none)'}
                         onClick={() => handleCheckClick(check)}
                         sx={{ 
                           bgcolor: check.color, 
-                          color: check.color === '#FFD700' ? '#1a1a1a' : 'white', 
+                          color: needsDarkText ? '#1a1a1a' : 'white', 
                           fontWeight: 600,
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
+                          fontSize: '0.9rem',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
                           '&:hover': {
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            opacity: 0.9
+                            boxShadow: `0 6px 16px ${check.color}80`,
+                            filter: 'brightness(1.1)',
                           },
                           '& .MuiChip-icon': {
-                            color: check.color === '#FFD700' ? '#1a1a1a' : 'white'
+                            color: needsDarkText ? '#1a1a1a' : 'white'
                           }
                         }}
                       />
@@ -493,7 +497,7 @@ ${details || '(none)'}
           <>
             <DialogTitle sx={{ 
               bgcolor: selectedCheck.color, 
-              color: selectedCheck.color === '#FFD700' ? '#1a1a1a' : 'white',
+              color: selectedCheck.color === '#fbbf24' ? '#1a1a1a' : 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -520,8 +524,8 @@ ${details || '(none)'}
               <IconButton
                 onClick={handleDialogClose}
                 sx={{ 
-                  color: selectedCheck.color === '#FFD700' ? '#1a1a1a' : 'white',
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
+                  color: selectedCheck.color === '#fbbf24' ? '#1a1a1a' : 'white',
+                  '&:hover': { bgcolor: selectedCheck.color === '#fbbf24' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)' }
                 }}
               >
                 <CloseIcon />
