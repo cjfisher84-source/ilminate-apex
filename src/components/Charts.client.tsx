@@ -1,9 +1,10 @@
 'use client'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Legend, LineChart, Line, PieChart, Pie, Cell, Sankey } from 'recharts'
 import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes, mockGeoThreatMap, mockAIExploitDetection, mockCrossChannelTimeline, mockThreatFamilies, mockPeerComparison } from '@/lib/mock'
-import { Box, Typography, Chip } from '@mui/material'
+import { Box, Typography, Chip, useTheme } from '@mui/material'
 import { useEffect, useState, useRef } from 'react'
 import { useIsMobile, getResponsiveChartHeight } from '@/lib/mobileUtils'
+import { log } from '@/utils/log'
 import '../../styles/reports.css'
 
 const UNCW_TEAL = '#007070'
@@ -13,24 +14,29 @@ const GOLD_DARK = '#E6C200'
 
 export function TimelineArea() {
   const isMobile = useIsMobile()
+  const theme = useTheme()
   const data = mockTimeline30d()
   const chartHeight = getResponsiveChartHeight(isMobile, 520)
+  
+  useEffect(() => {
+    log.chart('TimelineArea mounted', { isMobile, theme: theme.palette.mode })
+  }, [isMobile, theme.palette.mode])
   
   return (
     <div 
       className={isMobile ? 'mobile-chart-container' : ''}
       style={{ 
-        backgroundColor: '#FFFFFF', 
+        backgroundColor: theme.palette.background.paper, 
         borderRadius: 16, 
         padding: isMobile ? 16 : 32, 
-        border: '2px solid #E0E4E8',
+        border: `2px solid ${theme.palette.divider}`,
         height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
         transition: 'all 0.3s ease'
       }}>
       <div style={{ 
         marginBottom: isMobile ? 16 : 24, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: isMobile ? '1.1rem' : '1.3rem', 
         fontWeight: 700,
         display: 'flex',
@@ -54,14 +60,14 @@ export function TimelineArea() {
           </defs>
           <XAxis 
             dataKey="date" 
-            tick={{ fontSize: isMobile ? 9 : 11, fill: '#999' }} 
+            tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} 
             angle={-45} 
             textAnchor="end" 
             height={isMobile ? 50 : 60}
             interval={isMobile ? 'preserveStartEnd' : 0}
           />
-          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} width={isMobile ? 35 : 50} />
-          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem' }} />
+          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} width={isMobile ? 35 : 50} />
+          <Tooltip contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }} />
           <Legend wrapperStyle={{ paddingTop: isMobile ? 12 : 20, fontSize: isMobile ? '0.8rem' : '1rem' }} />
           <Area type="monotone" dataKey="quarantined" name="Quarantined" stroke={UNCW_TEAL} strokeWidth={isMobile ? 2 : 3} fill="url(#colorQuarantined)" />
           <Area type="monotone" dataKey="delivered" name="Delivered" stroke={UNCW_GOLD} strokeWidth={isMobile ? 2 : 3} fill="url(#colorDelivered)" />
@@ -109,8 +115,13 @@ export function QuarantineDeliveredBars() {
 }
 
 export function CyberScoreDonut() {
+  const theme = useTheme()
   const score = mockCyberScore()
   const data = [{name:'Score', value:score}, {name:'Gap', value:100-score}]
+  
+  useEffect(() => {
+    log.chart('CyberScoreDonut mounted', { score, theme: theme.palette.mode })
+  }, [score, theme.palette.mode])
   
   // Additional cyber metrics to fill the space
   const metrics = [
@@ -122,19 +133,19 @@ export function CyberScoreDonut() {
   
   return (
     <div style={{ 
-      backgroundColor: '#FFFFFF', 
+      backgroundColor: theme.palette.background.paper, 
       borderRadius: 16, 
       padding: 24, 
-      border: '2px solid #E0E4E8',
+      border: `2px solid ${theme.palette.divider}`,
       height: 320,
       position: 'relative',
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
       display: 'flex',
       flexDirection: 'column'
     }}>
       <div style={{ 
         marginBottom: 16, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: '1.1rem', 
         fontWeight: 700,
         display: 'flex',
@@ -167,12 +178,12 @@ export function CyberScoreDonut() {
               cy="50%"
             >
               <Cell fill={UNCW_TEAL} />
-              <Cell fill="#E0E4E8" />
+              <Cell fill={theme.palette.divider} />
             </Pie>
           </PieChart>
         </ResponsiveContainer>
         
-        {/* Perfectly Centered Score */}
+        {/* Responsive Centered Score - Fixed overlap issue */}
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -182,30 +193,23 @@ export function CyberScoreDonut() {
           pointerEvents: 'none',
           width: 'auto',
           height: 'auto',
-          maxWidth: '80px'
+          maxWidth: '100px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}>
           <div style={{ 
-            fontSize: '1.75rem', 
-            fontWeight: 700, 
+            fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+            fontWeight: 800, 
             color: UNCW_TEAL, 
             lineHeight: 1,
             textAlign: 'center',
             margin: 0,
-            padding: 0
-          }}>
-            {score}
-          </div>
-          <div style={{ 
-            fontSize: '0.75rem', 
-            fontWeight: 600, 
-            color: '#666',
-            textAlign: 'center',
-            lineHeight: 1.2,
-            margin: 0,
             padding: 0,
-            marginTop: '2px'
+            whiteSpace: 'nowrap'
           }}>
-            / 100
+            {score}<span style={{ fontSize: '0.7em', opacity: 0.8 }}>/100</span>
           </div>
         </div>
       </div>
@@ -216,9 +220,9 @@ export function CyberScoreDonut() {
           <div key={idx} style={{
             textAlign: 'center',
             padding: '8px 6px',
-            backgroundColor: '#F8FAFB',
+            backgroundColor: theme.palette.background.default,
             borderRadius: 6,
-            border: '1px solid #E0E4E8',
+            border: `1px solid ${theme.palette.divider}`,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center'
@@ -226,7 +230,7 @@ export function CyberScoreDonut() {
             <div style={{ fontSize: '1rem', fontWeight: 700, color: metric.color, marginBottom: 2 }}>
               {metric.value}
             </div>
-            <div style={{ fontSize: '0.6rem', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+            <div style={{ fontSize: '0.6rem', fontWeight: 600, color: theme.palette.text.secondary, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
               {metric.label}
             </div>
           </div>
@@ -238,23 +242,29 @@ export function CyberScoreDonut() {
 
 export function AIThreatsBar() {
   const isMobile = useIsMobile()
+  const theme = useTheme()
   const data = mockAIThreats()
   const chartHeight = getResponsiveChartHeight(isMobile, 500)
+  
+  useEffect(() => {
+    log.chart('AIThreatsBar mounted', { isMobile, theme: theme.palette.mode })
+  }, [isMobile, theme.palette.mode])
   
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
         <div style={{
-          backgroundColor: '#FFFFFF',
-          border: '2px solid #007070',
+          backgroundColor: theme.palette.background.paper,
+          border: `2px solid ${UNCW_TEAL}`,
           borderRadius: 12,
           padding: 16,
-          maxWidth: 300
+          maxWidth: 300,
+          color: theme.palette.text.primary
         }}>
           <div style={{ fontWeight: 700, color: UNCW_TEAL, marginBottom: 8 }}>{data.type}</div>
           <div style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 8 }}>{data.count} incidents</div>
-          <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: 8 }}>{data.description}</div>
+          <div style={{ fontSize: '0.9rem', color: theme.palette.text.secondary, marginBottom: 8 }}>{data.description}</div>
           <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
             <span style={{ fontWeight: 600 }}>Severity: <span style={{ color: data.severity === 'Critical' ? '#ef4444' : data.severity === 'High' ? '#f97316' : '#FFD700' }}>{data.severity}</span></span>
             <span style={{ fontWeight: 600 }}>Trend: <span style={{ color: data.trend === 'Increasing' ? '#ef4444' : '#10b981' }}>{data.trend}</span></span>
@@ -269,16 +279,16 @@ export function AIThreatsBar() {
     <div 
       className={isMobile ? 'mobile-chart-container' : ''}
       style={{ 
-        backgroundColor: '#FFFFFF', 
+        backgroundColor: theme.palette.background.paper, 
         borderRadius: 16, 
         padding: isMobile ? 16 : 32, 
-        border: '2px solid #E0E4E8',
+        border: `2px solid ${theme.palette.divider}`,
         height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
       }}>
       <div style={{ 
         marginBottom: isMobile ? 16 : 24, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: isMobile ? '1.1rem' : '1.3rem', 
         fontWeight: 700,
         display: 'flex',
@@ -292,16 +302,16 @@ export function AIThreatsBar() {
         <BarChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: isMobile ? 60 : 80 }}>
           <XAxis 
             dataKey="type" 
-            tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} 
+            tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} 
             angle={-20} 
             textAnchor="end" 
             height={isMobile ? 60 : 80}
             interval={0}
           />
           <YAxis 
-            tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} 
+            tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} 
             width={isMobile ? 35 : 50} 
-            label={isMobile ? undefined : { value: 'Incidents', angle: -90, position: 'insideLeft', fill: '#666' }} 
+            label={isMobile ? undefined : { value: 'Incidents', angle: -90, position: 'insideLeft', fill: theme.palette.text.secondary }} 
           />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="count" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
@@ -313,23 +323,28 @@ export function AIThreatsBar() {
 
 export function EDRMetricsLines() {
   const isMobile = useIsMobile()
+  const theme = useTheme()
   const data = mockEDRMetrics30d()
   const chartHeight = getResponsiveChartHeight(isMobile, 520)
+  
+  useEffect(() => {
+    log.chart('EDRMetricsLines mounted', { isMobile, theme: theme.palette.mode })
+  }, [isMobile, theme.palette.mode])
   
   return (
     <div 
       className={isMobile ? 'mobile-chart-container' : ''}
       style={{ 
-        backgroundColor: '#FFFFFF', 
+        backgroundColor: theme.palette.background.paper, 
         borderRadius: 16, 
         padding: isMobile ? 16 : 32, 
-        border: '2px solid #E0E4E8',
+        border: `2px solid ${theme.palette.divider}`,
         height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
       }}>
       <div style={{ 
         marginBottom: isMobile ? 16 : 24, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: isMobile ? '1.1rem' : '1.3rem', 
         fontWeight: 700,
         display: 'flex',
@@ -343,18 +358,18 @@ export function EDRMetricsLines() {
         <LineChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: 0 }}>
           <XAxis 
             dataKey="date" 
-            tick={{ fontSize: isMobile ? 9 : 11, fill: '#999' }} 
+            tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} 
             angle={-45} 
             textAnchor="end" 
             height={isMobile ? 50 : 60}
             interval={isMobile ? 'preserveStartEnd' : 0}
           />
-          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} width={isMobile ? 35 : 50} />
-          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem' }} />
+          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} width={isMobile ? 35 : 50} />
+          <Tooltip contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }} />
           <Legend wrapperStyle={{ paddingTop: isMobile ? 12 : 20, fontSize: isMobile ? '0.75rem' : '1rem' }} />
           <Line type="monotone" dataKey="detections" name="Detections" stroke={UNCW_TEAL} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_TEAL, r: isMobile ? 3 : 4 }} />
           <Line type="monotone" dataKey="blocked" name="Blocked" stroke={UNCW_GOLD} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_GOLD, r: isMobile ? 3 : 4 }} />
-          <Line type="monotone" dataKey="endpointsOnline" name={isMobile ? 'Online' : 'Endpoints Online'} stroke="#666" strokeWidth={isMobile ? 1.5 : 2} dot={{ fill: '#666', r: isMobile ? 2 : 3 }} />
+          <Line type="monotone" dataKey="endpointsOnline" name={isMobile ? 'Online' : 'Endpoints Online'} stroke={theme.palette.text.secondary} strokeWidth={isMobile ? 1.5 : 2} dot={{ fill: theme.palette.text.secondary, r: isMobile ? 2 : 3 }} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -363,24 +378,29 @@ export function EDRMetricsLines() {
 
 export function EDREndpointStatus() {
   const isMobile = useIsMobile()
+  const theme = useTheme()
   const data = mockEDREndpointBreakdown()
   const total = data.reduce((sum, item) => sum + item.count, 0)
   const chartHeight = getResponsiveChartHeight(isMobile, 420)
+  
+  useEffect(() => {
+    log.chart('EDREndpointStatus mounted', { isMobile, theme: theme.palette.mode, total })
+  }, [isMobile, theme.palette.mode, total])
   
   return (
     <div 
       className={isMobile ? 'mobile-chart-container' : ''}
       style={{ 
-        backgroundColor: '#FFFFFF', 
+        backgroundColor: theme.palette.background.paper, 
         borderRadius: 16, 
         padding: isMobile ? 16 : 32, 
-        border: '2px solid #E0E4E8',
+        border: `2px solid ${theme.palette.divider}`,
         height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
       }}>
       <div style={{ 
         marginBottom: isMobile ? 16 : 24, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: isMobile ? '1.1rem' : '1.3rem', 
         fontWeight: 700,
         display: 'flex',
@@ -405,11 +425,11 @@ export function EDREndpointStatus() {
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem' }} />
+          <Tooltip contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }} />
           {isMobile && <Legend wrapperStyle={{ fontSize: '0.75rem' }} />}
         </PieChart>
       </ResponsiveContainer>
-      <div style={{ textAlign: 'center', marginTop: isMobile ? 8 : 16, fontSize: isMobile ? '0.95rem' : '1.1rem', fontWeight: 600, color: '#666' }}>
+      <div style={{ textAlign: 'center', marginTop: isMobile ? 8 : 16, fontSize: isMobile ? '0.95rem' : '1.1rem', fontWeight: 600, color: theme.palette.text.secondary }}>
         Total Endpoints: {total}
       </div>
     </div>
@@ -417,20 +437,25 @@ export function EDREndpointStatus() {
 }
 
 export function EDRThreatDetections() {
+  const theme = useTheme()
   const data = mockEDRThreatTypes()
+  
+  useEffect(() => {
+    log.chart('EDRThreatDetections mounted', { theme: theme.palette.mode })
+  }, [theme.palette.mode])
   
   return (
     <div style={{ 
-      backgroundColor: '#FFFFFF', 
+      backgroundColor: theme.palette.background.paper, 
       borderRadius: 16, 
       padding: 32, 
-      border: '2px solid #E0E4E8',
+      border: `2px solid ${theme.palette.divider}`,
       height: 420,
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)'
+      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
     }}>
       <div style={{ 
         marginBottom: 24, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: '1.3rem', 
         fontWeight: 700,
         display: 'flex',
@@ -442,9 +467,9 @@ export function EDRThreatDetections() {
       </div>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-          <XAxis dataKey="type" tick={{ fontSize: 12, fill: '#666' }} />
-          <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
-          <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }} />
+          <XAxis dataKey="type" tick={{ fontSize: 12, fill: theme.palette.text.secondary }} />
+          <YAxis tick={{ fontSize: 11, fill: theme.palette.text.secondary }} width={50} />
+          <Tooltip contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, color: theme.palette.text.primary }} />
           <Legend wrapperStyle={{ paddingTop: 16 }} />
           <Bar dataKey="detected" name="Detected" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
           <Bar dataKey="blocked" name="Blocked" fill={UNCW_GOLD} radius={[8, 8, 0, 0]} />
@@ -548,6 +573,7 @@ export function GeoThreatMap() {
 }
 
 export function AIExploitDetectionChart() {
+  const theme = useTheme()
   const data = mockAIExploitDetection()
   const [ready, setReady] = useState(false)
   const slotRef = useRef<HTMLDivElement | null>(null)
@@ -558,13 +584,13 @@ export function AIExploitDetectionChart() {
     const el = slotRef.current
     const logSize = () => {
       const r = el.getBoundingClientRect()
-      console.debug("[AI-Exploit] chart-slot size", { width: r.width, height: r.height })
+      log.chart('AIExploitDetectionChart chart-slot size', { width: r.width, height: r.height, theme: theme.palette.mode })
     }
     const ro = new ResizeObserver(logSize)
     ro.observe(el)
     logSize()
     return () => ro.disconnect()
-  }, [])
+  }, [theme.palette.mode])
   
   useEffect(() => setReady(true), [])
   
@@ -573,16 +599,17 @@ export function AIExploitDetectionChart() {
       const item = payload[0].payload
       return (
         <div style={{
-          backgroundColor: '#FFFFFF',
-          border: '2px solid #007070',
+          backgroundColor: theme.palette.background.paper,
+          border: `2px solid ${UNCW_TEAL}`,
           borderRadius: 12,
           padding: 16,
-          maxWidth: 350
+          maxWidth: 350,
+          color: theme.palette.text.primary
         }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 1 }}>
             {item.category}
           </Typography>
-          <Typography variant="body2" sx={{ color: '#666', mb: 2, lineHeight: 1.6 }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 2, lineHeight: 1.6 }}>
             {item.description}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
@@ -600,11 +627,11 @@ export function AIExploitDetectionChart() {
             <Chip label={`Success: ${item.success_rate}`} size="small" sx={{ bgcolor: '#10b981', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
             <Chip label={`Block Time: ${item.avg_block_time}`} size="small" sx={{ bgcolor: '#f97316', color: 'white', fontWeight: 600, fontSize: '0.7rem' }} />
           </Box>
-          <Typography variant="caption" sx={{ fontWeight: 700, color: '#666', display: 'block', mb: 0.5 }}>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: theme.palette.text.secondary, display: 'block', mb: 0.5 }}>
             Examples:
           </Typography>
           {item.examples.map((ex: string, idx: number) => (
-            <Typography key={idx} variant="caption" sx={{ display: 'block', color: '#999', fontStyle: 'italic', mb: 0.5 }}>
+            <Typography key={idx} variant="caption" sx={{ display: 'block', color: theme.palette.text.secondary, fontStyle: 'italic', mb: 0.5 }}>
               • {ex}
             </Typography>
           ))}
@@ -616,18 +643,18 @@ export function AIExploitDetectionChart() {
   
   return (
     <div style={{ 
-      backgroundColor: '#FFFFFF', 
+      backgroundColor: theme.palette.background.paper, 
       borderRadius: 16, 
       padding: 24, 
-      border: '2px solid #E0E4E8',
+      border: `2px solid ${theme.palette.divider}`,
       height: 320,
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
       display: 'flex',
       flexDirection: 'column'
     }}>
       <div style={{ 
         marginBottom: 16, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: '1.1rem', 
         fontWeight: 700,
         display: 'flex',
@@ -641,8 +668,8 @@ export function AIExploitDetectionChart() {
         <div className="chart-slot" ref={slotRef}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 20 }} layout="horizontal">
-              <XAxis type="number" tick={{ fontSize: 10, fill: '#666' }} />
-              <YAxis type="category" dataKey="category" tick={{ fontSize: 10, fill: '#666' }} width={140} />
+              <XAxis type="number" tick={{ fontSize: 10, fill: theme.palette.text.secondary }} />
+              <YAxis type="category" dataKey="category" tick={{ fontSize: 10, fill: theme.palette.text.secondary }} width={140} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ paddingTop: 10, fontSize: '12px' }} />
               <Bar dataKey="detected" name="Detected" fill="#ef4444" radius={[0, 4, 4, 0]} />
@@ -716,8 +743,13 @@ export function CrossChannelTimelineChart({ campaignId }: { campaignId: string }
 // New Threat Family Types Chart
 export function ThreatFamilyTypesChart() {
   const isMobile = useIsMobile()
+  const theme = useTheme()
   const data = mockThreatFamilies()
   const chartHeight = getResponsiveChartHeight(isMobile, 420)
+  
+  useEffect(() => {
+    log.chart('ThreatFamilyTypesChart mounted', { isMobile, theme: theme.palette.mode })
+  }, [isMobile, theme.palette.mode])
   
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -742,18 +774,18 @@ export function ThreatFamilyTypesChart() {
     <div 
       className={isMobile ? 'mobile-chart-container' : ''}
       style={{ 
-        backgroundColor: '#FFFFFF', 
+        backgroundColor: theme.palette.background.paper, 
         borderRadius: 16, 
         padding: isMobile ? 16 : 24, 
-        border: '2px solid #E0E4E8',
+        border: `2px solid ${theme.palette.divider}`,
         height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
         display: 'flex',
         flexDirection: 'column'
       }}>
       <div style={{ 
         marginBottom: isMobile ? 12 : 20, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: isMobile ? '1.05rem' : '1.2rem', 
         fontWeight: 700,
         display: 'flex',
@@ -767,20 +799,21 @@ export function ThreatFamilyTypesChart() {
         <BarChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: isMobile ? 50 : 60 }}>
           <XAxis 
             dataKey="name" 
-            tick={{ fontSize: isMobile ? 8 : 10, fill: '#666' }} 
+            tick={{ fontSize: isMobile ? 8 : 10, fill: theme.palette.text.secondary }} 
             angle={-45} 
             textAnchor="end" 
             height={isMobile ? 60 : 80}
             interval={0}
           />
-          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: '#666' }} width={isMobile ? 35 : 50} />
+          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} width={isMobile ? 35 : 50} />
           <Tooltip 
             contentStyle={{ 
-              backgroundColor: '#FFFFFF', 
-              border: '2px solid #007070', 
+              backgroundColor: theme.palette.background.paper, 
+              border: `2px solid ${UNCW_TEAL}`, 
               borderRadius: 12, 
               padding: 12,
-              fontSize: '12px'
+              fontSize: '12px',
+              color: theme.palette.text.primary
             }}
             formatter={(value: any, name: string, props: any) => [
               <div key="tooltip">
@@ -789,7 +822,7 @@ export function ThreatFamilyTypesChart() {
                 <div style={{ marginBottom: 2 }}>Percentage: <strong>{props.payload.percentage}%</strong></div>
                 <div style={{ marginBottom: 2 }}>Severity: <span style={{ color: getSeverityColor(props.payload.severity) }}><strong>{props.payload.severity}</strong></span></div>
                 <div style={{ marginBottom: 2 }}>Trend: {getTrendIcon(props.payload.trend)} <strong>{props.payload.trend}</strong></div>
-                <div style={{ fontSize: '11px', color: '#666', marginTop: 4 }}>{props.payload.description}</div>
+                <div style={{ fontSize: '11px', color: theme.palette.text.secondary, marginTop: 4 }}>{props.payload.description}</div>
               </div>
             ]}
           />
@@ -809,7 +842,12 @@ export function ThreatFamilyTypesChart() {
 
 // New Peer Comparison Chart
 export function PeerComparisonChart() {
+  const theme = useTheme()
   const data = mockPeerComparison()
+  
+  useEffect(() => {
+    log.chart('PeerComparisonChart mounted', { theme: theme.palette.mode })
+  }, [theme.palette.mode])
   
   const getTrendColor = (trend: string) => {
     switch (trend) {
@@ -829,18 +867,18 @@ export function PeerComparisonChart() {
 
   return (
     <div style={{ 
-      backgroundColor: '#FFFFFF', 
+      backgroundColor: theme.palette.background.paper, 
       borderRadius: 16, 
       padding: 24, 
-      border: '2px solid #E0E4E8',
+      border: `2px solid ${theme.palette.divider}`,
       height: 420,
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
       display: 'flex',
       flexDirection: 'column'
     }}>
       <div style={{ 
         marginBottom: 20, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: '1.2rem', 
         fontWeight: 700,
         display: 'flex',
@@ -854,20 +892,21 @@ export function PeerComparisonChart() {
         <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
           <XAxis 
             dataKey="metric" 
-            tick={{ fontSize: 10, fill: '#666' }} 
+            tick={{ fontSize: 10, fill: theme.palette.text.secondary }} 
             angle={-45} 
             textAnchor="end" 
             height={80}
             interval={0}
           />
-          <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
+          <YAxis tick={{ fontSize: 11, fill: theme.palette.text.secondary }} width={50} />
           <Tooltip 
             contentStyle={{ 
-              backgroundColor: '#FFFFFF', 
-              border: '2px solid #007070', 
+              backgroundColor: theme.palette.background.paper, 
+              border: `2px solid ${UNCW_TEAL}`, 
               borderRadius: 12, 
               padding: 12,
-              fontSize: '12px'
+              fontSize: '12px',
+              color: theme.palette.text.primary
             }}
             formatter={(value: any, name: string, props: any) => [
               <div key="tooltip">

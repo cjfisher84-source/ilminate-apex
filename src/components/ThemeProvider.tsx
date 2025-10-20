@@ -3,6 +3,7 @@ import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { useState, useEffect, ReactNode } from 'react'
 import { lightTheme, darkTheme } from '@/lib/theme'
+import { log } from '@/utils/log'
 
 interface ThemeProviderProps {
   children: ReactNode
@@ -15,11 +16,18 @@ export default function ThemeProvider({ children }: ThemeProviderProps) {
   useEffect(() => {
     // Check system preference on mount
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    setIsDarkMode(mediaQuery.matches)
+    const systemPrefersDark = mediaQuery.matches
+    setIsDarkMode(systemPrefersDark)
+    
+    log.theme('ThemeProvider initialized', { 
+      isDarkMode: systemPrefersDark, 
+      systemPreference: systemPrefersDark ? 'dark' : 'light' 
+    })
 
     // Listen for system preference changes
     const handler = (e: MediaQueryListEvent) => {
       setIsDarkMode(e.matches)
+      log.theme('System theme preference changed', { isDarkMode: e.matches })
     }
 
     mediaQuery.addEventListener('change', handler)

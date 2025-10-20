@@ -1,0 +1,52 @@
+/* 
+ * Dark Mode Global Overrides
+ * Ensures no white backgrounds or grey overlays leak through
+ */
+
+/* Remove any pseudo-element overlays globally */
+.hover-overlay::before,
+[data-hover-overlay="true"]::before,
+.MuiPaper-root::before,
+.MuiCard-root::before {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+}
+
+/* Recharts container fallback to transparent */
+.recharts-responsive-container {
+  background: transparent !important;
+}
+
+/* Ensure Recharts tooltips respect theme */
+.recharts-default-tooltip {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Remove any lingering white overlays from MUI Paper components */
+.MuiPaper-root {
+  background-image: none !important;
+}
+
+/* Ensure consistent dark backgrounds for common interactive elements */
+.MuiPopover-paper,
+.MuiMenu-paper,
+.MuiDialog-paper {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+/* Table row hover states - prevent grey overlay */
+.MuiTableRow-root:hover {
+  background-color: rgba(0, 168, 168, 0.08) !important;
+}
+
+/* Chart containers should never show white */
+[class*="chart-container"],
+[class*="Chart"],
+.chart-slot {
+  background-color: transparent !important;
+}
+
