@@ -170,8 +170,8 @@ export function CyberScoreDonut() {
             <Pie 
               data={data} 
               dataKey="value" 
-              innerRadius="60%" 
-              outerRadius="75%" 
+              innerRadius="70%" 
+              outerRadius="85%" 
               startAngle={90} 
               endAngle={-270}
               cx="50%"
@@ -193,14 +193,14 @@ export function CyberScoreDonut() {
           pointerEvents: 'none',
           width: 'auto',
           height: 'auto',
-          maxWidth: '80px',
+          maxWidth: '60px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <div style={{ 
-            fontSize: '1.4rem',
+            fontSize: '1.1rem',
             fontWeight: 800, 
             color: UNCW_TEAL, 
             lineHeight: 1,
@@ -209,7 +209,7 @@ export function CyberScoreDonut() {
             padding: 0,
             whiteSpace: 'nowrap'
           }}>
-            {score}<span style={{ fontSize: '0.5em', opacity: 0.8, fontWeight: 600 }}>/100</span>
+            {score}<span style={{ fontSize: '0.4em', opacity: 0.8, fontWeight: 600 }}>/100</span>
           </div>
         </div>
       </div>
