@@ -259,8 +259,8 @@ export function mockAIExploitDetection() {
   return [
     {
       category: 'Prompt Injection',
-      detected: Math.floor(120 + Math.random() * 180),
-      blocked: Math.floor(110 + Math.random() * 170),
+      detected: 200,
+      blocked: 185,
       severity: 'Critical' as const,
       description: 'Attempts to inject malicious instructions into AI prompts to manipulate outputs',
       examples: [
@@ -276,8 +276,8 @@ export function mockAIExploitDetection() {
     },
     {
       category: 'Jailbreak Attempts',
-      detected: Math.floor(85 + Math.random() * 120),
-      blocked: Math.floor(78 + Math.random() * 115),
+      detected: 145,
+      blocked: 135,
       severity: 'High' as const,
       description: 'Efforts to bypass AI safety guidelines and content filters',
       examples: [
@@ -293,8 +293,8 @@ export function mockAIExploitDetection() {
     },
     {
       category: 'Data Exfiltration via AI',
-      detected: Math.floor(45 + Math.random() * 80),
-      blocked: Math.floor(42 + Math.random() * 75),
+      detected: 85,
+      blocked: 78,
       severity: 'Critical' as const,
       description: 'Using AI assistants to extract or leak sensitive company information',
       examples: [
@@ -310,8 +310,8 @@ export function mockAIExploitDetection() {
     },
     {
       category: 'Model Poisoning',
-      detected: Math.floor(25 + Math.random() * 45),
-      blocked: Math.floor(23 + Math.random() * 42),
+      detected: 35,
+      blocked: 32,
       severity: 'High' as const,
       description: 'Attempts to corrupt AI model behavior through malicious training data',
       examples: [
@@ -327,8 +327,8 @@ export function mockAIExploitDetection() {
     },
     {
       category: 'Hidden Prompts in Email',
-      detected: Math.floor(200 + Math.random() * 300),
-      blocked: Math.floor(195 + Math.random() * 290),
+      detected: 320,
+      blocked: 295,
       severity: 'Medium' as const,
       description: 'Embedded instructions in emails designed to manipulate AI email assistants',
       examples: [
@@ -344,8 +344,8 @@ export function mockAIExploitDetection() {
     },
     {
       category: 'AI Hallucination Exploitation',
-      detected: Math.floor(35 + Math.random() * 65),
-      blocked: Math.floor(32 + Math.random() * 60),
+      detected: 50,
+      blocked: 45,
       severity: 'Medium' as const,
       description: 'Exploiting AI model hallucinations to generate false information',
       examples: [
