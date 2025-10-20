@@ -3,8 +3,21 @@ import type { NextRequest } from "next/server";
 
 // Middleware to protect portal routes with token or Cognito SSO
 export function middleware(request: NextRequest) {
-  // Get token from query parameter
-  const token = request.nextUrl.searchParams.get('k');
+  const { pathname, searchParams } = request.nextUrl;
+  
+  // Always allow login page
+  if (pathname === '/login') {
+    return NextResponse.next();
+  }
+
+  // Allow OAuth callback (has 'code' parameter from Cognito)
+  const authCode = searchParams.get('code');
+  if (authCode) {
+    return NextResponse.next();
+  }
+
+  // Get token from query parameter (direct access)
+  const token = searchParams.get('k');
   const validToken = process.env.NEXT_PUBLIC_PORTAL_TOKEN || '7885c5de63b9b75428cacee0731b80509590783da34b02dd3373276b75ef8e25';
   
   // Allow if valid token is provided
@@ -18,6 +31,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
+  // Check if user came from Cognito (OAuth flow)
+  const referer = request.headers.get('referer');
+  if (referer && referer.includes('amazoncognito.com')) {
+    return NextResponse.next();
+  }
+  
   // Otherwise redirect to Cognito login
   const loginUrl = new URL(
     'https://ilminate-customer-portal-jqo56pdt.auth.us-east-1.amazoncognito.com/login'
@@ -25,7 +44,7 @@ export function middleware(request: NextRequest) {
   loginUrl.searchParams.set('client_id', '1uoiq3h1afgo6799gie48vmlcj');
   loginUrl.searchParams.set('response_type', 'code');
   loginUrl.searchParams.set('scope', 'email openid profile');
-  loginUrl.searchParams.set('redirect_uri', `https://apex.ilminate.com/`);
+  loginUrl.searchParams.set('redirect_uri', 'https://apex.ilminate.com/');
   
   return NextResponse.redirect(loginUrl);
 }
@@ -43,4 +62,3 @@ export const config = {
     '/admin/:path*',
   ],
 };
-
