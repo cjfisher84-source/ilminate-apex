@@ -108,24 +108,51 @@
   background-color: transparent !important;
 }
 
-/* Force ALL backgrounds to be dark or transparent */
-* {
+/* Remove grey backgrounds from specific chart elements only */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-cartesian-axis,
+.recharts-cartesian-grid,
+.recharts-bar,
+.recharts-bar-rectangle,
+.recharts-reference-line,
+.recharts-area,
+.recharts-area-dots,
+.recharts-line,
+.recharts-dot,
+.recharts-active-dot,
+.recharts-layer,
+.recharts-cartesian-axis-tick,
+.recharts-cartesian-axis-tick-value,
+.recharts-cartesian-axis-domain,
+.recharts-cartesian-axis-line {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+/* Ensure MUI Chips keep their colors */
+.MuiChip-root {
+  background-color: inherit !important;
+}
+
+/* Ensure chart containers are transparent */
+[class*="chart-container"],
+[class*="Chart"],
+.chart-slot {
   background-color: transparent !important;
 }
 
-/* Restore dark backgrounds for specific elements */
-body,
+/* Restore dark backgrounds for UI elements */
+body {
+  background-color: #0f172a !important;
+}
+
 .MuiPaper-root,
 .MuiCard-root,
 .MuiTableContainer-root,
 .MuiDialog-paper,
 .MuiMenu-paper,
 .MuiPopover-paper {
-  background-color: #0f172a !important;
-}
-
-.MuiPaper-root.MuiCard-root,
-.MuiPaper-root.MuiTableContainer-root {
   background-color: #1e293b !important;
 }
 
