@@ -37,14 +37,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
-  // Otherwise redirect to Cognito login
-  const loginUrl = new URL(
-    'https://ilminate-customer-portal-jqo56pdt.auth.us-east-1.amazoncognito.com/login'
-  );
-  loginUrl.searchParams.set('client_id', '1uoiq3h1afgo6799gie48vmlcj');
-  loginUrl.searchParams.set('response_type', 'code');
-  loginUrl.searchParams.set('scope', 'email openid profile');
-  loginUrl.searchParams.set('redirect_uri', 'https://apex.ilminate.com/');
+  // Otherwise redirect to custom login page
+  const loginUrl = new URL('/login', request.url);
   
   return NextResponse.redirect(loginUrl);
 }

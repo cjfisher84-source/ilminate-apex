@@ -1,0 +1,137 @@
+/* Beautiful Login Page Styles */
+
+.login-container {
+  min-height: 100vh;
+  background-color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated Background Circles */
+.login-bg-animation {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.1;
+  animation: float 20s infinite ease-in-out;
+}
+
+.bg-circle-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #00a8a8, transparent);
+  top: -200px;
+  right: -200px;
+  animation-delay: 0s;
+}
+
+.bg-circle-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #FFD700, transparent);
+  bottom: -150px;
+  left: -150px;
+  animation-delay: 7s;
+}
+
+.bg-circle-3 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #007070, transparent);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: 14s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+/* Login Card */
+.login-card {
+  animation: fadeInUp 0.6s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Shimmer Effect on Button Hover */
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .login-container {
+    padding: 16px;
+  }
+
+  .login-card {
+    max-width: 100%;
+  }
+
+  .bg-circle-1,
+  .bg-circle-2,
+  .bg-circle-3 {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+/* Loading Animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Focus Styles */
+.login-card input:focus {
+  outline: none;
+  border-color: #00a8a8;
+  box-shadow: 0 0 0 3px rgba(0, 168, 168, 0.1);
+}
+
+/* Button Glow Effect */
+.login-card button:hover {
+  box-shadow: 0 6px 25px rgba(0, 168, 168, 0.4);
+  transition: all 0.3s ease;
+}
+
