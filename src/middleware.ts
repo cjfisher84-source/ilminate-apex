@@ -5,8 +5,8 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   
-  // Always allow login page
-  if (pathname === '/login') {
+  // Always allow login page and public assets
+  if (pathname === '/login' || pathname.startsWith('/_next') || pathname.startsWith('/api')) {
     return NextResponse.next();
   }
 
@@ -25,15 +25,25 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
-  // Check if user has a valid session cookie (from Cognito callback)
-  const sessionCookie = request.cookies.get('cognito_session');
-  if (sessionCookie) {
+  // Check for ANY Cognito-related cookies (Google OAuth, Microsoft OAuth, etc.)
+  const cookies = request.cookies;
+  const hasCognitoAuth = 
+    cookies.get('cognito_session') ||
+    cookies.get('CognitoIdentityServiceProvider') ||
+    Array.from(cookies.getAll()).some(cookie => 
+      cookie.name.includes('CognitoIdentityServiceProvider') ||
+      cookie.name.includes('idToken') ||
+      cookie.name.includes('accessToken') ||
+      cookie.name.includes('refreshToken')
+    );
+  
+  if (hasCognitoAuth) {
     return NextResponse.next();
   }
   
   // Check if user came from Cognito (OAuth flow)
   const referer = request.headers.get('referer');
-  if (referer && referer.includes('amazoncognito.com')) {
+  if (referer && (referer.includes('amazoncognito.com') || referer.includes('accounts.google.com') || referer.includes('login.microsoftonline.com'))) {
     return NextResponse.next();
   }
   
@@ -53,6 +63,7 @@ export const config = {
     '/investigations/:path*',
     '/triage/:path*',
     '/dmarc/:path*',
+    '/reports/:path*',
     '/admin/:path*',
   ],
 };
