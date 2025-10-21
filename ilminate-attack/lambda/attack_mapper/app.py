@@ -1,4 +1,4 @@
-import json, ujson
+import json
 from attack_meta import load_attack_meta
 from rules import map_event
 def _resp(status, body):
