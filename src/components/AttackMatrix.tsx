@@ -100,7 +100,6 @@ export default function AttackMatrix({
                 textAlign: 'center',
                 bgcolor: 'rgba(0, 168, 168, 0.08)',
                 borderBottom: '2px solid',
-                borderColor: 'divider',
                 borderLeft: '1px solid',
                 borderColor: 'divider',
                 color: UNCW_TEAL,
