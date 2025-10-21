@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { Box, Typography, Button, Chip } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 type TechniqueScore = { techniqueID: string; score: number };
 type Layer = { 
@@ -10,6 +12,8 @@ type Layer = {
   gradient?: { colors: string[] } 
 };
 type TechniqueMeta = { id: string; name: string; tactics: string[] };
+
+const UNCW_TEAL = '#00a8a8';
 
 function scoreToAlpha(score: number, max: number) { 
   if (!max) return 0; 
@@ -26,6 +30,7 @@ export default function AttackMatrix({
   meta: TechniqueMeta[]; 
   onClickTechnique?: (techId: string) => void;
 }) {
+  const theme = useTheme();
   const scoreMap = new Map(layer.techniques.map(t => [t.techniqueID, t.score]));
   const maxScore = Math.max(1, ...layer.techniques.map(t => t.score));
   
@@ -41,77 +46,199 @@ export default function AttackMatrix({
     'Discovery',
     'Lateral Movement',
     'Collection',
-    'Command And Control',
+    'Command & Control',
     'Exfiltration',
     'Impact'
   ];
 
   return (
-    <div className="w-full">
-      <h2 className="text-xl font-semibold mb-2">{layer.name}</h2>
-      {layer.description && <p className="text-sm opacity-80">{layer.description}</p>}
+    <Box sx={{ width: '100%' }}>
+      <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
+        {layer.name}
+      </Typography>
+      {layer.description && (
+        <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+          {layer.description}
+        </Typography>
+      )}
       
-      <div className="overflow-x-auto rounded-2xl mt-2 border border-white/10">
-        <div 
-          className="min-w-[900px] grid" 
-          style={{ gridTemplateColumns: `200px repeat(${tacticOrder.length}, minmax(120px, 1fr))` }}
-        >
+      <Box sx={{ 
+        overflowX: 'auto',
+        borderRadius: 3,
+        border: '1px solid',
+        borderColor: 'divider',
+        bgcolor: 'background.default'
+      }}>
+        <Box sx={{ 
+          display: 'grid',
+          gridTemplateColumns: `220px repeat(${tacticOrder.length}, minmax(100px, 1fr))`,
+          minWidth: '1400px'
+        }}>
           {/* Header row */}
-          <div className="sticky left-0 z-10 bg-black/5 dark:bg-white/5 p-3 font-semibold border-b border-white/10">
+          <Box sx={{ 
+            position: 'sticky',
+            left: 0,
+            zIndex: 10,
+            bgcolor: 'rgba(0, 168, 168, 0.08)',
+            p: 2,
+            fontWeight: 700,
+            borderBottom: '2px solid',
+            borderColor: 'divider',
+            display: 'flex',
+            alignItems: 'center',
+            color: UNCW_TEAL
+          }}>
             Technique
-          </div>
+          </Box>
           {tacticOrder.map(t => (
-            <div 
+            <Box 
               key={t} 
-              className="p-3 text-sm font-semibold text-center bg-black/5 dark:bg-white/5 border-b border-white/10"
+              sx={{ 
+                p: 1.5,
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                textAlign: 'center',
+                bgcolor: 'rgba(0, 168, 168, 0.08)',
+                borderBottom: '2px solid',
+                borderColor: 'divider',
+                borderLeft: '1px solid',
+                borderColor: 'divider',
+                color: UNCW_TEAL,
+                lineHeight: 1.2
+              }}
             >
               {t}
-            </div>
+            </Box>
           ))}
 
           {/* Technique rows */}
           {meta.map(tech => {
             const score = scoreMap.get(tech.id) || 0;
             const alpha = scoreToAlpha(score, maxScore);
-            const base = `rgba(0, 168, 168, ${alpha})`; // UNCW teal with dynamic alpha
             
             return (
               <React.Fragment key={tech.id}>
-                <div className="sticky left-0 z-10 bg-background p-2 border-b border-white/10">
-                  <button 
-                    onClick={() => onClickTechnique?.(tech.id)} 
-                    className="text-left hover:underline w-full"
-                    title={`${tech.id} — ${tech.name}`}
+                <Box sx={{ 
+                  position: 'sticky',
+                  left: 0,
+                  zIndex: 5,
+                  bgcolor: 'background.paper',
+                  p: 1.5,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 0.5
+                }}>
+                  <Button
+                    onClick={() => onClickTechnique?.(tech.id)}
+                    sx={{
+                      justifyContent: 'flex-start',
+                      textAlign: 'left',
+                      p: 0,
+                      minWidth: 0,
+                      textTransform: 'none',
+                      '&:hover': {
+                        bgcolor: 'transparent',
+                        textDecoration: 'underline'
+                      }
+                    }}
                   >
-                    <div className="text-sm font-medium">{tech.id}</div>
-                    <div className="text-xs opacity-80">{tech.name}</div>
-                  </button>
-                </div>
+                    <Box>
+                      <Chip 
+                        label={tech.id}
+                        size="small"
+                        sx={{
+                          height: '20px',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          bgcolor: UNCW_TEAL,
+                          color: 'white',
+                          mb: 0.5
+                        }}
+                      />
+                      <Typography 
+                        sx={{ 
+                          fontSize: '0.75rem',
+                          color: 'text.secondary',
+                          lineHeight: 1.3,
+                          fontWeight: 500
+                        }}
+                      >
+                        {tech.name}
+                      </Typography>
+                    </Box>
+                  </Button>
+                </Box>
                 
                 {tacticOrder.map(tac => {
                   const active = tech.tactics.includes(tac);
+                  const bgColor = active && score 
+                    ? `rgba(0, 168, 168, ${alpha})`
+                    : 'transparent';
+                  
                   return (
-                    <div 
+                    <Box 
                       key={tech.id + tac} 
-                      className={`border-b border-white/5 ${active ? '' : 'opacity-20'}`}
-                      style={{ 
-                        background: active && score ? base : 'transparent',
-                        minHeight: '48px'
+                      sx={{
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        borderLeft: '1px solid',
+                        opacity: active ? 1 : 0.15,
+                        minHeight: '60px',
+                        bgcolor: bgColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        transition: 'all 0.2s',
+                        '&:hover': active && score ? {
+                          boxShadow: `inset 0 0 0 2px ${UNCW_TEAL}`,
+                          opacity: 1
+                        } : {}
                       }}
-                      title={active ? `${tech.id} score ${score}` : ''}
-                    />
+                      title={active ? `${tech.id}: ${tech.name}\nDetections: ${score}` : ''}
+                    >
+                      {active && score > 0 && (
+                        <Typography 
+                          sx={{ 
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            color: alpha > 0.5 ? 'white' : UNCW_TEAL
+                          }}
+                        >
+                          {score}
+                        </Typography>
+                      )}
+                    </Box>
                   );
                 })}
               </React.Fragment>
             );
           })}
-        </div>
-      </div>
+        </Box>
+      </Box>
       
-      <div className="mt-2 text-xs opacity-70">
-        Max technique count: {maxScore}
-      </div>
-    </div>
+      <Box sx={{ 
+        mt: 2, 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 2,
+        flexWrap: 'wrap'
+      }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          Max detections: <strong>{maxScore}</strong>
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ width: 40, height: 12, bgcolor: 'rgba(0, 168, 168, 0.2)', borderRadius: 1 }} />
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Low</Typography>
+          <Box sx={{ width: 40, height: 12, bgcolor: 'rgba(0, 168, 168, 0.6)', borderRadius: 1 }} />
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Medium</Typography>
+          <Box sx={{ width: 40, height: 12, bgcolor: UNCW_TEAL, borderRadius: 1 }} />
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>High</Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 
