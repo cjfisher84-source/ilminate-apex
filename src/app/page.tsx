@@ -80,7 +80,8 @@ export default function Home() {
             display: 'flex', 
             gap: isMobile ? 1.5 : 2,
             width: isMobile ? '100%' : 'auto',
-            flexDirection: isMobile ? 'column' : 'row'
+            flexDirection: isMobile ? 'column' : 'row',
+            flexWrap: 'wrap'
           }}>
             <Link href="/investigations" passHref legacyBehavior>
               <Button 
@@ -117,6 +118,29 @@ export default function Home() {
                 }}
               >
                 Triage
+              </Button>
+            </Link>
+            <Link href="/reports/attack" passHref legacyBehavior>
+              <Button 
+                variant="outlined" 
+                component="a" 
+                size={isMobile ? 'medium' : 'large'}
+                fullWidth={isMobile}
+                className={isMobile ? 'mobile-touch-target' : ''}
+                sx={{ 
+                  px: isMobile ? 3 : 4,
+                  py: isMobile ? 1.2 : 1.5,
+                  fontSize: isMobile ? '1rem' : '1.1rem',
+                  fontWeight: 600,
+                  borderColor: '#00a8a8',
+                  color: '#00a8a8',
+                  '&:hover': {
+                    borderColor: '#007070',
+                    bgcolor: 'rgba(0, 168, 168, 0.08)'
+                  }
+                }}
+              >
+                🎯 ATT&CK Matrix
               </Button>
             </Link>
           </Box>
@@ -159,6 +183,78 @@ export default function Home() {
               <CategoryCard label="ATO" value={cats.ATO} description={GLOSSARY.ATO} />
             </Box>
           </Box>
+
+          {/* New Feature Highlight - ATT&CK Matrix */}
+          <Link href="/reports/attack" style={{ textDecoration: 'none' }}>
+            <Paper sx={{ 
+              p: isMobile ? 2.5 : 4, 
+              bgcolor: 'rgba(0, 168, 168, 0.08)',
+              border: '2px solid',
+              borderColor: '#00a8a8',
+              borderRadius: 4,
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 12px 40px rgba(0, 168, 168, 0.25)',
+                bgcolor: 'rgba(0, 168, 168, 0.12)',
+              }
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                <Box sx={{ 
+                  fontSize: isMobile ? '2rem' : '3rem',
+                  lineHeight: 1
+                }}>
+                  🎯
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                    <Typography variant="overline" sx={{ 
+                      color: '#00a8a8', 
+                      fontWeight: 800,
+                      fontSize: isMobile ? '0.7rem' : '0.8rem',
+                      letterSpacing: 1.5
+                    }}>
+                      ✨ NEW FEATURE
+                    </Typography>
+                  </Box>
+                  <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ 
+                    fontWeight: 800, 
+                    color: 'text.primary',
+                    mb: 0.5
+                  }}>
+                    MITRE ATT&CK® Matrix
+                  </Typography>
+                  <Typography variant="body1" sx={{ 
+                    color: 'text.secondary',
+                    fontSize: isMobile ? '0.95rem' : '1.1rem',
+                    lineHeight: 1.6
+                  }}>
+                    Real-time threat technique detection and mapping. Visualize adversary tactics across the ATT&CK framework with interactive heatmaps.
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', mt: 2 }}>
+                {['12+ Detection Rules', 'Real-time Mapping', 'Interactive Matrix', 'Top Techniques'].map(feature => (
+                  <Box key={feature} sx={{ 
+                    px: 2, 
+                    py: 0.75,
+                    bgcolor: 'rgba(0, 168, 168, 0.15)',
+                    borderRadius: 2,
+                    border: '1px solid rgba(0, 168, 168, 0.3)'
+                  }}>
+                    <Typography variant="caption" sx={{ 
+                      color: '#00a8a8', 
+                      fontWeight: 700,
+                      fontSize: isMobile ? '0.7rem' : '0.75rem'
+                    }}>
+                      ✓ {feature}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Paper>
+          </Link>
 
           {/* Cyber Score Section */}
           <Box>
