@@ -25,25 +25,32 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
-  // Check for ANY Cognito-related cookies (Google OAuth, Microsoft OAuth, etc.)
+  // Check for ANY authentication cookies
+  // Cognito sets cookies with format: CognitoIdentityServiceProvider.<client_id>.<username>.<tokenType>
   const cookies = request.cookies;
-  const hasCognitoAuth = 
-    cookies.get('cognito_session') ||
-    cookies.get('CognitoIdentityServiceProvider') ||
-    Array.from(cookies.getAll()).some(cookie => 
-      cookie.name.includes('CognitoIdentityServiceProvider') ||
-      cookie.name.includes('idToken') ||
-      cookie.name.includes('accessToken') ||
-      cookie.name.includes('refreshToken')
-    );
+  const allCookies = Array.from(cookies.getAll());
   
-  if (hasCognitoAuth) {
+  // Check if ANY cookie exists that suggests authentication
+  const hasAuthCookie = allCookies.length > 0 && allCookies.some(cookie => 
+    cookie.name.toLowerCase().includes('cognito') ||
+    cookie.name.toLowerCase().includes('token') ||
+    cookie.name.toLowerCase().includes('session') ||
+    cookie.name.toLowerCase().includes('auth')
+  );
+  
+  if (hasAuthCookie) {
     return NextResponse.next();
   }
   
-  // Check if user came from Cognito (OAuth flow)
-  const referer = request.headers.get('referer');
-  if (referer && (referer.includes('amazoncognito.com') || referer.includes('accounts.google.com') || referer.includes('login.microsoftonline.com'))) {
+  // Check if user came from OAuth provider
+  const referer = request.headers.get('referer') || '';
+  const isFromOAuth = 
+    referer.includes('amazoncognito.com') ||
+    referer.includes('accounts.google.com') ||
+    referer.includes('login.microsoftonline.com') ||
+    referer.includes('apex.ilminate.com'); // Allow internal navigation
+  
+  if (isFromOAuth) {
     return NextResponse.next();
   }
   
