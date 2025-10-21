@@ -75,34 +75,48 @@ export default function AttackReport() {
     }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-          MITRE ATT&CK® Report
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontWeight: 800, 
+            mb: 1,
+            background: 'linear-gradient(135deg, #00a8a8 0%, #007070 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}
+        >
+          MITRE ATT&CK® Matrix
         </Typography>
-        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-          Observed techniques mapped to the MITRE ATT&CK framework
+        <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '1.1rem' }}>
+          Real-time threat technique detection and mapping
         </Typography>
       </Box>
 
       {/* Matrix */}
       <Card sx={{ 
         mb: 4, 
-        p: 3, 
+        p: { xs: 2, sm: 3 }, 
         bgcolor: 'background.paper',
-        borderRadius: 3,
-        boxShadow: '0 4px 20px rgba(0, 168, 168, 0.1)'
+        borderRadius: 4,
+        boxShadow: '0 8px 32px rgba(0, 168, 168, 0.12)',
+        border: '1px solid',
+        borderColor: 'divider'
       }}>
         <AttackMatrix layer={layer} meta={meta} onClickTechnique={onClickTechnique} />
       </Card>
 
       {/* Top Techniques Card */}
       <Card sx={{ 
-        p: 3, 
+        p: { xs: 2, sm: 3 }, 
         bgcolor: 'background.paper',
-        borderRadius: 3,
-        boxShadow: '0 4px 20px rgba(0, 168, 168, 0.1)'
+        borderRadius: 4,
+        boxShadow: '0 8px 32px rgba(0, 168, 168, 0.12)',
+        border: '1px solid',
+        borderColor: 'divider'
       }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-          Top Techniques (Last 30 Days)
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, color: 'text.primary' }}>
+          🔥 Top Techniques (Last 30 Days)
         </Typography>
         <List dense>
           {topTechniques.map((t, idx) => {
