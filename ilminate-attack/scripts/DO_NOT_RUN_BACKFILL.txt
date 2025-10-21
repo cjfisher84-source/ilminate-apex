@@ -1,0 +1,33 @@
+⚠️  WARNING: STAGING ONLY - DO NOT RUN WITHOUT APPROVAL ⚠️
+
+This file is a reminder that the backfill script should ONLY be run:
+1. In STAGING environments
+2. After explicit sign-off
+3. After taking backups/snapshots
+4. With proper monitoring
+
+To run later (STAGING ONLY, with approval):
+
+TABLE=ILMINATE_EVENTS_STAGING \
+MAPPER_PROXY="https://staging.apex.ilminate.com/api/attack/map" \
+ts-node ilminate-attack/scripts/backfill_attack_mapping.ts
+
+The script includes safety checks:
+- Requires explicit TABLE and MAPPER_PROXY env vars
+- Rejects any TABLE name containing "prod"
+- Processes only first 1000 events by default
+- Includes rate limiting (100ms between requests)
+- Logs detailed progress and errors
+
+Before running:
+1. Take a DynamoDB backup or snapshot
+2. Verify TABLE points to staging
+3. Verify MAPPER_PROXY points to staging API
+4. Get explicit approval from team lead
+5. Monitor the process in real-time
+
+Rollback plan:
+- If issues occur, restore from backup
+- Remove "techniques" attribute from affected items
+- Check CloudWatch logs for errors
+
