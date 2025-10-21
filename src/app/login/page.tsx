@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [tokenInput, setTokenInput] = useState('')
 
   // SSO Login handlers
-  const handleSSOLogin = (provider: 'Google' | 'AzureAD') => {
+  const handleSSOLogin = (provider: 'Google' | 'AzureADv2') => {
     setLoading(true)
     const cognitoUrl = new URL(
       'https://ilminate-customer-portal-jqo56pdt.auth.us-east-1.amazoncognito.com/oauth2/authorize'
@@ -175,7 +175,7 @@ export default function LoginPage() {
               variant="contained"
               size="large"
               disabled={loading}
-              onClick={() => handleSSOLogin('AzureAD')}
+              onClick={() => handleSSOLogin('AzureADv2')}
               sx={{
                 py: 2,
                 fontSize: '1.1rem',
