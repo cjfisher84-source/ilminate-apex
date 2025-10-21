@@ -5,6 +5,9 @@ import { Box, Typography, Card, CircularProgress, List, ListItem, ListItemText, 
 import AttackMatrix from '@/components/AttackMatrix';
 import { getTechniqueMeta, TechniqueMeta } from '@/lib/attackMeta';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 type Layer = {
   name: string;
   description?: string;
@@ -18,22 +21,38 @@ export default function AttackReport() {
   const [layer, setLayer] = useState<Layer | null>(null);
   const [meta, setMeta] = useState<TechniqueMeta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
+    
     (async () => {
       try {
+        console.log('Fetching ATT&CK data...');
         const [layerData, metaData] = await Promise.all([
-          fetch('/api/attack/layer').then(r => r.json()),
+          fetch('/api/attack/layer', { cache: 'no-store' }).then(r => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+          }),
           getTechniqueMeta()
         ]);
-        setLayer(layerData);
-        setMeta(metaData);
-      } catch (error) {
-        console.error('Failed to load ATT&CK data:', error);
-      } finally {
-        setLoading(false);
+        
+        if (mounted) {
+          console.log('Data loaded:', { layer: layerData, meta: metaData.length });
+          setLayer(layerData);
+          setMeta(metaData);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Failed to load ATT&CK data:', err);
+        if (mounted) {
+          setError(err instanceof Error ? err.message : 'Failed to load');
+          setLoading(false);
+        }
       }
     })();
+    
+    return () => { mounted = false; };
   }, []);
 
   function onClickTechnique(techId: string) {
@@ -44,21 +63,39 @@ export default function AttackReport() {
   if (loading) {
     return (
       <Box sx={{ 
-        display: 'flex', 
+        display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center', 
         alignItems: 'center', 
-        minHeight: '400px' 
+        minHeight: '100vh',
+        bgcolor: 'background.default'
       }}>
-        <CircularProgress sx={{ color: '#00a8a8' }} />
-        <Typography sx={{ ml: 2 }}>Loading ATT&CK report…</Typography>
+        <CircularProgress sx={{ color: '#00a8a8', mb: 2 }} size={60} />
+        <Typography sx={{ color: 'text.primary', fontSize: '1.1rem' }}>
+          Loading ATT&CK Matrix...
+        </Typography>
       </Box>
     );
   }
 
-  if (!layer || !meta.length) {
+  if (error || !layer || !meta.length) {
     return (
-      <Box sx={{ p: 6 }}>
-        <Typography color="error">Failed to load ATT&CK data</Typography>
+      <Box sx={{ 
+        p: 6,
+        bgcolor: 'background.default',
+        minHeight: '100vh'
+      }}>
+        <Card sx={{ p: 4, bgcolor: 'background.paper', maxWidth: 600, mx: 'auto', mt: 8 }}>
+          <Typography variant="h5" sx={{ color: '#DC2626', mb: 2, fontWeight: 700 }}>
+            Failed to Load ATT&CK Data
+          </Typography>
+          <Typography sx={{ color: 'text.secondary', mb: 2 }}>
+            {error || 'Unable to fetch technique data'}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 2 }}>
+            Try refreshing the page or check the browser console for details.
+          </Typography>
+        </Card>
       </Box>
     );
   }
