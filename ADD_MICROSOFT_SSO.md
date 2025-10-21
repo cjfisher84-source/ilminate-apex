@@ -174,3 +174,4 @@ Uncomment the Microsoft button in `src/app/login/page.tsx`:
 
 **The login page is production-ready with Google OAuth!** Microsoft can be added later when you configure Azure AD in Cognito. 🚀
 
+
