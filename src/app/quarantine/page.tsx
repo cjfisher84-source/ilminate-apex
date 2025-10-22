@@ -23,6 +23,7 @@ import {
   CircularProgress,
   Alert
 } from '@mui/material'
+import Link from 'next/link'
 import { 
   Close as CloseIcon,
   AttachFile as AttachFileIcon,
@@ -123,13 +124,39 @@ export default function QuarantinePage() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: containerPadding }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-            Quarantined Messages
-          </Typography>
-          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-            View and manage messages that have been quarantined based on threat detection
-          </Typography>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: isMobile ? 'flex-start' : 'center',
+          flexDirection: isMobile ? 'column' : 'row',
+          mb: 3,
+          gap: isMobile ? 2 : 0
+        }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+              Quarantined Messages
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+              View and manage messages that have been quarantined based on threat detection
+            </Typography>
+          </Box>
+          <Link href="/" passHref legacyBehavior>
+            <Button 
+              variant="outlined" 
+              component="a" 
+              size={isMobile ? 'medium' : 'large'}
+              color="primary"
+              fullWidth={isMobile}
+              sx={{ 
+                px: isMobile ? 3 : 4,
+                py: isMobile ? 1.2 : 1.5,
+                fontSize: isMobile ? '1rem' : '1.1rem',
+                fontWeight: 600
+              }}
+            >
+              ← Dashboard
+            </Button>
+          </Link>
         </Box>
 
         {/* Filters */}
