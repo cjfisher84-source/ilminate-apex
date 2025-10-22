@@ -103,7 +103,7 @@ export default function Home() {
             </Link>
             <Link href="/triage" passHref legacyBehavior>
               <Button 
-                variant="contained" 
+                variant="outlined" 
                 component="a" 
                 size={isMobile ? 'medium' : 'large'}
                 color="primary"
@@ -113,8 +113,7 @@ export default function Home() {
                   px: isMobile ? 3 : 4,
                   py: isMobile ? 1.2 : 1.5,
                   fontSize: isMobile ? '1rem' : '1.1rem',
-                  fontWeight: 600,
-                  boxShadow: 3
+                  fontWeight: 600
                 }}
               >
                 Triage
