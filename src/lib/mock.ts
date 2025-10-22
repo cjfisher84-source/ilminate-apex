@@ -597,3 +597,174 @@ export function mockPeerComparison(): PeerComparison[] {
   ]
 }
 
+// Quarantine Management
+export interface QuarantinedMessage {
+  id: string
+  messageId: string
+  subject: string
+  sender: string
+  senderEmail: string
+  recipients: string[]
+  quarantineDate: Date
+  riskScore: number
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
+  detectionReasons: string[]
+  bodyPreview: string
+  hasAttachments: boolean
+  attachments: {
+    name: string
+    size: number
+    contentType: string
+  }[]
+  status: 'quarantined' | 'released' | 'deleted'
+}
+
+export function mockQuarantinedMessages(): QuarantinedMessage[] {
+  const now = new Date()
+  const messages: QuarantinedMessage[] = []
+  
+  // Sample messages with realistic threat scenarios
+  const sampleMessages = [
+    {
+      subject: 'Urgent Wire Transfer Request',
+      sender: 'CEO',
+      senderEmail: 'ceo@gmail.com',
+      riskScore: 95,
+      severity: 'CRITICAL' as const,
+      reasons: ['Executive impersonation detected', 'Financial request from free email', 'Urgency language detected'],
+      body: 'I need you to process an urgent wire transfer of $85,000 to our new vendor. This is time sensitive. Please handle immediately and confirm.',
+      hasAttachments: false,
+      attachments: []
+    },
+    {
+      subject: 'Payroll Change Request - Immediate',
+      sender: 'HR Director',
+      senderEmail: 'hr-director@outlook.com',
+      riskScore: 88,
+      severity: 'CRITICAL' as const,
+      reasons: ['Executive impersonation from free email', 'Payroll modification request', 'External domain spoofing'],
+      body: 'Please update my direct deposit information immediately. New account number: 9876543210, Routing: 123456789. Process this today.',
+      hasAttachments: false,
+      attachments: []
+    },
+    {
+      subject: 'Invoice #45821 - Payment Due',
+      sender: 'Accounts Receivable',
+      senderEmail: 'billing@vendor-company-inc.com',
+      riskScore: 72,
+      severity: 'HIGH' as const,
+      reasons: ['Suspicious link detected', 'Newly registered domain', 'Invoice scam patterns'],
+      body: 'Your invoice is overdue. Click here to view and pay immediately to avoid service interruption.',
+      hasAttachments: true,
+      attachments: [{ name: 'invoice_45821.pdf.exe', size: 245678, contentType: 'application/x-msdownload' }]
+    },
+    {
+      subject: 'Re: Q4 Budget Review',
+      sender: 'CFO',
+      senderEmail: 'cfo@yahoo.com',
+      riskScore: 81,
+      severity: 'HIGH' as const,
+      reasons: ['CFO impersonation', 'Free email domain', 'Financial discussion from external'],
+      body: 'I need the Q4 budget numbers revised. Can you send me the updated spreadsheet with our account balances?',
+      hasAttachments: false,
+      attachments: []
+    },
+    {
+      subject: 'Your Package Delivery Failed',
+      sender: 'FedEx Delivery',
+      senderEmail: 'noreply@fedex-delivery-center.com',
+      riskScore: 68,
+      severity: 'HIGH' as const,
+      reasons: ['Domain typosquatting (fedex)', 'Suspicious tracking link', 'Credential harvesting attempt'],
+      body: 'Your package delivery failed. Click here to reschedule and provide delivery instructions.',
+      hasAttachments: false,
+      attachments: []
+    },
+    {
+      subject: 'IT Security Alert - Action Required',
+      sender: 'IT Help Desk',
+      senderEmail: 'helpdesk@company-it.com',
+      riskScore: 65,
+      severity: 'HIGH' as const,
+      reasons: ['IT impersonation', 'Credential request', 'Urgency tactics'],
+      body: 'Your password will expire in 24 hours. Click here to update your credentials immediately to avoid account lockout.',
+      hasAttachments: false,
+      attachments: []
+    },
+    {
+      subject: 'Weekly Team Update',
+      sender: 'Project Manager',
+      senderEmail: 'pm@protonmail.com',
+      riskScore: 45,
+      severity: 'MEDIUM' as const,
+      reasons: ['First-time sender', 'Free email domain', 'Unusual communication pattern'],
+      body: 'Hi team, here\'s this week\'s project update. Please review the attached status report.',
+      hasAttachments: true,
+      attachments: [{ name: 'weekly_update.docx', size: 45231, contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }]
+    },
+    {
+      subject: 'Congratulations! You\'ve Won',
+      sender: 'Prize Distribution',
+      senderEmail: 'winner@prizes-center.com',
+      riskScore: 58,
+      severity: 'MEDIUM' as const,
+      reasons: ['Lottery/prize scam pattern', 'Suspicious domain', 'Social engineering attempt'],
+      body: 'Congratulations! You\'ve been selected to receive a $5,000 gift card. Click here to claim your prize now!',
+      hasAttachments: false,
+      attachments: []
+    }
+  ]
+
+  // Generate messages distributed over last 30 days
+  sampleMessages.forEach((msg, index) => {
+    const daysAgo = Math.floor((index / sampleMessages.length) * 30)
+    const quarantineDate = new Date(now)
+    quarantineDate.setDate(now.getDate() - daysAgo)
+    quarantineDate.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60), 0, 0)
+
+    messages.push({
+      id: `qm-${index + 1}`,
+      messageId: `msg-${Date.now()}-${index}`,
+      subject: msg.subject,
+      sender: msg.sender,
+      senderEmail: msg.senderEmail,
+      recipients: ['user@yourcompany.com'],
+      quarantineDate,
+      riskScore: msg.riskScore,
+      severity: msg.severity,
+      detectionReasons: msg.reasons,
+      bodyPreview: msg.body,
+      hasAttachments: msg.hasAttachments,
+      attachments: msg.attachments,
+      status: 'quarantined'
+    })
+  })
+
+  // Add more variations for realistic volume (total ~25 messages)
+  for (let i = 0; i < 17; i++) {
+    const template = sampleMessages[i % sampleMessages.length]
+    const daysAgo = Math.floor(Math.random() * 30)
+    const quarantineDate = new Date(now)
+    quarantineDate.setDate(now.getDate() - daysAgo)
+
+    messages.push({
+      id: `qm-${messages.length + 1}`,
+      messageId: `msg-${Date.now()}-${messages.length}`,
+      subject: template.subject,
+      sender: template.sender,
+      senderEmail: template.senderEmail,
+      recipients: ['user@yourcompany.com'],
+      quarantineDate,
+      riskScore: Math.max(30, template.riskScore + Math.floor(Math.random() * 10) - 5),
+      severity: template.severity,
+      detectionReasons: template.reasons,
+      bodyPreview: template.body,
+      hasAttachments: template.hasAttachments,
+      attachments: template.attachments,
+      status: 'quarantined'
+    })
+  }
+
+  return messages.sort((a, b) => b.quarantineDate.getTime() - a.quarantineDate.getTime())
+}
+

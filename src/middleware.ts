@@ -71,6 +71,7 @@ export const config = {
     '/triage/:path*',
     '/dmarc/:path*',
     '/reports/:path*',
+    '/quarantine/:path*',
     '/admin/:path*',
   ],
 };
