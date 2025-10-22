@@ -237,7 +237,7 @@ ${details || '(none)'}
                 fontWeight: 600
               }}
             >
-              Dashboard
+              ← Dashboard
             </Button>
           </Link>
         </Box>

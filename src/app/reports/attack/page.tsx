@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Card, CircularProgress, List, ListItem, ListItemText, Chip } from '@mui/material';
+import { Box, Typography, Card, CircularProgress, List, ListItem, ListItemText, Chip, Button } from '@mui/material';
+import Link from 'next/link';
 import AttackMatrix from '@/components/AttackMatrix';
 import { getTechniqueMeta, TechniqueMeta } from '@/lib/attackMeta';
 
@@ -111,23 +112,47 @@ export default function AttackReport() {
       minHeight: '100vh'
     }}>
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography 
-          variant="h4" 
-          sx={{ 
-            fontWeight: 800, 
-            mb: 1,
-            background: 'linear-gradient(135deg, #00a8a8 0%, #007070 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}
-        >
-          MITRE ATT&CK® Matrix
-        </Typography>
-        <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '1.1rem' }}>
-          Real-time threat technique detection and mapping
-        </Typography>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'flex-start',
+        mb: 4,
+        gap: 2
+      }}>
+        <Box>
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontWeight: 800, 
+              mb: 1,
+              background: 'linear-gradient(135deg, #00a8a8 0%, #007070 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}
+          >
+            MITRE ATT&CK® Matrix
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '1.1rem' }}>
+            Real-time threat technique detection and mapping
+          </Typography>
+        </Box>
+        <Link href="/" passHref legacyBehavior>
+          <Button 
+            variant="outlined" 
+            component="a" 
+            size="large"
+            color="primary"
+            sx={{ 
+              px: 4,
+              py: 1.5,
+              fontSize: '1.1rem',
+              fontWeight: 600
+            }}
+          >
+            ← Dashboard
+          </Button>
+        </Link>
       </Box>
 
       {/* Matrix */}
