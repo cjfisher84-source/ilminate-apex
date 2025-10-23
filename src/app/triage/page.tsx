@@ -60,7 +60,7 @@ const securityChecks: SecurityCheck[] = [
     id: 'suspicious-links',
     label: 'Suspicious Links',
     icon: LinkIcon,
-    color: '#fbbf24',
+    color: '#f59e0b',
     description: 'URL & Link Analysis',
     details: [
       'Scans for malicious, phishing, or compromised URLs',
@@ -326,8 +326,6 @@ ${details || '(none)'}
                 <Box sx={{ display:'flex', gap:1, flexWrap:'wrap' }}>
                   {securityChecks.map((check) => {
                     const CheckIcon = check.icon
-                    // Determine if we need dark text (for bright yellow)
-                    const needsDarkText = check.color === '#fbbf24'
                     return (
                       <Chip 
                         key={check.id}
@@ -336,7 +334,7 @@ ${details || '(none)'}
                         onClick={() => handleCheckClick(check)}
                         sx={{ 
                           bgcolor: check.color, 
-                          color: needsDarkText ? '#1a1a1a' : 'white', 
+                          color: 'white', 
                           fontWeight: 600,
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
@@ -348,7 +346,7 @@ ${details || '(none)'}
                             filter: 'brightness(1.1)',
                           },
                           '& .MuiChip-icon': {
-                            color: needsDarkText ? '#1a1a1a' : 'white'
+                            color: 'white'
                           }
                         }}
                       />
@@ -497,7 +495,7 @@ ${details || '(none)'}
           <>
             <DialogTitle sx={{ 
               bgcolor: selectedCheck.color, 
-              color: selectedCheck.color === '#fbbf24' ? '#1a1a1a' : 'white',
+              color: 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -524,8 +522,8 @@ ${details || '(none)'}
               <IconButton
                 onClick={handleDialogClose}
                 sx={{ 
-                  color: selectedCheck.color === '#fbbf24' ? '#1a1a1a' : 'white',
-                  '&:hover': { bgcolor: selectedCheck.color === '#fbbf24' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)' }
+                  color: 'white',
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
                 }}
               >
                 <CloseIcon />
