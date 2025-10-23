@@ -521,8 +521,7 @@ export function GeoThreatMap() {
   const severityColors = {
     Critical: '#ef4444',
     High: '#f97316',
-    Medium: UNCW_GOLD,
-    Low: '#10b981'
+    Medium: UNCW_GOLD
   }
   
   // Create lookup map for quick access
@@ -552,8 +551,6 @@ export function GeoThreatMap() {
         return `rgba(249, 115, 22, ${0.4 + intensity * 0.6})`
       case 'Medium':
         return `rgba(${parseInt(UNCW_GOLD.slice(1, 3), 16)}, ${parseInt(UNCW_GOLD.slice(3, 5), 16)}, ${parseInt(UNCW_GOLD.slice(5, 7), 16)}, ${0.4 + intensity * 0.6})`
-      case 'Low':
-        return `rgba(16, 185, 129, ${0.4 + intensity * 0.6})`
       default:
         return '#E5E7EB'
     }
