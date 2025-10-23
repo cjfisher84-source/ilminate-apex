@@ -29,8 +29,15 @@ export default function Home() {
           border-radius: 16px !important;
         }
       `}</style>
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', p: containerPadding }}>
-      <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      bgcolor: 'background.default', 
+      color: 'text.primary', 
+      p: containerPadding,
+      width: '100%',
+      overflowX: 'hidden'
+    }}>
+      <Box sx={{ maxWidth: '1400px', mx: 'auto', width: '100%' }}>
         {/* Header with Logo */}
         <Box sx={{ 
           display: 'flex', 
@@ -82,7 +89,7 @@ export default function Home() {
             gap: isMobile ? 1.5 : 2,
             width: isMobile ? '100%' : 'auto',
             flexDirection: isMobile ? 'column' : 'row',
-            flexWrap: 'wrap'
+            flexWrap: isMobile ? 'nowrap' : 'wrap'
           }}>
             <Link href="/investigations" passHref legacyBehavior>
               <Button 
@@ -93,10 +100,11 @@ export default function Home() {
                 fullWidth={isMobile}
                 className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{ 
-                  px: isMobile ? 3 : 4,
+                  px: isMobile ? 2 : 4,
                   py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '1rem' : '1.1rem',
-                  fontWeight: 600
+                  fontSize: isMobile ? '0.95rem' : '1.1rem',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap'
                 }}
               >
                 Investigations
@@ -111,10 +119,11 @@ export default function Home() {
                 fullWidth={isMobile}
                 className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{ 
-                  px: isMobile ? 3 : 4,
+                  px: isMobile ? 2 : 4,
                   py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '1rem' : '1.1rem',
-                  fontWeight: 600
+                  fontSize: isMobile ? '0.95rem' : '1.1rem',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap'
                 }}
               >
                 Triage
@@ -129,10 +138,11 @@ export default function Home() {
                 fullWidth={isMobile}
                 className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{ 
-                  px: isMobile ? 3 : 4,
+                  px: isMobile ? 2 : 4,
                   py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '1rem' : '1.1rem',
-                  fontWeight: 600
+                  fontSize: isMobile ? '0.95rem' : '1.1rem',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap'
                 }}
               >
                 Quarantine
@@ -146,19 +156,20 @@ export default function Home() {
                 fullWidth={isMobile}
                 className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{ 
-                  px: isMobile ? 3 : 4,
+                  px: isMobile ? 2 : 4,
                   py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '1rem' : '1.1rem',
+                  fontSize: isMobile ? '0.95rem' : '1.1rem',
                   fontWeight: 600,
                   borderColor: '#00a8a8',
                   color: '#00a8a8',
+                  whiteSpace: 'nowrap',
                   '&:hover': {
                     borderColor: '#007070',
                     bgcolor: 'rgba(0, 168, 168, 0.08)'
                   }
                 }}
               >
-                🎯 ATT&CK Matrix
+                {isMobile ? '🎯 ATT&CK' : '🎯 ATT&CK Matrix'}
               </Button>
             </Link>
           </Box>
