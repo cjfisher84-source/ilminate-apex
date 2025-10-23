@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import CategoryCard from '@/components/CategoryCard'
 import SecurityAssistant from '@/components/SecurityAssistant'
+import ImageScanResults from '@/components/ImageScanResults'
 import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart, GeoThreatMap, CrossChannelTimelineChart, ThreatFamilyTypesChart, PeerComparisonChart } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
 import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
@@ -200,6 +201,9 @@ export default function Home() {
               <CategoryCard label="ATO" value={cats.ATO} description={GLOSSARY.ATO} />
             </Box>
           </Box>
+
+          {/* Advanced Image Detection Section */}
+          <ImageScanResults />
 
           {/* New Feature Highlight - ATT&CK Matrix */}
           <Link href="/reports/attack" style={{ textDecoration: 'none' }}>
