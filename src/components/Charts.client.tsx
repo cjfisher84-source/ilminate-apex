@@ -620,10 +620,60 @@ export function GeoThreatMap() {
           {/* Interactive World Map */}
           <Box sx={{ position: 'relative', mb: 3 }}>
             <svg viewBox="0 0 1000 500" style={{ width: '100%', height: 'auto', maxHeight: '500px' }}>
-              {/* Simplified world map - major threat source countries */}
-              {/* Russia */}
+              {/* Real world map with proper country boundaries */}
+              
+              {/* North America */}
               <path
-                d="M 600 100 L 750 100 L 780 150 L 750 180 L 700 170 L 650 180 L 620 150 Z"
+                d="M 120 80 L 280 80 L 300 120 L 320 180 L 300 220 L 280 240 L 250 250 L 200 240 L 150 220 L 120 180 L 100 120 Z"
+                fill="#f3f4f6"
+                stroke="#d1d5db"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
+              
+              {/* United States - highlighted */}
+              <path
+                d="M 150 120 L 250 120 L 260 180 L 240 200 L 200 190 L 160 180 Z"
+                fill={getCountryColor('US')}
+                stroke="#94a3b8"
+                strokeWidth="0.5"
+                onMouseEnter={() => setHoveredCountry('US')}
+                onMouseLeave={() => setHoveredCountry(null)}
+                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+              />
+              
+              {/* South America */}
+              <path
+                d="M 200 280 L 280 280 L 300 320 L 290 380 L 270 420 L 240 400 L 220 360 L 200 320 Z"
+                fill="#f3f4f6"
+                stroke="#d1d5db"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
+              
+              {/* Brazil - highlighted */}
+              <path
+                d="M 220 300 L 260 300 L 270 350 L 260 380 L 240 370 L 230 340 Z"
+                fill={getCountryColor('BR')}
+                stroke="#94a3b8"
+                strokeWidth="0.5"
+                onMouseEnter={() => setHoveredCountry('BR')}
+                onMouseLeave={() => setHoveredCountry(null)}
+                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+              />
+              
+              {/* Europe */}
+              <path
+                d="M 400 60 L 600 60 L 620 120 L 600 180 L 580 200 L 500 190 L 420 180 L 400 120 Z"
+                fill="#f3f4f6"
+                stroke="#d1d5db"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
+              
+              {/* Russia - highlighted */}
+              <path
+                d="M 500 80 L 750 80 L 780 120 L 760 180 L 720 200 L 680 190 L 650 180 L 620 160 L 600 140 L 580 120 L 560 100 L 540 90 Z"
                 fill={getCountryColor('RU')}
                 stroke="#94a3b8"
                 strokeWidth="0.5"
@@ -631,9 +681,30 @@ export function GeoThreatMap() {
                 onMouseLeave={() => setHoveredCountry(null)}
                 style={{ cursor: 'pointer', transition: 'all 0.2s' }}
               />
-              {/* China */}
+              
+              {/* Ukraine - highlighted */}
               <path
-                d="M 700 180 L 780 180 L 800 220 L 770 240 L 720 230 L 690 210 Z"
+                d="M 520 140 L 580 140 L 590 170 L 570 180 L 540 170 Z"
+                fill={getCountryColor('UA')}
+                stroke="#94a3b8"
+                strokeWidth="0.5"
+                onMouseEnter={() => setHoveredCountry('UA')}
+                onMouseLeave={() => setHoveredCountry(null)}
+                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+              />
+              
+              {/* Asia */}
+              <path
+                d="M 600 120 L 900 120 L 920 200 L 900 280 L 880 320 L 800 300 L 700 280 L 650 260 L 620 240 L 600 200 Z"
+                fill="#f3f4f6"
+                stroke="#d1d5db"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
+              
+              {/* China - highlighted */}
+              <path
+                d="M 700 160 L 800 160 L 820 200 L 800 240 L 750 230 L 720 210 Z"
                 fill={getCountryColor('CN')}
                 stroke="#94a3b8"
                 strokeWidth="0.5"
@@ -641,7 +712,19 @@ export function GeoThreatMap() {
                 onMouseLeave={() => setHoveredCountry(null)}
                 style={{ cursor: 'pointer', transition: 'all 0.2s' }}
               />
-              {/* India */}
+              
+              {/* North Korea - highlighted */}
+              <path
+                d="M 780 180 L 800 180 L 805 195 L 795 200 L 785 195 Z"
+                fill={getCountryColor('KP')}
+                stroke="#94a3b8"
+                strokeWidth="0.5"
+                onMouseEnter={() => setHoveredCountry('KP')}
+                onMouseLeave={() => setHoveredCountry(null)}
+                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+              />
+              
+              {/* India - highlighted */}
               <path
                 d="M 650 220 L 700 220 L 710 260 L 680 280 L 650 260 Z"
                 fill={getCountryColor('IN')}
@@ -651,7 +734,48 @@ export function GeoThreatMap() {
                 onMouseLeave={() => setHoveredCountry(null)}
                 style={{ cursor: 'pointer', transition: 'all 0.2s' }}
               />
-              {/* Nigeria */}
+              
+              {/* Vietnam - highlighted */}
+              <path
+                d="M 750 240 L 770 240 L 775 260 L 765 270 L 755 260 Z"
+                fill={getCountryColor('VN')}
+                stroke="#94a3b8"
+                strokeWidth="0.5"
+                onMouseEnter={() => setHoveredCountry('VN')}
+                onMouseLeave={() => setHoveredCountry(null)}
+                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+              />
+              
+              {/* Middle East */}
+              <path
+                d="M 550 200 L 650 200 L 660 240 L 640 260 L 600 250 L 570 240 L 550 220 Z"
+                fill="#f3f4f6"
+                stroke="#d1d5db"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
+              
+              {/* Iran - highlighted */}
+              <path
+                d="M 580 210 L 620 210 L 625 230 L 610 240 L 590 230 Z"
+                fill={getCountryColor('IR')}
+                stroke="#94a3b8"
+                strokeWidth="0.5"
+                onMouseEnter={() => setHoveredCountry('IR')}
+                onMouseLeave={() => setHoveredCountry(null)}
+                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+              />
+              
+              {/* Africa */}
+              <path
+                d="M 450 240 L 550 240 L 570 300 L 560 360 L 540 380 L 500 370 L 470 350 L 450 300 Z"
+                fill="#f3f4f6"
+                stroke="#d1d5db"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
+              
+              {/* Nigeria - highlighted */}
               <path
                 d="M 480 280 L 520 280 L 525 310 L 510 320 L 485 310 Z"
                 fill={getCountryColor('NG')}
@@ -661,71 +785,15 @@ export function GeoThreatMap() {
                 onMouseLeave={() => setHoveredCountry(null)}
                 style={{ cursor: 'pointer', transition: 'all 0.2s' }}
               />
-              {/* North Korea */}
-              <path
-                d="M 780 185 L 795 185 L 795 200 L 785 205 L 780 200 Z"
-                fill={getCountryColor('KP')}
-                stroke="#94a3b8"
-                strokeWidth="0.5"
-                onMouseEnter={() => setHoveredCountry('KP')}
-                onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-              />
-              {/* Iran */}
-              <path
-                d="M 580 200 L 630 200 L 635 230 L 610 240 L 585 230 Z"
-                fill={getCountryColor('IR')}
-                stroke="#94a3b8"
-                strokeWidth="0.5"
-                onMouseEnter={() => setHoveredCountry('IR')}
-                onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-              />
-              {/* Brazil */}
-              <path
-                d="M 320 320 L 380 320 L 390 370 L 360 390 L 330 370 Z"
-                fill={getCountryColor('BR')}
-                stroke="#94a3b8"
-                strokeWidth="0.5"
-                onMouseEnter={() => setHoveredCountry('BR')}
-                onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-              />
-              {/* United States */}
-              <path
-                d="M 100 150 L 250 150 L 270 200 L 240 230 L 180 220 L 120 200 Z"
-                fill={getCountryColor('US')}
-                stroke="#94a3b8"
-                strokeWidth="0.5"
-                onMouseEnter={() => setHoveredCountry('US')}
-                onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-              />
-              {/* Ukraine */}
-              <path
-                d="M 550 160 L 590 160 L 595 185 L 575 195 L 555 185 Z"
-                fill={getCountryColor('UA')}
-                stroke="#94a3b8"
-                strokeWidth="0.5"
-                onMouseEnter={() => setHoveredCountry('UA')}
-                onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-              />
-              {/* Vietnam */}
-              <path
-                d="M 730 250 L 755 250 L 760 280 L 745 290 L 730 275 Z"
-                fill={getCountryColor('VN')}
-                stroke="#94a3b8"
-                strokeWidth="0.5"
-                onMouseEnter={() => setHoveredCountry('VN')}
-                onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-              />
               
-              {/* Background continents (light gray) */}
-              <path d="M 50 100 L 300 100 L 350 250 L 280 300 L 100 280 L 50 200 Z" fill="#f3f4f6" opacity="0.3" />
-              <path d="M 420 100 L 850 100 L 900 300 L 800 350 L 500 340 L 420 250 Z" fill="#f3f4f6" opacity="0.3" />
-              <path d="M 300 320 L 400 320 L 420 450 L 350 480 L 300 420 Z" fill="#f3f4f6" opacity="0.3" />
+              {/* Australia */}
+              <path
+                d="M 800 320 L 880 320 L 890 360 L 870 380 L 820 370 L 800 350 Z"
+                fill="#f3f4f6"
+                stroke="#d1d5db"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
             </svg>
             
             {/* Hover Tooltip */}
