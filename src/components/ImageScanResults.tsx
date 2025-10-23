@@ -409,58 +409,6 @@ export default function ImageScanResults() {
                 </Box>
               </Box>
             </Box>
-
-            {/* Detection Methods Info */}
-            <Box sx={{ 
-              mt: 3, 
-              p: 2, 
-              bgcolor: 'rgba(0, 168, 168, 0.05)',
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'rgba(0, 168, 168, 0.2)'
-            }}>
-              <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 700, color: 'primary.main' }}>
-                🔬 Detection Technology
-              </Typography>
-              <Box sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
-                gap: 2
-              }}>
-                <Box>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary', fontSize: '0.75rem' }}>
-                    QR Code Detection
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: '0.7rem' }}>
-                    pyzbar + YOLOv8 AI
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary', fontSize: '0.75rem' }}>
-                    Logo Detection
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: '0.7rem' }}>
-                    CLIP Vision AI
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary', fontSize: '0.75rem' }}>
-                    Text Extraction
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: '0.7rem' }}>
-                    Tesseract OCR
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary', fontSize: '0.75rem' }}>
-                    Screenshot Detection
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: '0.7rem' }}>
-                    Heuristic Analysis
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
           </Box>
         </Collapse>
       </Paper>
