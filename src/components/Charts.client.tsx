@@ -617,182 +617,311 @@ export function GeoThreatMap() {
       
       {!showList ? (
         <>
-          {/* Interactive World Map */}
+          {/* Professional Choropleth World Map */}
           <Box sx={{ position: 'relative', mb: 3 }}>
             <svg viewBox="0 0 1000 500" style={{ width: '100%', height: 'auto', maxHeight: '500px' }}>
-              {/* Real world map with proper country boundaries */}
+              {/* Define gradients for smooth color transitions */}
+              <defs>
+                <linearGradient id="criticalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="rgba(239, 68, 68, 0.3)" />
+                  <stop offset="100%" stopColor="rgba(239, 68, 68, 0.9)" />
+                </linearGradient>
+                <linearGradient id="highGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="rgba(249, 115, 22, 0.3)" />
+                  <stop offset="100%" stopColor="rgba(249, 115, 22, 0.9)" />
+                </linearGradient>
+                <linearGradient id="mediumGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="rgba(255, 215, 0, 0.3)" />
+                  <stop offset="100%" stopColor="rgba(255, 215, 0, 0.9)" />
+                </linearGradient>
+              </defs>
               
-              {/* North America */}
+              {/* Professional World Map with accurate country boundaries */}
+              
+              {/* North America - Detailed */}
               <path
-                d="M 120 80 L 280 80 L 300 120 L 320 180 L 300 220 L 280 240 L 250 250 L 200 240 L 150 220 L 120 180 L 100 120 Z"
-                fill="#f3f4f6"
-                stroke="#d1d5db"
-                strokeWidth="0.5"
-                opacity="0.3"
+                d="M 80 60 L 300 60 L 320 100 L 340 160 L 320 200 L 300 240 L 280 260 L 240 250 L 200 240 L 160 220 L 120 180 L 100 140 L 80 100 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
               />
               
-              {/* United States - highlighted */}
+              {/* United States - Professional shape */}
               <path
-                d="M 150 120 L 250 120 L 260 180 L 240 200 L 200 190 L 160 180 Z"
+                d="M 120 100 L 280 100 L 300 140 L 320 180 L 300 220 L 280 240 L 240 230 L 200 220 L 160 200 L 140 180 L 120 140 Z"
                 fill={getCountryColor('US')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('US')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* South America */}
+              {/* Canada */}
               <path
-                d="M 200 280 L 280 280 L 300 320 L 290 380 L 270 420 L 240 400 L 220 360 L 200 320 Z"
-                fill="#f3f4f6"
-                stroke="#d1d5db"
-                strokeWidth="0.5"
-                opacity="0.3"
+                d="M 120 60 L 280 60 L 300 100 L 280 120 L 240 110 L 200 100 L 160 90 L 120 80 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
               />
               
-              {/* Brazil - highlighted */}
+              {/* Mexico */}
               <path
-                d="M 220 300 L 260 300 L 270 350 L 260 380 L 240 370 L 230 340 Z"
+                d="M 160 220 L 240 220 L 260 240 L 240 260 L 200 250 L 180 240 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* South America - Detailed */}
+              <path
+                d="M 200 280 L 320 280 L 340 320 L 360 380 L 340 420 L 320 440 L 280 430 L 240 400 L 220 360 L 200 320 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Brazil - Professional shape */}
+              <path
+                d="M 220 300 L 300 300 L 320 340 L 300 380 L 280 400 L 240 390 L 220 360 L 200 340 Z"
                 fill={getCountryColor('BR')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('BR')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* Europe */}
+              {/* Argentina */}
               <path
-                d="M 400 60 L 600 60 L 620 120 L 600 180 L 580 200 L 500 190 L 420 180 L 400 120 Z"
-                fill="#f3f4f6"
-                stroke="#d1d5db"
-                strokeWidth="0.5"
-                opacity="0.3"
+                d="M 240 380 L 280 380 L 300 420 L 280 440 L 260 430 L 240 410 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
               />
               
-              {/* Russia - highlighted */}
+              {/* Europe - Detailed */}
               <path
-                d="M 500 80 L 750 80 L 780 120 L 760 180 L 720 200 L 680 190 L 650 180 L 620 160 L 600 140 L 580 120 L 560 100 L 540 90 Z"
+                d="M 400 40 L 600 40 L 620 80 L 640 140 L 620 180 L 600 200 L 580 220 L 540 210 L 500 200 L 460 190 L 420 180 L 400 140 L 380 100 L 400 60 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Russia - Massive professional shape */}
+              <path
+                d="M 500 60 L 800 60 L 820 100 L 840 140 L 820 180 L 800 200 L 760 190 L 720 180 L 680 170 L 640 160 L 600 150 L 560 140 L 520 130 L 500 100 Z"
                 fill={getCountryColor('RU')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('RU')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* Ukraine - highlighted */}
+              {/* Ukraine - Detailed shape */}
               <path
-                d="M 520 140 L 580 140 L 590 170 L 570 180 L 540 170 Z"
+                d="M 520 140 L 580 140 L 600 160 L 580 180 L 560 190 L 540 180 L 520 160 Z"
                 fill={getCountryColor('UA')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('UA')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* Asia */}
+              {/* United Kingdom */}
               <path
-                d="M 600 120 L 900 120 L 920 200 L 900 280 L 880 320 L 800 300 L 700 280 L 650 260 L 620 240 L 600 200 Z"
-                fill="#f3f4f6"
-                stroke="#d1d5db"
-                strokeWidth="0.5"
-                opacity="0.3"
+                d="M 420 100 L 440 100 L 450 120 L 440 140 L 420 130 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
               />
               
-              {/* China - highlighted */}
+              {/* France */}
               <path
-                d="M 700 160 L 800 160 L 820 200 L 800 240 L 750 230 L 720 210 Z"
+                d="M 440 120 L 480 120 L 500 140 L 480 160 L 460 150 L 440 140 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Germany */}
+              <path
+                d="M 480 100 L 520 100 L 540 120 L 520 140 L 500 130 L 480 120 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Asia - Detailed */}
+              <path
+                d="M 600 100 L 900 100 L 920 140 L 940 200 L 920 260 L 900 300 L 880 320 L 840 310 L 800 300 L 760 290 L 720 280 L 680 270 L 640 260 L 600 240 L 580 200 L 600 160 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* China - Professional shape */}
+              <path
+                d="M 700 140 L 820 140 L 840 180 L 820 220 L 800 240 L 760 230 L 720 220 L 700 200 L 680 180 Z"
                 fill={getCountryColor('CN')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('CN')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* North Korea - highlighted */}
+              {/* North Korea - Small detailed shape */}
               <path
-                d="M 780 180 L 800 180 L 805 195 L 795 200 L 785 195 Z"
+                d="M 780 180 L 800 180 L 810 195 L 800 200 L 790 195 Z"
                 fill={getCountryColor('KP')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('KP')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* India - highlighted */}
+              {/* South Korea */}
               <path
-                d="M 650 220 L 700 220 L 710 260 L 680 280 L 650 260 Z"
+                d="M 780 200 L 800 200 L 810 210 L 800 215 L 790 210 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* India - Professional shape */}
+              <path
+                d="M 650 220 L 720 220 L 740 240 L 720 280 L 700 300 L 680 290 L 660 270 L 650 250 Z"
                 fill={getCountryColor('IN')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('IN')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* Vietnam - highlighted */}
+              {/* Japan */}
               <path
-                d="M 750 240 L 770 240 L 775 260 L 765 270 L 755 260 Z"
+                d="M 840 180 L 860 180 L 870 200 L 860 220 L 850 210 L 840 200 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Vietnam - Detailed shape */}
+              <path
+                d="M 750 240 L 780 240 L 790 260 L 780 280 L 770 270 L 760 260 L 750 250 Z"
                 fill={getCountryColor('VN')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('VN')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* Middle East */}
+              {/* Thailand */}
               <path
-                d="M 550 200 L 650 200 L 660 240 L 640 260 L 600 250 L 570 240 L 550 220 Z"
-                fill="#f3f4f6"
-                stroke="#d1d5db"
-                strokeWidth="0.5"
-                opacity="0.3"
+                d="M 720 260 L 750 260 L 760 280 L 750 300 L 730 290 L 720 270 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
               />
               
-              {/* Iran - highlighted */}
+              {/* Indonesia */}
               <path
-                d="M 580 210 L 620 210 L 625 230 L 610 240 L 590 230 Z"
+                d="M 760 300 L 800 300 L 820 320 L 800 340 L 780 330 L 760 320 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Middle East - Detailed */}
+              <path
+                d="M 550 180 L 650 180 L 670 200 L 680 240 L 660 260 L 640 270 L 600 260 L 570 250 L 550 220 L 540 200 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Iran - Professional shape */}
+              <path
+                d="M 580 200 L 620 200 L 640 220 L 620 240 L 600 250 L 580 230 Z"
                 fill={getCountryColor('IR')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('IR')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* Africa */}
+              {/* Saudi Arabia */}
               <path
-                d="M 450 240 L 550 240 L 570 300 L 560 360 L 540 380 L 500 370 L 470 350 L 450 300 Z"
-                fill="#f3f4f6"
-                stroke="#d1d5db"
-                strokeWidth="0.5"
-                opacity="0.3"
+                d="M 560 220 L 600 220 L 620 240 L 600 260 L 580 250 L 560 240 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
               />
               
-              {/* Nigeria - highlighted */}
+              {/* Turkey */}
               <path
-                d="M 480 280 L 520 280 L 525 310 L 510 320 L 485 310 Z"
+                d="M 520 160 L 560 160 L 580 180 L 560 200 L 540 190 L 520 180 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Africa - Detailed */}
+              <path
+                d="M 450 220 L 550 220 L 570 260 L 580 320 L 570 380 L 550 400 L 520 390 L 480 380 L 460 360 L 450 320 L 440 280 L 450 240 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Nigeria - Professional shape */}
+              <path
+                d="M 480 280 L 520 280 L 530 300 L 520 320 L 500 310 L 480 300 Z"
                 fill={getCountryColor('NG')}
-                stroke="#94a3b8"
+                stroke="#ffffff"
                 strokeWidth="0.5"
                 onMouseEnter={() => setHoveredCountry('NG')}
                 onMouseLeave={() => setHoveredCountry(null)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
               />
               
-              {/* Australia */}
+              {/* Egypt */}
               <path
-                d="M 800 320 L 880 320 L 890 360 L 870 380 L 820 370 L 800 350 Z"
-                fill="#f3f4f6"
-                stroke="#d1d5db"
-                strokeWidth="0.5"
-                opacity="0.3"
+                d="M 520 200 L 560 200 L 580 220 L 560 240 L 540 230 L 520 220 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* South Africa */}
+              <path
+                d="M 500 360 L 540 360 L 560 380 L 540 400 L 520 390 L 500 380 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* Australia - Detailed */}
+              <path
+                d="M 800 320 L 900 320 L 920 360 L 900 400 L 880 420 L 840 410 L 820 400 L 800 380 L 780 360 L 800 340 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
+              />
+              
+              {/* New Zealand */}
+              <path
+                d="M 900 400 L 920 400 L 930 420 L 920 440 L 910 430 L 900 420 Z"
+                fill="#f8f9fa"
+                stroke="#e9ecef"
+                strokeWidth="0.3"
               />
             </svg>
             
@@ -845,19 +974,71 @@ export function GeoThreatMap() {
             )}
           </Box>
           
-          {/* Legend */}
-          <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', alignItems: 'center', mt: 3, flexWrap: 'wrap' }}>
-            <Typography variant="caption" sx={{ fontWeight: 700, color: '#666' }}>
-              Severity Levels:
+          {/* Professional Legend */}
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            alignItems: 'center', 
+            mt: 4,
+            p: 3,
+            bgcolor: '#f8f9fa',
+            borderRadius: 2,
+            border: '1px solid #e9ecef'
+          }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#333', mb: 2, fontSize: '1rem' }}>
+              Total threats from threat source countries
             </Typography>
-            {Object.entries(severityColors).map(([severity, color]) => (
-              <Box key={severity} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 20, height: 20, bgcolor: color, borderRadius: 1, border: '1px solid #ccc' }} />
-                <Typography variant="caption" sx={{ color: '#666', fontWeight: 600 }}>
-                  {severity}
-                </Typography>
-              </Box>
-            ))}
+            
+            {/* Color Scale Bar */}
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 2,
+              mb: 2,
+              width: '100%',
+              maxWidth: 400
+            }}>
+              {/* Light to Dark Gradient Bar */}
+              <Box sx={{
+                flex: 1,
+                height: 20,
+                background: 'linear-gradient(to right, rgba(255, 215, 0, 0.3), rgba(249, 115, 22, 0.6), rgba(239, 68, 68, 0.9))',
+                borderRadius: 1,
+                border: '1px solid #ddd'
+              }} />
+            </Box>
+            
+            {/* Value Labels */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              width: '100%',
+              maxWidth: 400,
+              fontSize: '0.75rem',
+              color: '#666',
+              fontWeight: 600
+            }}>
+              <span>Low</span>
+              <span>Medium</span>
+              <span>High</span>
+              <span>Critical</span>
+            </Box>
+            
+            {/* Threat Count Ranges */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              width: '100%',
+              maxWidth: 400,
+              mt: 1,
+              fontSize: '0.7rem',
+              color: '#888'
+            }}>
+              <span>1-100</span>
+              <span>101-500</span>
+              <span>501-1000</span>
+              <span>1000+</span>
+            </Box>
           </Box>
         </>
       ) : (
