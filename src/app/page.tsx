@@ -21,9 +21,13 @@ export default function Home() {
   const sectionGap = getResponsiveSpacing(isMobile, 3, 4)
   const logoSize = getResponsiveImageSize(isMobile, 100)
 
-  // Scroll to top when dashboard loads
+  // Scroll to top when dashboard loads (only if coming from another page)
   useEffect(() => {
-    window.scrollTo(0, 0)
+    // Only scroll to top if we're not already at the top
+    // This prevents jarring scroll behavior when already at top
+    if (window.scrollY > 0) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }, [])
 
   return (

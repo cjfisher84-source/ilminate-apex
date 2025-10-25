@@ -28,6 +28,11 @@ body {
    MOBILE OPTIMIZATIONS (Feature Flag: MOBILE_TWEAKS)
    ============================================ */
 
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Mobile-specific utility classes */
 @media (max-width: 768px) {
   /* Prevent horizontal scroll */
