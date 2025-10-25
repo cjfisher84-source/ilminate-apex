@@ -44,8 +44,9 @@ function getMockDmarcData(domain: string) {
   };
 }
 
-export default function DmarcDomainPage({ params }: { params: { domain?: string } }) {
-  const domain = decodeURIComponent(params.domain || "");
+export default async function DmarcDomainPage({ params }: { params: Promise<{ domain?: string }> }) {
+  const { domain: domainParam } = await params;
+  const domain = decodeURIComponent(domainParam || "");
   if (!domain) return notFound();
 
   const data = getMockDmarcData(domain);
