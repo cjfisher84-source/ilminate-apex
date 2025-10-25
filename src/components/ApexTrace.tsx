@@ -44,6 +44,8 @@ export function ApexTrace() {
     sender: '',
     domain: '',
     ip: '',
+    subject: '',
+    content: '',
     threat_category: '',
     apex_action: '',
     date_from: '',
@@ -53,8 +55,6 @@ export function ApexTrace() {
   const isMobile = useIsMobile()
 
   const performSearch = async (query: string = searchQuery) => {
-    if (!query.trim()) return
-
     setLoading(true)
     setError(null)
 
@@ -62,18 +62,33 @@ export function ApexTrace() {
       let searchParams: any = {}
       
       if (showAdvanced) {
-        // Advanced search
-        searchParams = { ...advancedFilters }
-        if (query) searchParams.subject = query
+        // Advanced search - use all filter parameters
+        searchParams = { 
+          sender: advancedFilters.sender,
+          domain: advancedFilters.domain,
+          ip: advancedFilters.ip,
+          subject: advancedFilters.subject,
+          content: advancedFilters.content,
+          threat_category: advancedFilters.threat_category,
+          apex_action: advancedFilters.apex_action,
+          date_from: advancedFilters.date_from,
+          date_to: advancedFilters.date_to
+        }
+        
+        // If there's a main query and no specific subject/content, use it for general search
+        if (query && !advancedFilters.subject && !advancedFilters.content) {
+          searchParams.general_search = query
+        }
       } else {
-        // Quick search - detect type
+        // Quick search - detect type and search accordingly
         if (query.includes('@')) {
           searchParams.sender = query
         } else if (query.includes('.') && !query.includes(' ')) {
           searchParams.domain = query
         } else if (/^\d+\.\d+\.\d+\.\d+$/.test(query)) {
-          searchParams.ip_address = query
+          searchParams.ip = query
         } else {
+          // Default to subject search for text queries
           searchParams.subject = query
         }
       }
@@ -216,34 +231,97 @@ export function ApexTrace() {
             </Box>
 
             {showAdvanced && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {/* Row 1: Sender Email & Domain */}
                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                   <TextField
                     fullWidth
                     label="Sender Email"
+                    placeholder="phisher@malicious.com"
                     value={advancedFilters.sender}
                     onChange={(e) => setAdvancedFilters(prev => ({ ...prev, sender: e.target.value }))}
                     size="small"
-                    sx={{ minWidth: 200 }}
+                    sx={{ minWidth: 250 }}
                   />
                   <TextField
                     fullWidth
                     label="Sender Domain"
+                    placeholder="malicious-domain.com"
                     value={advancedFilters.domain}
                     onChange={(e) => setAdvancedFilters(prev => ({ ...prev, domain: e.target.value }))}
                     size="small"
-                    sx={{ minWidth: 200 }}
+                    sx={{ minWidth: 250 }}
                   />
                 </Box>
+
+                {/* Row 2: IP Address & Subject Line */}
                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                   <TextField
                     fullWidth
                     label="IP Address"
+                    placeholder="192.168.1.100"
                     value={advancedFilters.ip}
                     onChange={(e) => setAdvancedFilters(prev => ({ ...prev, ip: e.target.value }))}
                     size="small"
-                    sx={{ minWidth: 200 }}
+                    sx={{ minWidth: 250 }}
                   />
+                  <TextField
+                    fullWidth
+                    label="Subject Line"
+                    placeholder="Full-text search in subject"
+                    value={advancedFilters.subject}
+                    onChange={(e) => setAdvancedFilters(prev => ({ ...prev, subject: e.target.value }))}
+                    size="small"
+                    sx={{ minWidth: 250 }}
+                  />
+                </Box>
+
+                {/* Row 3: Message Content */}
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                  <TextField
+                    fullWidth
+                    label="Message Content"
+                    placeholder="Full-text search in message content"
+                    value={advancedFilters.content}
+                    onChange={(e) => setAdvancedFilters(prev => ({ ...prev, content: e.target.value }))}
+                    size="small"
+                    multiline
+                    rows={2}
+                    sx={{ minWidth: 250 }}
+                  />
+                </Box>
+
+                {/* Row 4: Date Range */}
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                  <TextField
+                    fullWidth
+                    label="Date From"
+                    type="date"
+                    value={advancedFilters.date_from}
+                    onChange={(e) => setAdvancedFilters(prev => ({ ...prev, date_from: e.target.value }))}
+                    size="small"
+                    sx={{ minWidth: 200 }}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Date To"
+                    type="date"
+                    value={advancedFilters.date_to}
+                    onChange={(e) => setAdvancedFilters(prev => ({ ...prev, date_to: e.target.value }))}
+                    size="small"
+                    sx={{ minWidth: 200 }}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                  <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 200 }}>
+                    <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '0.75rem' }}>
+                      Last 30 days retention
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Row 5: Threat Category & APEX Action */}
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                   <TextField
                     fullWidth
                     select
@@ -259,6 +337,21 @@ export function ApexTrace() {
                     <option value="malware">Malware</option>
                     <option value="spam">Spam</option>
                     <option value="legitimate">Legitimate</option>
+                  </TextField>
+                  <TextField
+                    fullWidth
+                    select
+                    label="APEX Action"
+                    value={advancedFilters.apex_action}
+                    onChange={(e) => setAdvancedFilters(prev => ({ ...prev, apex_action: e.target.value }))}
+                    size="small"
+                    SelectProps={{ native: true }}
+                    sx={{ minWidth: 200 }}
+                  >
+                    <option value="">All Actions</option>
+                    <option value="quarantine">Quarantine</option>
+                    <option value="deliver">Deliver</option>
+                    <option value="block">Block</option>
                   </TextField>
                 </Box>
               </Box>
