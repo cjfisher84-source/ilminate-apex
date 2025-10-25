@@ -263,7 +263,7 @@ export default function AttackReport() {
       {/* Footer Note */}
       <Box sx={{ mt: 3, p: 2, bgcolor: 'rgba(0, 168, 168, 0.05)', borderRadius: 2 }}>
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          📊 <strong>Note:</strong> This report shows automated mapping of observed security events to MITRE ATT&CK techniques. 
+          <strong>Note:</strong> This report shows automated mapping of observed security events to MITRE ATT&CK techniques. 
           Data aggregates detections from the last 30 days. Click any technique to view related events.
         </Typography>
       </Box>

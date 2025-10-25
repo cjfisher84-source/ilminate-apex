@@ -315,22 +315,22 @@ export default function InvestigationsPage() {
                 <Box component="ul" sx={{ pl: 3, m: 0, color: 'text.secondary', lineHeight: 2.5 }}>
                   <li>
                     <Typography variant="body2">
-                      <strong style={{ color: '#10b981' }}>🛡️ Successfully Blocked:</strong> {activeCampaign.targets - activeCampaign.interactions.delivered} malicious messages prevented from reaching users
+                      <strong style={{ color: '#10b981' }}>Successfully Blocked:</strong> {activeCampaign.targets - activeCampaign.interactions.delivered} malicious messages prevented from reaching users
                     </Typography>
                   </li>
                   <li>
                     <Typography variant="body2">
-                      <strong style={{ color: UNCW_GOLD }}>👥 Security Awareness:</strong> {activeCampaign.interactions.reported} users demonstrated excellent security awareness by reporting suspicious content
+                      <strong style={{ color: UNCW_GOLD }}>Security Awareness:</strong> {activeCampaign.interactions.reported} users demonstrated excellent security awareness by reporting suspicious content
                     </Typography>
                   </li>
                   <li>
                     <Typography variant="body2">
-                      <strong style={{ color: '#10b981' }}>📧 Safe Delivery:</strong> {activeCampaign.interactions.delivered - activeCampaign.interactions.clicked} legitimate messages safely delivered to intended recipients
+                      <strong style={{ color: '#10b981' }}>Safe Delivery:</strong> {activeCampaign.interactions.delivered - activeCampaign.interactions.clicked} legitimate messages safely delivered to intended recipients
                     </Typography>
                   </li>
                   <li>
                     <Typography variant="body2">
-                      <strong style={{ color: '#f97316' }}>⚠️ Requires Attention:</strong> {activeCampaign.interactions.clicked} users clicked suspicious links - immediate security training recommended
+                      <strong style={{ color: '#f97316' }}>Requires Attention:</strong> {activeCampaign.interactions.clicked} users clicked suspicious links - immediate security training recommended
                     </Typography>
                   </li>
                 </Box>
