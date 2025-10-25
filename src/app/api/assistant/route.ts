@@ -107,31 +107,31 @@ Outlook:
     } else if (lower.includes('score') || lower.includes('status')) {
       reply = `Current Security Status:
 
-📊 Cyber Security Score: ${score.score}/100
-🛡️ Protection Rate: ${score.protectionRate}%
-⚡ Response Time: ${score.responseTime}
-✅ False Positives: ${score.falsePositiveRate}
+Cyber Security Score: ${score.score}/100
+Protection Rate: ${score.protectionRate}%
+Response Time: ${score.responseTime}
+False Positives: ${score.falsePositiveRate}
 
 Recent Activity:
 ${aiThreats.slice(0, 3).map(t => `• ${t.type}: ${t.count} incidents`).join('\n')}
 
-Overall Health: ${score.score > 85 ? '🟢 Excellent' : score.score > 70 ? '🟡 Good' : '🔴 Needs Attention'}`;
+Overall Health: ${score.score > 85 ? 'Excellent' : score.score > 70 ? 'Good' : 'Needs Attention'}`;
       
     } else {
       // Fallback with contextual help
       reply = `I can help you with:
 
-🔍 **Threat Investigation**
+**Threat Investigation**
 • "Investigate today's top threat"
 • "What's the highest risk right now?"
 • "Show me recent AI threats"
 
-🛡️ **Security Posture**
+**Security Posture**
 • "How can I improve our security?"
 • "What's our current security score?"
 • "Recommend posture improvements"
 
-📊 **Risk Analysis**
+**Risk Analysis**
 • "Summarize 30-day risk trends"
 • "What's our protection rate?"
 • "Show me threat statistics"

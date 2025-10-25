@@ -2,6 +2,7 @@
 import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, useTheme } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useEffect } from 'react'
 import CategoryCard from '@/components/CategoryCard'
 import SecurityAssistant from '@/components/SecurityAssistant'
 import ImageScanResults from '@/components/ImageScanResults'
@@ -19,6 +20,11 @@ export default function Home() {
   const headerGap = getResponsiveSpacing(isMobile, 2, 3)
   const sectionGap = getResponsiveSpacing(isMobile, 3, 4)
   const logoSize = getResponsiveImageSize(isMobile, 100)
+
+  // Scroll to top when dashboard loads
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <>
@@ -164,7 +170,7 @@ export default function Home() {
                   whiteSpace: 'nowrap'
                 }}
               >
-                🔍 APEX Trace
+                APEX Trace
               </Button>
             </Link>
             <Link href="/reports/attack" passHref legacyBehavior>
@@ -188,7 +194,7 @@ export default function Home() {
                   }
                 }}
               >
-                {isMobile ? '🎯 ATT&CK' : '🎯 ATT&CK Matrix'}
+                {isMobile ? 'ATT&CK' : 'ATT&CK Matrix'}
               </Button>
             </Link>
           </Box>
