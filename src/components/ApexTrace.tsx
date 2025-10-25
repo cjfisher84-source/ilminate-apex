@@ -130,11 +130,8 @@ export function ApexTrace() {
 
   return (
     <Box sx={{ 
-      backgroundColor: '#1e293b', 
-      borderRadius: 16, 
-      padding: 4,
-      border: '2px solid #334155',
-      boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
+      backgroundColor: 'transparent', 
+      padding: 0,
       minHeight: 600
     }}>
       {/* Header */}
@@ -147,19 +144,13 @@ export function ApexTrace() {
         gap: 2
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ 
-            width: 4, 
-            height: 32, 
-            backgroundColor: UNCW_TEAL, 
-            borderRadius: 2 
-          }} />
           <Box>
             <Typography variant="h4" sx={{ 
               fontWeight: 700, 
               color: '#f1f5f9',
               fontSize: isMobile ? '1.5rem' : '2rem'
             }}>
-              🔍 APEX Trace
+              APEX Trace
             </Typography>
             <Typography variant="body1" sx={{ 
               color: '#94a3b8',
@@ -189,9 +180,8 @@ export function ApexTrace() {
       </Box>
 
       {/* Search Interface */}
-      <Card sx={{ mb: 3, bgcolor: '#0f172a', border: '1px solid #334155' }}>
-        <CardContent>
-          <form onSubmit={handleSearch}>
+      <Box sx={{ mb: 3 }}>
+        <form onSubmit={handleSearch}>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
               <TextField
                 fullWidth
@@ -274,8 +264,7 @@ export function ApexTrace() {
               </Box>
             )}
           </form>
-        </CardContent>
-      </Card>
+        </Box>
 
       {/* Error Display */}
       {error && (
@@ -296,37 +285,28 @@ export function ApexTrace() {
             flexWrap: 'wrap',
             gap: 2
           }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#f1f5f9' }}>
               {searchResults.total_hits.toLocaleString()} Results Found
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <Chip 
-                icon={<Timeline />}
-                label={`${searchResults.query_time_ms}ms`}
-                sx={{ bgcolor: '#22c55e', color: 'white', fontWeight: 600 }}
-              />
-              <Chip 
-                icon={<Security />}
-                label="APEX Protected"
-                sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600 }}
-              />
-            </Box>
+            <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+              Query time: {searchResults.query_time_ms}ms
+            </Typography>
           </Box>
 
           {/* Messages */}
           <Box sx={{ mb: 4 }}>
             {searchResults.messages.map((message, index) => (
-              <Card key={index} sx={{ 
-                mb: 2, 
+              <Box key={index} sx={{ 
+                mb: 3, 
+                p: 3,
                 bgcolor: '#0f172a',
                 border: '1px solid #334155',
+                borderRadius: 1,
                 '&:hover': { 
-                  boxShadow: '0 4px 12px rgba(0, 112, 112, 0.15)',
-                  transform: 'translateY(-2px)',
+                  borderColor: '#007070',
                   transition: 'all 0.3s ease'
                 }
               }}>
-                <CardContent>
                   <Box sx={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
@@ -406,18 +386,16 @@ export function ApexTrace() {
                       </Typography>
                     </Box>
                   </Box>
-                </CardContent>
-              </Card>
+                </Box>
             ))}
           </Box>
 
           {/* Facets */}
           {searchResults.facets && (
-            <Card sx={{ bgcolor: '#0f172a', border: '1px solid #334155' }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 3 }}>
-                  Search Analytics
-                </Typography>
+            <Box sx={{ bgcolor: '#0f172a', border: '1px solid #334155', p: 3, borderRadius: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#f1f5f9', mb: 3 }}>
+                Search Analytics
+              </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {searchResults.facets.threat_categories && (
                     <Box>
@@ -497,8 +475,7 @@ export function ApexTrace() {
                     </Box>
                   )}
                 </Box>
-              </CardContent>
-            </Card>
+            </Box>
           )}
         </Box>
       )}
@@ -508,10 +485,9 @@ export function ApexTrace() {
         <Box sx={{ 
           textAlign: 'center', 
           py: 8,
-          color: '#666'
+          color: '#94a3b8'
         }}>
-          <Timeline sx={{ fontSize: 64, color: UNCW_TEAL, mb: 2 }} />
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#f1f5f9' }}>
             APEX Trace Ready
           </Typography>
           <Typography variant="body1">
