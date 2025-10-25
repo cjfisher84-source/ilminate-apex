@@ -130,10 +130,10 @@ export function ApexTrace() {
 
   return (
     <Box sx={{ 
-      backgroundColor: '#FFFFFF', 
+      backgroundColor: '#1e293b', 
       borderRadius: 16, 
       padding: 4,
-      border: '2px solid #E0E4E8',
+      border: '2px solid #334155',
       boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
       minHeight: 600
     }}>
@@ -156,13 +156,13 @@ export function ApexTrace() {
           <Box>
             <Typography variant="h4" sx={{ 
               fontWeight: 700, 
-              color: '#1a1a1a',
+              color: '#f1f5f9',
               fontSize: isMobile ? '1.5rem' : '2rem'
             }}>
               🔍 APEX Trace
             </Typography>
             <Typography variant="body1" sx={{ 
-              color: '#666',
+              color: '#94a3b8',
               fontSize: isMobile ? '0.9rem' : '1rem'
             }}>
               Super Fast Message Search & Investigation
@@ -189,7 +189,7 @@ export function ApexTrace() {
       </Box>
 
       {/* Search Interface */}
-      <Card sx={{ mb: 3, bgcolor: '#F8FAFB', border: '1px solid #E0E4E8' }}>
+      <Card sx={{ mb: 3, bgcolor: '#0f172a', border: '1px solid #334155' }}>
         <CardContent>
           <form onSubmit={handleSearch}>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
@@ -318,7 +318,8 @@ export function ApexTrace() {
             {searchResults.messages.map((message, index) => (
               <Card key={index} sx={{ 
                 mb: 2, 
-                border: '1px solid #E0E4E8',
+                bgcolor: '#0f172a',
+                border: '1px solid #334155',
                 '&:hover': { 
                   boxShadow: '0 4px 12px rgba(0, 112, 112, 0.15)',
                   transform: 'translateY(-2px)',
@@ -335,10 +336,10 @@ export function ApexTrace() {
                     gap: 2
                   }}>
                     <Box>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 1 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#f1f5f9', mb: 1 }}>
                         {message.message_id}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#666' }}>
+                      <Typography variant="body2" sx={{ color: '#94a3b8' }}>
                         {formatTimestamp(message.timestamp)}
                       </Typography>
                     </Box>
@@ -368,34 +369,34 @@ export function ApexTrace() {
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Email sx={{ fontSize: 16, color: UNCW_TEAL }} />
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#f1f5f9' }}>
                           From: {message.sender_email}
                         </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Language sx={{ fontSize: 16, color: UNCW_TEAL }} />
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#f1f5f9' }}>
                           Domain: {message.sender_domain}
                         </Typography>
                       </Box>
                       {message.sender_ip && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Computer sx={{ fontSize: 16, color: UNCW_TEAL }} />
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#f1f5f9' }}>
                             IP: {message.sender_ip}
                           </Typography>
                         </Box>
                       )}
                     </Box>
                     <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#333', mb: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#f1f5f9', mb: 1 }}>
                         Subject: {message.subject}
                       </Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#333', mb: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#f1f5f9', mb: 1 }}>
                         Content Preview:
                       </Typography>
                       <Typography variant="body2" sx={{ 
-                        color: '#666',
+                        color: '#94a3b8',
                         fontStyle: 'italic',
                         maxHeight: 60,
                         overflow: 'hidden',
@@ -412,7 +413,7 @@ export function ApexTrace() {
 
           {/* Facets */}
           {searchResults.facets && (
-            <Card sx={{ bgcolor: '#F8FAFB', border: '1px solid #E0E4E8' }}>
+            <Card sx={{ bgcolor: '#0f172a', border: '1px solid #334155' }}>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 3 }}>
                   Search Analytics
@@ -420,7 +421,7 @@ export function ApexTrace() {
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {searchResults.facets.threat_categories && (
                     <Box>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#f1f5f9' }}>
                         Threat Categories
                       </Typography>
                       {searchResults.facets.threat_categories.map((facet, index) => (
@@ -429,9 +430,9 @@ export function ApexTrace() {
                           justifyContent: 'space-between', 
                           alignItems: 'center',
                           py: 1,
-                          borderBottom: '1px solid #E0E4E8'
+                          borderBottom: '1px solid #334155'
                         }}>
-                          <Typography variant="body2" sx={{ color: '#666' }}>
+                          <Typography variant="body2" sx={{ color: '#94a3b8' }}>
                             {facet.name}
                           </Typography>
                           <Chip 
@@ -446,7 +447,7 @@ export function ApexTrace() {
                   
                   {searchResults.facets.apex_actions && (
                     <Box>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#f1f5f9' }}>
                         APEX Actions
                       </Typography>
                       {searchResults.facets.apex_actions.map((facet, index) => (
@@ -455,9 +456,9 @@ export function ApexTrace() {
                           justifyContent: 'space-between', 
                           alignItems: 'center',
                           py: 1,
-                          borderBottom: '1px solid #E0E4E8'
+                          borderBottom: '1px solid #334155'
                         }}>
-                          <Typography variant="body2" sx={{ color: '#666' }}>
+                          <Typography variant="body2" sx={{ color: '#94a3b8' }}>
                             {facet.name}
                           </Typography>
                           <Chip 
@@ -472,7 +473,7 @@ export function ApexTrace() {
                   
                   {searchResults.facets.sender_domains && (
                     <Box>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#f1f5f9' }}>
                         Top Domains
                       </Typography>
                       {searchResults.facets.sender_domains.slice(0, 5).map((facet, index) => (
@@ -481,9 +482,9 @@ export function ApexTrace() {
                           justifyContent: 'space-between', 
                           alignItems: 'center',
                           py: 1,
-                          borderBottom: '1px solid #E0E4E8'
+                          borderBottom: '1px solid #334155'
                         }}>
-                          <Typography variant="body2" sx={{ color: '#666' }}>
+                          <Typography variant="body2" sx={{ color: '#94a3b8' }}>
                             {facet.name}
                           </Typography>
                           <Chip 
