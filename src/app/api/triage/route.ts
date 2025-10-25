@@ -78,11 +78,11 @@ function analyzeThreat(kind: string, subject: string, sender: string, details: s
   // Determine classification
   let classification = kind || 'N/A'
   if (riskScore >= 50) {
-    classification = 'SUSPICIOUS - Likely BEC/Phishing Attack'
+    classification = '🚨 SUSPICIOUS - Likely BEC/Phishing Attack'
   } else if (riskScore >= 30) {
-    classification = 'SUSPICIOUS - Potential Social Engineering'
+    classification = '⚠️  SUSPICIOUS - Potential Social Engineering'
   } else if (riskScore >= 15) {
-    classification = 'REVIEW REQUIRED - Suspicious Patterns Detected'
+    classification = '⚡ REVIEW REQUIRED - Suspicious Patterns Detected'
   }
   
   return { indicators, riskScore, classification }
@@ -113,7 +113,7 @@ Sender: ${sender || 'N/A'}
     // Add threat indicators if detected
     const detectedIndicators = Object.values(analysis.indicators).filter(i => i.detected)
     if (detectedIndicators.length > 0) {
-      summary += `THREAT INDICATORS DETECTED:\n\n`
+      summary += `🚨 THREAT INDICATORS DETECTED:\n\n`
       detectedIndicators.forEach((indicator, idx) => {
         summary += `${idx + 1}. [${indicator.severity}] ${indicator.description}\n`
       })
