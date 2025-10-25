@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: apex-elasticsearch
+    environment:
+      - node.name=apex-node
+      - cluster.name=apex-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ../data/elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - apex-network
+    restart: unless-stopped
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: apex-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - SERVER_NAME=apex-kibana
+      - SERVER_HOST=0.0.0.0
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - apex-network
+    restart: unless-stopped
+
+  apex-search-api:
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    container_name: apex-search-api
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+    ports:
+      - "5000:5000"
+    depends_on:
+      - elasticsearch
+    networks:
+      - apex-network
+    restart: unless-stopped
+    volumes:
+      - ../logs:/app/logs
+
+networks:
+  apex-network:
+    driver: bridge
