@@ -148,7 +148,7 @@ function EventsContent() {
                 {technique}
               </Typography>
               <Typography variant="h6" sx={{ color: 'text.secondary', mt: 1 }}>
-                {techInfo.techniqueName}
+                {techInfo.name}
               </Typography>
             </Box>
 
