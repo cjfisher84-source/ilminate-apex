@@ -5,17 +5,30 @@ import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Box, Typography, Paper, Card, CardContent, Chip, Divider, Button, List, ListItem, ListItemText, CircularProgress } from '@mui/material'
-import { getTechniqueMeta, TechniqueMeta } from '@/lib/attackMeta'
+import { getTechniqueMeta } from '@/lib/attackMeta'
+
+interface TechniqueInfo {
+  id: string
+  name: string
+  description?: string
+  tactic?: string
+  subTactic?: string
+  domain?: string
+  useCase?: string
+  examples?: string[]
+}
 
 function EventsContent() {
   const searchParams = useSearchParams()
   const technique = searchParams?.get('technique')
   const [techniqueData, setTechniqueData] = useState<any>(null)
-  const [meta, setMeta] = useState<TechniqueMeta[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!technique) return
+    if (!technique) {
+      setLoading(false)
+      return
+    }
     
     // Fetch technique details from ATT&CK API
     fetch(`/api/attack/map?technique=${technique}`)
@@ -28,13 +41,62 @@ function EventsContent() {
         console.error('Error fetching technique data:', err)
         setLoading(false)
       })
-
-    // Load meta data
-    getTechniqueMeta().then(setMeta)
   }, [technique])
 
-  const getTechniqueInfo = (techId: string): TechniqueMeta | null => {
-    return meta.find(m => m.techniqueID === techId) || null
+  const getTechniqueInfo = (techId: string): TechniqueInfo | null => {
+    // Mock data for techniques
+    const techniqueDescriptions: Record<string, TechniqueInfo> = {
+      'T1053': {
+        id: 'T1053',
+        name: 'Scheduled Task/Job',
+        description: 'Adversaries may abuse task scheduling functionality to facilitate initial or recurring execution of malicious code. This can be used to execute code at system startup or on a scheduled basis.',
+        tactic: 'Persistence',
+        subTactic: 'Scheduled Task/Job',
+        domain: 'Enterprise',
+        useCase: 'Commonly used for persistence after initial compromise',
+        examples: [
+          'Creating Windows scheduled tasks to run malicious code',
+          'Using cron jobs on Linux systems',
+          'Scheduling tasks to run PowerShell scripts'
+        ]
+      },
+      'T1566': {
+        id: 'T1566',
+        name: 'Phishing',
+        description: 'Adversaries may send phishing messages to gain access to victim systems. Phishing often incorporates a malicious file or link to execute malicious code.',
+        tactic: 'Initial Access',
+        subTactic: 'Phishing',
+        domain: 'Enterprise',
+        useCase: 'Initial compromise vector to gain entry into victim networks',
+        examples: [
+          'Sending malicious attachments via email',
+          'Embedding links to malicious websites in messages',
+          'Impersonating trusted entities'
+        ]
+      },
+      'T1059.001': {
+        id: 'T1059.001',
+        name: 'PowerShell',
+        description: 'Adversaries may abuse PowerShell commands and scripts for execution. PowerShell can be used to execute scripts directly on the command line.',
+        tactic: 'Execution',
+        subTactic: 'PowerShell',
+        domain: 'Enterprise',
+        useCase: 'Executing malicious scripts and payloads',
+        examples: [
+          'Running PowerShell scripts downloaded from the internet',
+          'Using PowerShell for post-exploitation activities',
+          'Executing encoded PowerShell commands'
+        ]
+      }
+    }
+    
+    return techniqueDescriptions[techId] || {
+      id: techId,
+      name: techId,
+      description: `No detailed information available for technique ${techId}.`,
+      tactic: 'Unknown',
+      domain: 'Enterprise'
+    }
   }
 
   if (loading) {
