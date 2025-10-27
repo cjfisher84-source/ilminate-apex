@@ -133,17 +133,6 @@ export default function ImageScanResults() {
           >
             Advanced Image Detection
           </Typography>
-          <Chip 
-            label="NEW" 
-            size="small" 
-            sx={{ 
-              bgcolor: 'rgba(0, 168, 168, 0.15)',
-              color: '#00a8a8',
-              fontWeight: 800,
-              fontSize: '0.65rem',
-              height: 22
-            }} 
-          />
         </Box>
         <Typography 
           variant="body1" 
