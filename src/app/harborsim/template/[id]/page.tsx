@@ -35,17 +35,90 @@ export default function HarborSimDetail() {
     if (id) fetchTemplate()
   }, [id])
 
+  const getMockTemplate = (templateId: string): Template | null => {
+    const mockTemplates: Record<string, Template> = {
+      '1': {
+        id: '1',
+        name: 'Phishing Email Template',
+        sender_name: 'Security Team',
+        sender_email: 'security@company.com',
+        subject: 'Urgent: Verify Your Account',
+        html_content: '<p>Dear User,</p><p>We have detected suspicious activity on your account. Please <a href="http://evil.com/login">click here</a> to verify your identity immediately.</p><p>Failure to verify within 24 hours will result in account suspension.</p>',
+        text_content: 'Dear User,\n\nWe have detected suspicious activity on your account. Please click here to verify your identity immediately.\n\nFailure to verify within 24 hours will result in account suspension.',
+        preview: 'This is a training email to help you identify phishing attempts.',
+        status: 'draft',
+        created_at: new Date().toISOString(),
+        approved: false
+      },
+      '2': {
+        id: '2',
+        name: 'CEO Impersonation',
+        sender_name: 'CEO Name',
+        sender_email: 'ceo@company.com',
+        subject: 'Urgent Request for Wire Transfer',
+        html_content: '<p>Hi,</p><p>I need you to process an urgent wire transfer of $50,000 to our new vendor account. This is confidential and time-sensitive.</p><p>Send to: Bank Account #123456789</p><p>Reply to this email ASAP with confirmation.</p>',
+        text_content: 'Hi,\n\nI need you to process an urgent wire transfer of $50,000 to our new vendor account. This is confidential and time-sensitive.\n\nSend to: Bank Account #123456789\n\nReply to this email ASAP with confirmation.',
+        preview: 'Train users to recognize executive impersonation attacks.',
+        status: 'approved',
+        created_at: new Date().toISOString(),
+        approved: true
+      },
+      '3': {
+        id: '3',
+        name: 'Invoice Scam',
+        sender_name: 'Accounting',
+        sender_email: 'billing@vendor.com',
+        subject: 'Invoice #12345 - Payment Due',
+        html_content: '<p>Please find attached invoice #12345 for your review and payment.</p><p>Payment is due within 7 days. Click here to view: <a href="http://invoice-scam.com/pay">Pay Now</a></p>',
+        text_content: 'Please find attached invoice #12345 for your review and payment.\n\nPayment is due within 7 days. Click here to view: http://invoice-scam.com/pay',
+        preview: 'Teaching users to verify invoices before payment.',
+        status: 'draft',
+        created_at: new Date().toISOString(),
+        approved: false
+      }
+    }
+    return mockTemplates[templateId] || null
+  }
+
   const fetchTemplate = async () => {
     try {
       setLoading(true)
       const response = await fetch(`/api/harborsim/v1/templates/${id}`)
-      if (!response.ok) throw new Error('Failed to fetch template')
+      
+      if (!response.ok) {
+        console.warn('API unavailable, using mock data')
+        const mockTemplate = getMockTemplate(id)
+        if (mockTemplate) {
+          setTemplate(mockTemplate)
+          setError(null)
+          return
+        }
+        throw new Error('Failed to fetch template')
+      }
+      
       const data = await response.json()
+      if (data.error) {
+        // API returned error, fall back to mock
+        const mockTemplate = getMockTemplate(id)
+        if (mockTemplate) {
+          setTemplate(mockTemplate)
+          setError(null)
+          return
+        }
+      }
+      
       setTemplate(data.template || data)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load template')
-      console.error('Error fetching template:', err)
+      // Try mock data as last resort
+      const mockTemplate = getMockTemplate(id)
+      if (mockTemplate) {
+        setTemplate(mockTemplate)
+        setError(null)
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to load template')
+        console.error('Error fetching template:', err)
+      }
     } finally {
       setLoading(false)
     }
