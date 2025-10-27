@@ -28,14 +28,36 @@ export default function HarborSimList() {
   const fetchTemplates = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/harborsim/v1/templates')
-      if (!response.ok) throw new Error('Failed to fetch templates')
-      const data = await response.json()
-      setTemplates(data.templates || [])
       setError(null)
+      const response = await fetch('/api/harborsim/v1/templates')
+      console.log('API Response status:', response.status)
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API Error Response:', errorText)
+        throw new Error(`Failed to fetch templates: ${response.status} ${response.statusText}`)
+      }
+      
+      const data = await response.json()
+      console.log('API Response data:', data)
+      
+      // Handle different response formats
+      if (data.templates) {
+        setTemplates(data.templates)
+      } else if (Array.isArray(data)) {
+        setTemplates(data)
+      } else {
+        setTemplates([])
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load templates')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load templates'
+      setError(errorMessage)
       console.error('Error fetching templates:', err)
+      
+      // Log the full error for debugging
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        console.error('Network error - API proxy may not be configured correctly')
+      }
     } finally {
       setLoading(false)
     }
