@@ -99,11 +99,11 @@ export default function Home() {
         {/* Navigation Icons - Single Row with Emojis */}
         <Box sx={{ 
           display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: 2, 
-          justifyContent: isMobile ? 'center' : 'flex-start',
+          flexWrap: isMobile ? 'wrap' : 'nowrap', 
+          gap: 3, 
+          justifyContent: 'space-around',
           mb: 3,
-          p: 2,
+          p: 3,
           bgcolor: 'background.paper',
           border: '1px solid',
           borderColor: 'divider',
@@ -116,6 +116,8 @@ export default function Home() {
               title="Deep dive into active and recent security campaigns with timeline analysis"
               sx={{ 
                 color: 'text.secondary',
+                fontSize: isMobile ? '1rem' : '1.2rem',
+                fontWeight: 600,
                 '&:hover': { 
                   color: 'primary.main',
                   bgcolor: 'rgba(0, 168, 168, 0.08)'
@@ -132,6 +134,8 @@ export default function Home() {
               title="Super fast message search across email data with advanced filtering"
               sx={{ 
                 color: 'text.secondary',
+                fontSize: isMobile ? '1rem' : '1.2rem',
+                fontWeight: 600,
                 '&:hover': { 
                   color: 'primary.main',
                   bgcolor: 'rgba(0, 168, 168, 0.08)'
@@ -148,6 +152,8 @@ export default function Home() {
               title="AI-powered threat analysis and classification for suspicious emails"
               sx={{ 
                 color: 'text.secondary',
+                fontSize: isMobile ? '1rem' : '1.2rem',
+                fontWeight: 600,
                 '&:hover': { 
                   color: 'primary.main',
                   bgcolor: 'rgba(0, 168, 168, 0.08)'
@@ -164,6 +170,8 @@ export default function Home() {
               title="Review and manage messages held for security review"
               sx={{ 
                 color: 'text.secondary',
+                fontSize: isMobile ? '1rem' : '1.2rem',
+                fontWeight: 600,
                 '&:hover': { 
                   color: 'primary.main',
                   bgcolor: 'rgba(0, 168, 168, 0.08)'
@@ -180,6 +188,8 @@ export default function Home() {
               title="Email security training platform with phishing simulation templates"
               sx={{ 
                 color: 'text.secondary',
+                fontSize: isMobile ? '1rem' : '1.2rem',
+                fontWeight: 600,
                 '&:hover': { 
                   color: 'primary.main',
                   bgcolor: 'rgba(0, 168, 168, 0.08)'
@@ -196,6 +206,8 @@ export default function Home() {
               title="View security events mapped to ATT&CK techniques for threat intelligence"
               sx={{ 
                 color: 'text.secondary',
+                fontSize: isMobile ? '1rem' : '1.2rem',
+                fontWeight: 600,
                 '&:hover': { 
                   color: 'primary.main',
                   bgcolor: 'rgba(0, 168, 168, 0.08)'
