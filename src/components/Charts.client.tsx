@@ -135,10 +135,10 @@ export function CyberScoreDonut() {
   
   // Additional cyber metrics to fill the space
   const metrics = [
-    { label: 'Protection Rate', value: '94.2%', color: '#10b981' },
-    { label: 'Response Time', value: '2.3m', color: UNCW_GOLD },
-    { label: 'False Positives', value: '0.8%', color: '#f97316' },
-    { label: 'Coverage', value: '99.1%', color: UNCW_TEAL }
+    { label: 'Protection Rate', value: '94.2%', color: '#10b981', href: '/metrics/protection-rate', tooltip: 'Percentage of dangerous emails successfully blocked from your inbox' },
+    { label: 'Response Time', value: '2.3m', color: UNCW_GOLD, href: '/metrics/response-time', tooltip: 'Average time to detect and respond to security threats' },
+    { label: 'False Positives', value: '0.8%', color: '#f97316', href: '/metrics/false-positives', tooltip: 'Legitimate emails incorrectly flagged as suspicious' },
+    { label: 'Coverage', value: '99.1%', color: UNCW_TEAL, href: '/metrics/coverage', tooltip: 'Percentage of your organization monitored for threats' }
   ]
   
   return (
@@ -155,14 +155,14 @@ export function CyberScoreDonut() {
     }}>
       <div style={{ 
         marginBottom: 16, 
-        color: theme.palette.text.primary, 
+        color: theme.palette.primary.main, 
         fontSize: '1.1rem', 
         fontWeight: 700,
         display: 'flex',
         alignItems: 'center',
         gap: 8
       }}>
-        <div style={{ width: 3, height: 20, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+        <div style={{ width: 3, height: 20, backgroundColor: theme.palette.primary.main, borderRadius: 2 }}></div>
         Cyber Security Score
       </div>
       
@@ -227,23 +227,46 @@ export function CyberScoreDonut() {
       {/* Metrics Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, flex: 1 }}>
         {metrics.map((metric, idx) => (
-          <div key={idx} style={{
-            textAlign: 'center',
-            padding: '8px 6px',
-            backgroundColor: theme.palette.background.default,
-            borderRadius: 6,
-            border: `1px solid ${theme.palette.divider}`,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}>
+          <a
+            key={idx}
+            href={metric.href}
+            style={{
+              textAlign: 'center',
+              padding: '8px 6px',
+              backgroundColor: theme.palette.background.default,
+              borderRadius: 6,
+              border: `1px solid ${theme.palette.divider}`,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              textDecoration: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              ':hover': {
+                backgroundColor: theme.palette.action.hover,
+                borderColor: metric.color,
+                transform: 'translateY(-2px)'
+              }
+            }}
+            title={metric.tooltip}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.palette.action.hover
+              e.currentTarget.style.borderColor = metric.color
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = theme.palette.background.default
+              e.currentTarget.style.borderColor = theme.palette.divider
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
+          >
             <div style={{ fontSize: '1rem', fontWeight: 700, color: metric.color, marginBottom: 2 }}>
               {metric.value}
             </div>
             <div style={{ fontSize: '0.6rem', fontWeight: 600, color: theme.palette.text.secondary, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
               {metric.label}
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>
