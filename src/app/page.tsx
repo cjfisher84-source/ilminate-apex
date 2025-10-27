@@ -201,6 +201,25 @@ export default function Home() {
                 {isMobile ? 'ATT&CK' : 'ATT&CK Matrix'}
               </Button>
             </Link>
+            <Link href="/harborsim" passHref legacyBehavior>
+              <Button 
+                variant="outlined" 
+                component="a" 
+                size={isMobile ? 'medium' : 'large'}
+                color="primary"
+                fullWidth={isMobile}
+                className={isMobile ? 'mobile-touch-target' : ''}
+                sx={{ 
+                  px: isMobile ? 2 : 4,
+                  py: isMobile ? 1.2 : 1.5,
+                  fontSize: isMobile ? '0.95rem' : '1.1rem',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                HarborSim
+              </Button>
+            </Link>
           </Box>
         </Box>
 
