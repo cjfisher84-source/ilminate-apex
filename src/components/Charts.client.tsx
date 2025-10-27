@@ -370,53 +370,111 @@ export function EDRMetricsLines() {
     log.chart('EDRMetricsLines mounted', { isMobile, theme: theme.palette.mode })
   }, [isMobile, theme.palette.mode])
   
+  const totalDetections = data.reduce((sum, d) => sum + d.detections, 0)
+  const totalBlocked = data.reduce((sum, d) => sum + d.blocked, 0)
+  const avgEndpoints = Math.round(data.reduce((sum, d) => sum + d.endpointsOnline, 0) / data.length)
+  
   return (
-    <div 
-      className={isMobile ? 'mobile-chart-container' : ''}
+    <a 
+      href="/edr/metrics"
       style={{ 
-        backgroundColor: theme.palette.background.paper, 
-        borderRadius: 16, 
-        padding: isMobile ? 16 : 32, 
-        border: `2px solid ${theme.palette.divider}`,
-        height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
-      }}>
-      <div style={{ 
-        marginBottom: isMobile ? 16 : 24, 
-        color: theme.palette.text.primary, 
-        fontSize: isMobile ? '1.1rem' : '1.3rem', 
-        fontWeight: 700,
-        display: 'flex',
-        alignItems: 'center',
-        gap: isMobile ? 8 : 12
-      }}>
-        <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
-        {isMobile ? 'EDR Metrics (30d)' : 'EDR Metrics — last 30 days'}
+        textDecoration: 'none',
+        display: 'block'
+      }}
+      title="View detailed EDR metrics including detections, blocked threats, and endpoint status over time"
+    >
+      <div 
+        className={isMobile ? 'mobile-chart-container' : ''}
+        style={{ 
+          backgroundColor: theme.palette.background.paper, 
+          borderRadius: 16, 
+          padding: isMobile ? 16 : 32, 
+          border: `2px solid ${theme.palette.divider}`,
+          height: chartHeight,
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = UNCW_TEAL
+          e.currentTarget.style.transform = 'translateY(-4px)'
+          e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 168, 168, 0.3)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = theme.palette.divider
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+        <div style={{ 
+          marginBottom: isMobile ? 16 : 24, 
+          color: theme.palette.text.primary, 
+          fontSize: isMobile ? '1.1rem' : '1.3rem', 
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: isMobile ? 8 : 12
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12 }}>
+            <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+            {isMobile ? 'EDR Metrics (30d)' : 'EDR Metrics — last 30 days'}
+          </div>
+          {!isMobile && (
+            <div style={{ fontSize: '0.85rem', color: theme.palette.text.secondary }}>
+              Click to view details →
+            </div>
+          )}
+        </div>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: 0 }}>
+            <XAxis 
+              dataKey="date" 
+              tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} 
+              angle={-45} 
+              textAnchor="end" 
+              height={isMobile ? 50 : 60}
+              interval={isMobile ? 'preserveStartEnd' : 0}
+            />
+            <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} width={isMobile ? 35 : 50} />
+            <Tooltip 
+              cursor={false}
+              contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }}
+              labelStyle={{ color: '#94a3b8' }}
+              itemStyle={{ color: '#f1f5f9' }}
+            />
+            <Legend wrapperStyle={{ paddingTop: isMobile ? 12 : 20, fontSize: isMobile ? '0.75rem' : '1rem' }} />
+            <Line type="monotone" dataKey="detections" name="Detections" stroke={UNCW_TEAL} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_TEAL, r: isMobile ? 3 : 4 }} />
+            <Line type="monotone" dataKey="blocked" name="Blocked" stroke={UNCW_GOLD} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_GOLD, r: isMobile ? 3 : 4 }} />
+            <Line type="monotone" dataKey="endpointsOnline" name={isMobile ? 'Online' : 'Endpoints Online'} stroke={theme.palette.text.secondary} strokeWidth={isMobile ? 1.5 : 2} dot={{ fill: theme.palette.text.secondary, r: isMobile ? 2 : 3 }} />
+          </LineChart>
+        </ResponsiveContainer>
+        {!isMobile && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-around', 
+            marginTop: 16, 
+            paddingTop: 16, 
+            borderTop: `1px solid ${theme.palette.divider}`,
+            fontSize: '0.9rem',
+            color: theme.palette.text.secondary
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontWeight: 700, fontSize: '1.2rem', color: UNCW_TEAL }}>{totalDetections}</div>
+              <div>Total Detections</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontWeight: 700, fontSize: '1.2rem', color: UNCW_GOLD }}>{totalBlocked}</div>
+              <div>Blocked</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontWeight: 700, fontSize: '1.2rem', color: theme.palette.text.secondary }}>{avgEndpoints}</div>
+              <div>Avg Endpoints</div>
+            </div>
+          </div>
+        )}
       </div>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: 0 }}>
-          <XAxis 
-            dataKey="date" 
-            tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} 
-            angle={-45} 
-            textAnchor="end" 
-            height={isMobile ? 50 : 60}
-            interval={isMobile ? 'preserveStartEnd' : 0}
-          />
-          <YAxis tick={{ fontSize: isMobile ? 9 : 11, fill: theme.palette.text.secondary }} width={isMobile ? 35 : 50} />
-          <Tooltip 
-            cursor={false}
-            contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }}
-            labelStyle={{ color: '#94a3b8' }}
-            itemStyle={{ color: '#f1f5f9' }}
-          />
-          <Legend wrapperStyle={{ paddingTop: isMobile ? 12 : 20, fontSize: isMobile ? '0.75rem' : '1rem' }} />
-          <Line type="monotone" dataKey="detections" name="Detections" stroke={UNCW_TEAL} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_TEAL, r: isMobile ? 3 : 4 }} />
-          <Line type="monotone" dataKey="blocked" name="Blocked" stroke={UNCW_GOLD} strokeWidth={isMobile ? 2 : 3} dot={{ fill: UNCW_GOLD, r: isMobile ? 3 : 4 }} />
-          <Line type="monotone" dataKey="endpointsOnline" name={isMobile ? 'Online' : 'Endpoints Online'} stroke={theme.palette.text.secondary} strokeWidth={isMobile ? 1.5 : 2} dot={{ fill: theme.palette.text.secondary, r: isMobile ? 2 : 3 }} />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    </a>
   )
 }
 
@@ -425,6 +483,8 @@ export function EDREndpointStatus() {
   const theme = useTheme()
   const data = mockEDREndpointBreakdown()
   const total = data.reduce((sum, item) => sum + item.count, 0)
+  const protectedCount = data.find(d => d.status === 'Protected')?.count || 0
+  const vulnerableCount = data.find(d => d.status === 'Vulnerable')?.count || 0
   const chartHeight = getResponsiveChartHeight(isMobile, 420)
   
   useEffect(() => {
@@ -432,104 +492,207 @@ export function EDREndpointStatus() {
   }, [isMobile, theme.palette.mode, total])
   
   return (
-    <div 
-      className={isMobile ? 'mobile-chart-container' : ''}
+    <a 
+      href="/edr/endpoints"
       style={{ 
-        backgroundColor: theme.palette.background.paper, 
-        borderRadius: 16, 
-        padding: isMobile ? 16 : 32, 
-        border: `2px solid ${theme.palette.divider}`,
-        height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
-      }}>
-      <div style={{ 
-        marginBottom: isMobile ? 16 : 24, 
-        color: theme.palette.text.primary, 
-        fontSize: isMobile ? '1.1rem' : '1.3rem', 
-        fontWeight: 700,
-        display: 'flex',
-        alignItems: 'center',
-        gap: isMobile ? 8 : 12
-      }}>
-        <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
-        EDR Endpoint Status
+        textDecoration: 'none',
+        display: 'block'
+      }}
+      title="View endpoint protection status including vulnerable systems that need attention"
+    >
+      <div 
+        className={isMobile ? 'mobile-chart-container' : ''}
+        style={{ 
+          backgroundColor: theme.palette.background.paper, 
+          borderRadius: 16, 
+          padding: isMobile ? 16 : 32, 
+          border: `2px solid ${theme.palette.divider}`,
+          height: chartHeight,
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = UNCW_TEAL
+          e.currentTarget.style.transform = 'translateY(-4px)'
+          e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 168, 168, 0.3)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = theme.palette.divider
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+        <div style={{ 
+          marginBottom: isMobile ? 16 : 24, 
+          color: theme.palette.text.primary, 
+          fontSize: isMobile ? '1.1rem' : '1.3rem', 
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: isMobile ? 8 : 12
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12 }}>
+            <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+            EDR Endpoint Status
+          </div>
+          {!isMobile && (
+            <div style={{ fontSize: '0.85rem', color: theme.palette.text.secondary }}>
+              View details →
+            </div>
+          )}
+        </div>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie 
+              data={data} 
+              dataKey="count" 
+              nameKey="status"
+              cx="50%" 
+              cy="50%" 
+              outerRadius={isMobile ? 80 : 120}
+              label={isMobile ? false : (entry) => `${entry.status}: ${entry.count}`}
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip 
+              cursor={false}
+              contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }}
+              labelStyle={{ color: '#94a3b8' }}
+              itemStyle={{ color: '#f1f5f9' }}
+            />
+            {isMobile && <Legend wrapperStyle={{ fontSize: '0.75rem' }} />}
+          </PieChart>
+        </ResponsiveContainer>
+        <div style={{ 
+          textAlign: 'center', 
+          marginTop: isMobile ? 8 : 16, 
+          fontSize: isMobile ? '0.95rem' : '1.1rem', 
+          fontWeight: 600, 
+          color: theme.palette.text.secondary,
+          display: 'flex',
+          justifyContent: 'space-around',
+          gap: 16
+        }}>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', color: '#10b981' }}>{protectedCount}</div>
+            <div style={{ fontSize: '0.85rem' }}>Protected</div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', color: '#ef4444' }}>{vulnerableCount}</div>
+            <div style={{ fontSize: '0.85rem' }}>Vulnerable</div>
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', color: theme.palette.text.secondary }}>{total}</div>
+            <div style={{ fontSize: '0.85rem' }}>Total</div>
+          </div>
+        </div>
       </div>
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie 
-            data={data} 
-            dataKey="count" 
-            nameKey="status"
-            cx="50%" 
-            cy="50%" 
-            outerRadius={isMobile ? 80 : 120}
-            label={isMobile ? false : (entry) => `${entry.status}: ${entry.count}`}
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Tooltip 
-            cursor={false}
-            contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, fontSize: isMobile ? '0.8rem' : '1rem', color: theme.palette.text.primary }}
-            labelStyle={{ color: '#94a3b8' }}
-            itemStyle={{ color: '#f1f5f9' }}
-          />
-          {isMobile && <Legend wrapperStyle={{ fontSize: '0.75rem' }} />}
-        </PieChart>
-      </ResponsiveContainer>
-      <div style={{ textAlign: 'center', marginTop: isMobile ? 8 : 16, fontSize: isMobile ? '0.95rem' : '1.1rem', fontWeight: 600, color: theme.palette.text.secondary }}>
-        Total Endpoints: {total}
-      </div>
-    </div>
+    </a>
   )
 }
 
 export function EDRThreatDetections() {
   const theme = useTheme()
   const data = mockEDRThreatTypes()
+  const totalDetected = data.reduce((sum, d) => sum + d.detected, 0)
+  const totalBlocked = data.reduce((sum, d) => sum + d.blocked, 0)
+  const blockRate = totalDetected > 0 ? Math.round((totalBlocked / totalDetected) * 100) : 0
   
   useEffect(() => {
     log.chart('EDRThreatDetections mounted', { theme: theme.palette.mode })
   }, [theme.palette.mode])
   
   return (
-    <div style={{ 
-      backgroundColor: theme.palette.background.paper, 
-      borderRadius: 16, 
-      padding: 32, 
-      border: `2px solid ${theme.palette.divider}`,
-      height: 420,
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
-    }}>
+    <a 
+      href="/edr/threats"
+      style={{ 
+        textDecoration: 'none',
+        display: 'block'
+      }}
+      title="View detailed threat detection breakdown by type including ransomware, trojans, and suspicious behavior"
+    >
       <div style={{ 
-        marginBottom: 24, 
-        color: theme.palette.text.primary, 
-        fontSize: '1.3rem', 
-        fontWeight: 700,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12
-      }}>
-        <div style={{ width: 4, height: 28, backgroundColor: UNCW_GOLD, borderRadius: 2 }}></div>
-        EDR Threat Detections
+        backgroundColor: theme.palette.background.paper, 
+        borderRadius: 16, 
+        padding: 32, 
+        border: `2px solid ${theme.palette.divider}`,
+        height: 420,
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = UNCW_GOLD
+        e.currentTarget.style.transform = 'translateY(-4px)'
+        e.currentTarget.style.boxShadow = '0 8px 24px rgba(245, 158, 11, 0.3)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = theme.palette.divider
+        e.currentTarget.style.transform = 'translateY(0)'
+        e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+      }}
+      >
+        <div style={{ 
+          marginBottom: 24, 
+          color: theme.palette.text.primary, 
+          fontSize: '1.3rem', 
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 4, height: 28, backgroundColor: UNCW_GOLD, borderRadius: 2 }}></div>
+            EDR Threat Detections
+          </div>
+          <div style={{ fontSize: '0.85rem', color: theme.palette.text.secondary }}>
+            View details →
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+            <XAxis dataKey="type" tick={{ fontSize: 12, fill: theme.palette.text.secondary }} />
+            <YAxis tick={{ fontSize: 11, fill: theme.palette.text.secondary }} width={50} />
+            <Tooltip 
+              cursor={false}
+              contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, color: theme.palette.text.primary }}
+              labelStyle={{ color: '#94a3b8' }}
+              itemStyle={{ color: '#f1f5f9' }}
+            />
+            <Legend wrapperStyle={{ paddingTop: 16 }} />
+            <Bar dataKey="detected" name="Detected" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
+            <Bar dataKey="blocked" name="Blocked" fill={UNCW_GOLD} radius={[8, 8, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-around', 
+          marginTop: 16, 
+          paddingTop: 16, 
+          borderTop: `1px solid ${theme.palette.divider}`,
+          fontSize: '0.9rem',
+          color: theme.palette.text.secondary
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', color: UNCW_TEAL }}>{totalDetected}</div>
+            <div>Total Detected</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', color: UNCW_GOLD }}>{totalBlocked}</div>
+            <div>Blocked</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontWeight: 700, fontSize: '1.2rem', color: '#10b981' }}>{blockRate}%</div>
+            <div>Block Rate</div>
+          </div>
+        </div>
       </div>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-          <XAxis dataKey="type" tick={{ fontSize: 12, fill: theme.palette.text.secondary }} />
-          <YAxis tick={{ fontSize: 11, fill: theme.palette.text.secondary }} width={50} />
-          <Tooltip 
-            cursor={false}
-            contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${UNCW_TEAL}`, borderRadius: 12, padding: 12, color: theme.palette.text.primary }}
-            labelStyle={{ color: '#94a3b8' }}
-            itemStyle={{ color: '#f1f5f9' }}
-          />
-          <Legend wrapperStyle={{ paddingTop: 16 }} />
-          <Bar dataKey="detected" name="Detected" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
-          <Bar dataKey="blocked" name="Blocked" fill={UNCW_GOLD} radius={[8, 8, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+    </a>
   )
 }
 
