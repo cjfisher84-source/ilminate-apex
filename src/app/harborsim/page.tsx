@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Box, Typography, Paper, Grid, Card, CardContent, Button, CircularProgress, Alert } from '@mui/material'
+import { Box, Typography, Card, CardContent, Button, CircularProgress, Alert } from '@mui/material'
 
 interface Template {
   id: string
@@ -67,45 +67,47 @@ export default function HarborSimList() {
             {error}
           </Alert>
         ) : (
-          <Grid container spacing={3}>
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+            gap: 3 
+          }}>
             {templates.map((template) => (
-              <Grid item xs={12} sm={6} md={4} key={template.id}>
-                <Card sx={{ bgcolor: '#111827', border: '1px solid #374151', '&:hover': { borderColor: '#14b8a6' } }}>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ color: '#f3f4f6', mb: 1 }}>
-                      {template.name}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#9ca3af', mb: 2 }}>
-                      {template.sender_name} &lt;{template.sender_email}&gt;
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#d1d5db', mb: 2, fontStyle: 'italic' }}>
-                      Subject: {template.subject}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#9ca3af', mb: 2 }}>
-                      {template.preview}
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: '#6b7280', display: 'block', mb: 2 }}>
-                      Status: {template.status}
-                    </Typography>
-                    <Button
-                      component={Link}
-                      href={`/harborsim/template/${template.id}`}
-                      variant="contained"
-                      fullWidth
-                      sx={{
-                        bgcolor: '#0d9488',
-                        color: '#ffffff',
-                        fontWeight: 600,
-                        '&:hover': { bgcolor: '#0f766e' }
-                      }}
-                    >
-                      View Details
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <Card key={template.id} sx={{ bgcolor: '#111827', border: '1px solid #374151', '&:hover': { borderColor: '#14b8a6' } }}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ color: '#f3f4f6', mb: 1 }}>
+                    {template.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#9ca3af', mb: 2 }}>
+                    {template.sender_name} &lt;{template.sender_email}&gt;
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#d1d5db', mb: 2, fontStyle: 'italic' }}>
+                    Subject: {template.subject}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#9ca3af', mb: 2 }}>
+                    {template.preview}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#6b7280', display: 'block', mb: 2 }}>
+                    Status: {template.status}
+                  </Typography>
+                  <Button
+                    component={Link}
+                    href={`/harborsim/template/${template.id}`}
+                    variant="contained"
+                    fullWidth
+                    sx={{
+                      bgcolor: '#0d9488',
+                      color: '#ffffff',
+                      fontWeight: 600,
+                      '&:hover': { bgcolor: '#0f766e' }
+                    }}
+                  >
+                    View Details
+                  </Button>
+                </CardContent>
+              </Card>
             ))}
-          </Grid>
+          </Box>
         )}
       </Box>
     </Box>
