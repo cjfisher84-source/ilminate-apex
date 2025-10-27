@@ -6,6 +6,7 @@ import { useIsMobile, getResponsivePadding, getResponsiveFontSize, getResponsive
 import { EDREndpointStatus } from '@/components/Charts.client'
 
 const UNCW_TEAL = '#007070'
+const UNCW_GOLD = '#f59e0b'
 
 export default function EDREndpointStatusPage() {
   const theme = useTheme()
