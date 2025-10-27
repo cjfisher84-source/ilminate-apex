@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -8,7 +8,7 @@ import { Box, Typography, Paper, Button, Alert, List, ListItem, ListItemText, Di
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import WarningIcon from '@mui/icons-material/Warning'
 
-export default function HarborSimCoach() {
+function HarborSimCoachContent() {
   const searchParams = useSearchParams()
   const sim = searchParams?.get('sim')
   const token = searchParams?.get('token')
@@ -147,6 +147,18 @@ export default function HarborSimCoach() {
         )}
       </Box>
     </Box>
+  )
+}
+
+export default function HarborSimCoach() {
+  return (
+    <Suspense fallback={
+      <Box sx={{ minHeight: '100vh', bgcolor: '#030712', color: '#f3f4f6', p: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography variant="h5" sx={{ color: '#9ca3af' }}>Loading...</Typography>
+      </Box>
+    }>
+      <HarborSimCoachContent />
+    </Suspense>
   )
 }
 
