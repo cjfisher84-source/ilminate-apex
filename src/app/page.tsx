@@ -374,18 +374,81 @@ export default function Home() {
                   Your organization's security posture is being continuously monitored and improved through advanced threat detection and response capabilities.
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'background.default', borderRadius: 2 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Threats Blocked Today</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main', fontSize: '1.1rem' }}>1,247</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'background.default', borderRadius: 2 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Active Monitoring</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', fontSize: '1.1rem' }}>24/7</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'background.default', borderRadius: 2 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Last Incident</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'secondary.main', fontSize: '1.1rem' }}>2h ago</Typography>
-                  </Box>
+                  <Link href="/metrics/threats-blocked" style={{ textDecoration: 'none' }}>
+                    <Box 
+                      sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center', 
+                        p: 1.5, 
+                        bgcolor: 'background.default', 
+                        borderRadius: 2,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        border: '1px solid transparent',
+                        '&:hover': {
+                          bgcolor: 'action.hover',
+                          borderColor: 'success.main',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+                        }
+                      }}
+                      title="Total number of dangerous emails blocked today"
+                    >
+                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Threats Blocked Today</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main', fontSize: '1.1rem' }}>1,247</Typography>
+                    </Box>
+                  </Link>
+                  <Link href="/metrics/active-monitoring" style={{ textDecoration: 'none' }}>
+                    <Box 
+                      sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center', 
+                        p: 1.5, 
+                        bgcolor: 'background.default', 
+                        borderRadius: 2,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        border: '1px solid transparent',
+                        '&:hover': {
+                          bgcolor: 'action.hover',
+                          borderColor: 'primary.main',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+                        }
+                      }}
+                      title="Continuous around-the-clock security monitoring"
+                    >
+                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Active Monitoring</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', fontSize: '1.1rem' }}>24/7</Typography>
+                    </Box>
+                  </Link>
+                  <Link href="/metrics/last-incident" style={{ textDecoration: 'none' }}>
+                    <Box 
+                      sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center', 
+                        p: 1.5, 
+                        bgcolor: 'background.default', 
+                        borderRadius: 2,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        border: '1px solid transparent',
+                        '&:hover': {
+                          bgcolor: 'action.hover',
+                          borderColor: 'secondary.main',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+                        }
+                      }}
+                      title="Time since the most recent security incident"
+                    >
+                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Last Incident</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'secondary.main', fontSize: '1.1rem' }}>2h ago</Typography>
+                    </Box>
+                  </Link>
                 </Box>
               </Box>
               <SecurityAssistant />
