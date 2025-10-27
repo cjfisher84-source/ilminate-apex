@@ -104,16 +104,35 @@ export default function HarborSimList() {
     <Box sx={{ minHeight: '100vh', bgcolor: '#030712', color: '#f3f4f6', p: 4 }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, gap: 3 }}>
-          <Image src="/logo.png" alt="Logo" width={60} height={60} />
-          <Box>
-            <Typography variant="h3" sx={{ fontWeight: 700, color: '#f3f4f6', mb: 0.5 }}>
-              HarborSim
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#9ca3af' }}>
-              Email Security Training Platform
-            </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, gap: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Image src="/logo.png" alt="Logo" width={60} height={60} />
+            <Box>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: '#f3f4f6', mb: 0.5 }}>
+                HarborSim
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+                Email Security Training Platform
+              </Typography>
+            </Box>
           </Box>
+          <Link href="/" passHref legacyBehavior>
+            <Button
+              variant="outlined"
+              component="a"
+              sx={{
+                borderColor: '#14b8a6',
+                color: '#14b8a6',
+                fontWeight: 600,
+                '&:hover': {
+                  borderColor: '#0d9488',
+                  bgcolor: 'rgba(20, 184, 166, 0.1)'
+                }
+              }}
+            >
+              ← Return to Dashboard
+            </Button>
+          </Link>
         </Box>
 
         {/* Content */}
