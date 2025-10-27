@@ -94,139 +94,117 @@ export default function Home() {
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ 
-            display: 'flex', 
-            gap: isMobile ? 1.5 : 2,
-            width: isMobile ? '100%' : 'auto',
-            flexDirection: isMobile ? 'column' : 'row',
-            flexWrap: isMobile ? 'nowrap' : 'wrap'
-          }}>
-            <Link href="/investigations" passHref legacyBehavior>
-              <Button 
-                variant="outlined" 
-                component="a" 
-                size={isMobile ? 'medium' : 'large'}
-                color="primary"
-                fullWidth={isMobile}
-                className={isMobile ? 'mobile-touch-target' : ''}
-                title="Deep dive into active and recent security campaigns with timeline analysis"
-                sx={{ 
-                  px: isMobile ? 2 : 4,
-                  py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '0.95rem' : '1.1rem',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                Investigations
-              </Button>
-            </Link>
-            <Link href="/triage" passHref legacyBehavior>
-              <Button 
-                variant="outlined" 
-                component="a" 
-                size={isMobile ? 'medium' : 'large'}
-                color="primary"
-                fullWidth={isMobile}
-                className={isMobile ? 'mobile-touch-target' : ''}
-                title="AI-powered threat analysis and classification for suspicious emails"
-                sx={{ 
-                  px: isMobile ? 2 : 4,
-                  py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '0.95rem' : '1.1rem',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                Triage
-              </Button>
-            </Link>
-            <Link href="/quarantine" passHref legacyBehavior>
-              <Button 
-                variant="outlined" 
-                component="a" 
-                size={isMobile ? 'medium' : 'large'}
-                color="primary"
-                fullWidth={isMobile}
-                className={isMobile ? 'mobile-touch-target' : ''}
-                title="Review and manage messages held for security review"
-                sx={{ 
-                  px: isMobile ? 2 : 4,
-                  py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '0.95rem' : '1.1rem',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                Quarantine
-              </Button>
-            </Link>
-            <Link href="/apex-trace" passHref legacyBehavior>
-              <Button 
-                variant="outlined" 
-                component="a" 
-                size={isMobile ? 'medium' : 'large'}
-                color="primary"
-                fullWidth={isMobile}
-                className={isMobile ? 'mobile-touch-target' : ''}
-                title="Super fast message search across email data with advanced filtering"
-                sx={{ 
-                  px: isMobile ? 2 : 4,
-                  py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '0.95rem' : '1.1rem',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                APEX Trace
-              </Button>
-            </Link>
-            <Link href="/reports/attack" passHref legacyBehavior>
-              <Button 
-                variant="outlined" 
-                component="a" 
-                size={isMobile ? 'medium' : 'large'}
-                fullWidth={isMobile}
-                className={isMobile ? 'mobile-touch-target' : ''}
-                title="View security events mapped to ATT&CK techniques for threat intelligence"
-                sx={{ 
-                  px: isMobile ? 2 : 4,
-                  py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '0.95rem' : '1.1rem',
-                  fontWeight: 600,
-                  borderColor: '#00a8a8',
-                  color: '#00a8a8',
-                  whiteSpace: 'nowrap',
-                  '&:hover': {
-                    borderColor: '#007070',
-                    bgcolor: 'rgba(0, 168, 168, 0.08)'
-                  }
-                }}
-              >
-                {isMobile ? 'ATT&CK' : 'ATT&CK Matrix'}
-              </Button>
-            </Link>
-            <Link href="/harborsim" passHref legacyBehavior>
-              <Button 
-                variant="outlined" 
-                component="a" 
-                size={isMobile ? 'medium' : 'large'}
-                color="primary"
-                fullWidth={isMobile}
-                className={isMobile ? 'mobile-touch-target' : ''}
-                title="Email security training platform with phishing simulation templates"
-                sx={{ 
-                  px: isMobile ? 2 : 4,
-                  py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '0.95rem' : '1.1rem',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                HarborSim
-              </Button>
-            </Link>
-          </Box>
+        </Box>
+
+        {/* Navigation Icons - Single Row with Emojis */}
+        <Box sx={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: 2, 
+          justifyContent: isMobile ? 'center' : 'flex-start',
+          mb: 3,
+          p: 2,
+          bgcolor: 'background.paper',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 2
+        }}>
+          <Link href="/investigations" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="Deep dive into active and recent security campaigns with timeline analysis"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              🔍 Investigations
+            </Button>
+          </Link>
+          <Link href="/apex-trace" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="Super fast message search across email data with advanced filtering"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              🔎 APEX Trace
+            </Button>
+          </Link>
+          <Link href="/triage" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="AI-powered threat analysis and classification for suspicious emails"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              ⚡ Triage
+            </Button>
+          </Link>
+          <Link href="/quarantine" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="Review and manage messages held for security review"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              🛡️ Quarantine
+            </Button>
+          </Link>
+          <Link href="/harborsim" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="Email security training platform with phishing simulation templates"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              📧 HarborSim
+            </Button>
+          </Link>
+          <Link href="/reports/attack" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="View security events mapped to ATT&CK techniques for threat intelligence"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              🎯 MITRE ATT&CK
+            </Button>
+          </Link>
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: sectionGap }}>
