@@ -397,12 +397,10 @@ export function EDRMetricsLines() {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = UNCW_TEAL
-          e.currentTarget.style.transform = 'translateY(-4px)'
           e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 168, 168, 0.3)'
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.borderColor = theme.palette.divider
-          e.currentTarget.style.transform = 'translateY(0)'
           e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
         }}
       >
@@ -514,12 +512,10 @@ export function EDREndpointStatus() {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = UNCW_TEAL
-          e.currentTarget.style.transform = 'translateY(-4px)'
           e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 168, 168, 0.3)'
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.borderColor = theme.palette.divider
-          e.currentTarget.style.transform = 'translateY(0)'
           e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
         }}
       >
@@ -627,12 +623,10 @@ export function EDRThreatDetections() {
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = UNCW_GOLD
-        e.currentTarget.style.transform = 'translateY(-4px)'
         e.currentTarget.style.boxShadow = '0 8px 24px rgba(245, 158, 11, 0.3)'
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.borderColor = theme.palette.divider
-        e.currentTarget.style.transform = 'translateY(0)'
         e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
       }}
       >
