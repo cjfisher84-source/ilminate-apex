@@ -28,9 +28,53 @@ body {
    MOBILE OPTIMIZATIONS (Feature Flag: MOBILE_TWEAKS)
    ============================================ */
 
-/* Smooth scrolling for better UX */
-html {
-  scroll-behavior: smooth;
+/* Keep default scrolling non-animated for perf; opt-in for anchors only. */
+html { 
+  scroll-behavior: auto; 
+}
+
+/* If you do want smooth anchor jumps (optional and light): */
+@media (prefers-reduced-motion: no-preference) {
+  :target { scroll-behavior: smooth; }
+}
+
+/* Avoid nested scroll containers. Prefer body-level scroll only. */
+html, body {
+  height: 100%;
+  overflow-y: auto;
+}
+#root, #__next {
+  height: 100%;
+}
+
+/* Animated login background perf hints */
+.login-bg-animation { 
+  position: absolute; 
+  inset: 0;
+  contain: paint;         /* isolate repaints to this subtree */
+}
+
+.bg-circle { 
+  will-change: transform, opacity;
+  transform: translateZ(0); /* promote to its own layer */
+  /* Avoid huge shadows/filters that trigger costly repaints on scroll */
+  filter: none;
+  box-shadow: none;
+}
+
+/* If you have a sticky header with big shadows, tone them down on scroll */
+.header.is-scrolling { 
+  box-shadow: 0 2px 8px rgba(0,0,0,.25); 
+}
+
+/* (Optional) Utility: visually hidden, but accessible */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; 
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
 }
 
 /* Mobile-specific utility classes */
