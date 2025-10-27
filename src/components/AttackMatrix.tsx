@@ -3,6 +3,7 @@
 import React from 'react';
 import { Box, Typography, Button, Chip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import Link from 'next/link';
 
 type TechniqueScore = { techniqueID: string; score: number };
 type Layer = { 
@@ -199,15 +200,24 @@ export default function AttackMatrix({
                       title={active ? `${tech.id}: ${tech.name}\nDetections: ${score}` : ''}
                     >
                       {active && score > 0 && (
-                        <Typography 
-                          sx={{ 
-                            fontSize: '0.7rem',
-                            fontWeight: 700,
-                            color: alpha > 0.5 ? 'white' : UNCW_TEAL
-                          }}
-                        >
-                          {score}
-                        </Typography>
+                        <Link href={`/events?technique=${tech.id}`} passHref legacyBehavior>
+                          <Button
+                            component="a"
+                            sx={{ 
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              color: alpha > 0.5 ? 'white' : UNCW_TEAL,
+                              minWidth: 'auto',
+                              p: 0.5,
+                              '&:hover': {
+                                bgcolor: 'rgba(255, 255, 255, 0.2)',
+                                textDecoration: 'underline'
+                              }
+                            }}
+                          >
+                            {score}
+                          </Button>
+                        </Link>
                       )}
                     </Box>
                   );

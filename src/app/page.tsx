@@ -223,6 +223,133 @@ export default function Home() {
           </Box>
         </Box>
 
+        {/* Navigation Icons with Hover Descriptions */}
+        <Box sx={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: 2, 
+          justifyContent: isMobile ? 'center' : 'flex-start',
+          mb: 3,
+          p: 2,
+          bgcolor: 'background.paper',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 2
+        }}>
+          <Link href="/" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="Main Dashboard - Overview of security posture and threat metrics"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              🏠 Dashboard
+            </Button>
+          </Link>
+          <Link href="/investigations" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="Investigations - Deep dive into active and recent security campaigns with timeline analysis"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              🔍 Investigations
+            </Button>
+          </Link>
+          <Link href="/apex-trace" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="APEX Trace - Super fast message search across email data with advanced filtering"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              🔎 APEX Trace
+            </Button>
+          </Link>
+          <Link href="/triage" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="Triage - AI-powered threat analysis and classification for suspicious emails"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              ⚡ Triage
+            </Button>
+          </Link>
+          <Link href="/quarantine" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="Quarantine - Review and manage messages held for security review"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              🛡️ Quarantine
+            </Button>
+          </Link>
+          <Link href="/harborsim" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="HarborSim - Email security training platform with phishing simulation templates"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              📧 HarborSim
+            </Button>
+          </Link>
+          <Link href="/reports/attack" passHref legacyBehavior>
+            <Button
+              component="a"
+              variant="text"
+              title="MITRE ATT&CK Matrix - View security events mapped to ATT&CK techniques for threat intelligence"
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { 
+                  color: 'primary.main',
+                  bgcolor: 'rgba(0, 168, 168, 0.08)'
+                }
+              }}
+            >
+              🎯 MITRE ATT&CK
+            </Button>
+          </Link>
+        </Box>
+
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: sectionGap }}>
           {/* Threat Categories Section */}
           <Box>
@@ -264,7 +391,7 @@ export default function Home() {
           {/* Advanced Image Detection Section */}
           <ImageScanResults />
 
-          {/* New Feature Highlight - ATT&CK Matrix */}
+          {/* MITRE ATT&CK Matrix Highlight */}
           <Link href="/reports/attack" style={{ textDecoration: 'none' }}>
             <Paper sx={{ 
               p: isMobile ? 2.5 : 4, 
@@ -288,16 +415,6 @@ export default function Home() {
                   🎯
                 </Box>
                 <Box sx={{ flex: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                    <Typography variant="overline" sx={{ 
-                      color: '#00a8a8', 
-                      fontWeight: 800,
-                      fontSize: isMobile ? '0.7rem' : '0.8rem',
-                      letterSpacing: 1.5
-                    }}>
-                      ✨ NEW FEATURE
-                    </Typography>
-                  </Box>
                   <Typography variant={isMobile ? 'h5' : 'h4'} sx={{ 
                     fontWeight: 800, 
                     color: 'text.primary',
