@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
-export default function ScrollManager() {
+function ScrollManagerContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -32,5 +32,13 @@ export default function ScrollManager() {
   }, []);
 
   return null;
+}
+
+export default function ScrollManager() {
+  return (
+    <Suspense fallback={null}>
+      <ScrollManagerContent />
+    </Suspense>
+  );
 }
 
