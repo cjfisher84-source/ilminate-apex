@@ -241,23 +241,20 @@ export function CyberScoreDonut() {
               justifyContent: 'center',
               textDecoration: 'none',
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              ':hover': {
-                backgroundColor: theme.palette.action.hover,
-                borderColor: metric.color,
-                transform: 'translateY(-2px)'
-              }
+              transition: 'all 0.2s ease'
             }}
             title={metric.tooltip}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = theme.palette.action.hover
               e.currentTarget.style.borderColor = metric.color
               e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = `0 2px 8px ${metric.color}40`
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = theme.palette.background.default
               e.currentTarget.style.borderColor = theme.palette.divider
               e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = 'none'
             }}
           >
             <div style={{ fontSize: '1rem', fontWeight: 700, color: metric.color, marginBottom: 2 }}>
