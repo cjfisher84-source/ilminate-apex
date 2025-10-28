@@ -40,13 +40,16 @@ html {
 
 /* Ensure proper scrolling behavior */
 html {
-  overflow-y: auto;
+  height: auto;
+  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
 body {
+  min-height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  position: relative;
 }
 
 /* Animated login background perf hints */
@@ -81,11 +84,22 @@ body {
 
 /* Mobile-specific utility classes */
 @media (max-width: 768px) {
-  /* Prevent horizontal scroll and improve touch scrolling */
+  /* Improve touch scrolling on iOS Safari */
+  html {
+    position: relative;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
   body {
+    position: relative;
     overflow-x: hidden;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    /* Fix iOS Safari scroll bounce */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
   
   /* Improve touch targets - minimum 44x44px */
