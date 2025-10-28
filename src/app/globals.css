@@ -38,13 +38,15 @@ html {
   :target { scroll-behavior: smooth; }
 }
 
-/* Avoid nested scroll containers. Prefer body-level scroll only. */
-html, body {
-  height: 100%;
+/* Ensure proper scrolling behavior */
+html {
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
-#root, #__next {
-  height: 100%;
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Animated login background perf hints */
@@ -79,9 +81,11 @@ html, body {
 
 /* Mobile-specific utility classes */
 @media (max-width: 768px) {
-  /* Prevent horizontal scroll */
+  /* Prevent horizontal scroll and improve touch scrolling */
   body {
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
   
   /* Improve touch targets - minimum 44x44px */
