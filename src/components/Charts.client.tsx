@@ -395,7 +395,8 @@ export function EDRMetricsLines() {
           height: chartHeight,
           boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
           cursor: 'pointer',
-          transition: 'all 0.2s ease'
+          transition: 'all 0.2s ease',
+          overflow: 'hidden'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = UNCW_TEAL
@@ -512,7 +513,8 @@ export function EDREndpointStatus() {
           height: chartHeight,
           boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
           cursor: 'pointer',
-          transition: 'all 0.2s ease'
+          transition: 'all 0.2s ease',
+          overflow: 'hidden'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = UNCW_TEAL
@@ -625,7 +627,8 @@ export function EDRThreatDetections() {
         height: 420,
         boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
         cursor: 'pointer',
-        transition: 'all 0.2s ease'
+        transition: 'all 0.2s ease',
+        overflow: 'hidden'
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = UNCW_GOLD
