@@ -21,8 +21,16 @@ function ScrollManagerContent() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.location.hash) return; // let anchor links scroll naturally
-    // Use "instant" behavior (non-animated) for best perf.
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    // Only scroll to top if we're coming from another route, not on initial load
+    const handleRouteChange = () => {
+      if (window.location.hash) return;
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    };
+    
+    // Use a small delay to ensure smooth scrolling
+    const timeoutId = setTimeout(handleRouteChange, 100);
+    
+    return () => clearTimeout(timeoutId);
   }, [pathname, searchParams]);
 
   // Defensive blur to avoid autofocus pulling the page mid-way on first paint.
