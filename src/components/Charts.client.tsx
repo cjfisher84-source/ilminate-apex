@@ -379,7 +379,9 @@ export function EDRMetricsLines() {
       href="/edr/metrics"
       style={{ 
         textDecoration: 'none',
-        display: 'block'
+        display: 'block',
+        position: 'relative',
+        zIndex: 1
       }}
       title="View detailed EDR metrics including detections, blocked threats, and endpoint status over time"
     >
@@ -494,7 +496,9 @@ export function EDREndpointStatus() {
       href="/edr/endpoints"
       style={{ 
         textDecoration: 'none',
-        display: 'block'
+        display: 'block',
+        position: 'relative',
+        zIndex: 1
       }}
       title="View endpoint protection status including vulnerable systems that need attention"
     >
@@ -607,7 +611,9 @@ export function EDRThreatDetections() {
       href="/edr/threats"
       style={{ 
         textDecoration: 'none',
-        display: 'block'
+        display: 'block',
+        position: 'relative',
+        zIndex: 1
       }}
       title="View detailed threat detection breakdown by type including ransomware, trojans, and suspicious behavior"
     >
