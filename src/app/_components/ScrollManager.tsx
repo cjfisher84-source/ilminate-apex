@@ -7,31 +7,28 @@ function ScrollManagerContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Disable browser auto-restoration so we control scroll position.
+  // Use browser's native scroll restoration for better mobile support
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
+      window.history.scrollRestoration = 'auto';
       return () => {
         window.history.scrollRestoration = 'auto';
       };
     }
   }, []);
 
-  // On route/search changes, go to top (unless there is a hash like /#section).
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (window.location.hash) return; // let anchor links scroll naturally
-    // Only scroll to top if we're coming from another route, not on initial load
-    const handleRouteChange = () => {
-      if (window.location.hash) return;
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    };
-    
-    // Use a small delay to ensure smooth scrolling
-    const timeoutId = setTimeout(handleRouteChange, 100);
-    
-    return () => clearTimeout(timeoutId);
-  }, [pathname, searchParams]);
+  // Disable auto scroll-to-top on route changes - let browser handle it naturally
+  // useEffect(() => {
+  //   if (typeof window === 'undefined') return;
+  //   if (window.location.hash) return;
+  //   const handleRouteChange = () => {
+  //     if (window.location.hash) return;
+  //     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  //   };
+  //   
+  //   const timeoutId = setTimeout(handleRouteChange, 100);
+  //   return () => clearTimeout(timeoutId);
+  // }, [pathname, searchParams]);
 
   // Defensive blur to avoid autofocus pulling the page mid-way on first paint.
   useEffect(() => {
