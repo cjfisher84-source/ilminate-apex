@@ -29,7 +29,9 @@ body {
    ============================================ */
 
 /* Smooth scrolling behavior and offset fix */
+/* Stop browser "scroll anchoring" from pinning to mid-page during hydration */
 html {
+  overflow-anchor: none;
   scroll-behavior: smooth;
   scroll-padding-top: 80px; /* approximate navbar height */
   height: auto;
