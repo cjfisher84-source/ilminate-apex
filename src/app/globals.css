@@ -28,21 +28,20 @@ body {
    MOBILE OPTIMIZATIONS (Feature Flag: MOBILE_TWEAKS)
    ============================================ */
 
-/* Keep default scrolling non-animated for perf; opt-in for anchors only. */
-html { 
-  scroll-behavior: auto; 
-}
-
-/* If you do want smooth anchor jumps (optional and light): */
-@media (prefers-reduced-motion: no-preference) {
-  :target { scroll-behavior: smooth; }
-}
-
-/* Ensure proper scrolling behavior */
+/* Smooth scrolling behavior and offset fix */
 html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* approximate navbar height */
   height: auto;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
+}
+
+/* If user prefers reduced motion, disable smooth scrolling */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 body {
   min-height: 100vh;
