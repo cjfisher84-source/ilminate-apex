@@ -12,13 +12,12 @@ function LoginContent() {
   const [error, setError] = useState('')
   const [tokenInput, setTokenInput] = useState('')
 
-  // Check for unauthorized access error
+  // Check for any login errors
   useEffect(() => {
     const errorParam = searchParams.get('error')
-    const emailParam = searchParams.get('email')
     
-    if (errorParam === 'unauthorized' && emailParam) {
-      setError(`Access denied: ${emailParam} is not authorized to access this portal. Please contact support@ilminate.com to request access.`)
+    if (errorParam === 'auth_failed') {
+      setError('Authentication failed. Please try again.')
     }
   }, [searchParams])
 

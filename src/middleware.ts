@@ -1,44 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// SECURITY: Cognito User Pool Configuration
+// MULTI-TENANT SaaS: Cognito User Pool Configuration
 const COGNITO_CLIENT_ID = '1uoiq3h1afgo6799gie48vmlcj'
 const COGNITO_DOMAIN = 'ilminate-customer-portal-jqo56pdt.auth.us-east-1.amazoncognito.com'
-
-// SECURITY: Authorized email domains (add customer domains as they onboard)
-const AUTHORIZED_DOMAINS = [
-  'ilminate.com',
-  // Add customer organization domains here:
-  // 'customer-company.com',
-]
-
-// SECURITY: Specific authorized email addresses
-const AUTHORIZED_EMAILS: string[] = [
-  // Add specific authorized emails here:
-  // 'security.admin@partner.com',
-]
-
-/**
- * Check if email domain or address is authorized
- */
-function isEmailAuthorized(email: string): boolean {
-  if (!email) return false
-  
-  const normalizedEmail = email.toLowerCase().trim()
-  
-  // Check specific email whitelist
-  if (AUTHORIZED_EMAILS.includes(normalizedEmail)) {
-    return true
-  }
-  
-  // Check domain whitelist
-  const domain = normalizedEmail.split('@')[1]
-  if (domain && AUTHORIZED_DOMAINS.includes(domain)) {
-    return true
-  }
-  
-  return false
-}
 
 /**
  * Get Cognito ID token from cookies
@@ -73,7 +38,20 @@ function parseJWTPayload(token: string): any {
   }
 }
 
-// Middleware to protect portal routes with secure authentication
+/**
+ * Extract customer/tenant ID from email domain
+ * e.g., "admin@acme.com" → "acme.com"
+ */
+function getCustomerIdFromEmail(email: string): string | null {
+  if (!email) return null
+  
+  const parts = email.split('@')
+  if (parts.length !== 2) return null
+  
+  return parts[1].toLowerCase() // Return domain as customer ID
+}
+
+// MULTI-TENANT Middleware - Allow any authenticated user, extract their tenant
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   
@@ -82,12 +60,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // ✅ METHOD 1: Direct token access (for admin/testing)
+  // ✅ METHOD 1: Direct token access (for ilminate admin/testing only)
   const token = searchParams.get('k');
   const validToken = process.env.NEXT_PUBLIC_PORTAL_TOKEN || '7885c5de63b9b75428cacee0731b80509590783da34b02dd3373276b75ef8e25';
   
   if (token && token === validToken) {
-    return NextResponse.next();
+    const response = NextResponse.next()
+    // Admin access - set special customer ID
+    response.headers.set('x-user-email', 'admin@ilminate.com')
+    response.headers.set('x-customer-id', 'ilminate.com')
+    response.headers.set('x-user-role', 'admin')
+    return response
   }
 
   // ✅ METHOD 2: OAuth callback flow (has 'code' parameter from Cognito)
@@ -100,34 +83,30 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // ✅ METHOD 3: Valid Cognito session with authorized email
+  // ✅ METHOD 3: Valid Cognito session - MULTI-TENANT
   const idToken = getCognitoIdToken(request)
   
   if (idToken) {
-    // Parse JWT to get email (without full verification in edge runtime)
+    // Parse JWT to get email
     const payload = parseJWTPayload(idToken)
     const email = payload?.email || payload?.['cognito:username']
     
     if (email) {
-      // Check if email is authorized
-      if (isEmailAuthorized(email)) {
-        // Valid session with authorized email
+      // Extract customer/tenant ID from email domain
+      const customerId = getCustomerIdFromEmail(email)
+      
+      if (customerId) {
+        // ✅ ALLOW ACCESS - Multi-tenant SaaS model
         const response = NextResponse.next()
         
-        // Add email to response headers for use in pages/APIs
+        // Set headers for API routes to use
         response.headers.set('x-user-email', email)
+        response.headers.set('x-customer-id', customerId) // e.g., "acme.com"
+        response.headers.set('x-user-role', customerId === 'ilminate.com' ? 'admin' : 'customer')
+        
+        console.log(`✅ Authenticated: ${email} → Customer: ${customerId}`)
         
         return response
-      } else {
-        // Valid session but UNAUTHORIZED email domain
-        console.warn(`🚫 Unauthorized access attempt from: ${email}`)
-        
-        // Redirect to login with error message
-        const loginUrl = new URL('/login', request.url)
-        loginUrl.searchParams.set('error', 'unauthorized')
-        loginUrl.searchParams.set('email', email)
-        
-        return NextResponse.redirect(loginUrl)
       }
     }
   }
