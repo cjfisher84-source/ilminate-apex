@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const COGNITO_DOMAIN = 'ilminate-customer-portal-jqo56pdt.auth.us-east-1.amazoncognito.com'
 const COGNITO_CLIENT_ID = '1uoiq3h1afgo6799gie48vmlcj'
-const REDIRECT_URI = 'https://apex.ilminate.com/api/auth/callback'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -21,6 +20,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // Use request origin for redirect URI (works in dev and prod)
+    const redirectUri = `${request.nextUrl.origin}/api/auth/callback`
+    
     // Exchange authorization code for tokens
     const tokenEndpoint = `https://${COGNITO_DOMAIN}/oauth2/token`
     
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest) {
         grant_type: 'authorization_code',
         client_id: COGNITO_CLIENT_ID,
         code: code,
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: redirectUri,
       }),
     })
 

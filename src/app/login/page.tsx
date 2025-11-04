@@ -24,13 +24,17 @@ function LoginContent() {
   // SSO Login handlers
   const handleSSOLogin = (provider: 'Google' | 'AzureADv2') => {
     setLoading(true)
+    
+    // Use current origin for redirect URI (works in dev and prod)
+    const redirectUri = `${window.location.origin}/api/auth/callback`
+    
     const cognitoUrl = new URL(
       'https://ilminate-customer-portal-jqo56pdt.auth.us-east-1.amazoncognito.com/oauth2/authorize'
     )
     cognitoUrl.searchParams.set('client_id', '1uoiq3h1afgo6799gie48vmlcj')
     cognitoUrl.searchParams.set('response_type', 'code')
     cognitoUrl.searchParams.set('scope', 'email openid profile')
-    cognitoUrl.searchParams.set('redirect_uri', 'https://apex.ilminate.com/api/auth/callback')
+    cognitoUrl.searchParams.set('redirect_uri', redirectUri)
     cognitoUrl.searchParams.set('identity_provider', provider)
     
     window.location.href = cognitoUrl.toString()
