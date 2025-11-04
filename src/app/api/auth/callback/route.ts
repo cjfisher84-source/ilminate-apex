@@ -7,21 +7,25 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get('code')
   const error = searchParams.get('error')
+  
+  // Get the origin from the request
+  const origin = request.nextUrl.origin
+  console.log('Callback handler - Origin:', origin, 'Full URL:', request.nextUrl.href)
 
   // Handle OAuth errors
   if (error) {
     console.error('OAuth error:', error)
-    return NextResponse.redirect(new URL('/login?error=auth_failed', request.url))
+    return NextResponse.redirect(new URL(`${origin}/login?error=auth_failed`))
   }
 
   // No code provided
   if (!code) {
-    return NextResponse.redirect(new URL('/login?error=no_code', request.url))
+    return NextResponse.redirect(new URL(`${origin}/login?error=no_code`))
   }
 
   try {
     // Use request origin for redirect URI (works in dev and prod)
-    const redirectUri = `${request.nextUrl.origin}/api/auth/callback`
+    const redirectUri = `${origin}/api/auth/callback`
     
     // Exchange authorization code for tokens
     const tokenEndpoint = `https://${COGNITO_DOMAIN}/oauth2/token`
@@ -41,8 +45,15 @@ export async function GET(request: NextRequest) {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text()
-      console.error('Token exchange failed:', errorText)
-      return NextResponse.redirect(new URL('/login?error=token_exchange_failed', request.url))
+      console.error('Token exchange failed:', {
+        status: tokenResponse.status,
+        statusText: tokenResponse.statusText,
+        error: errorText,
+        redirectUri,
+        origin,
+        code: code.substring(0, 10) + '...'
+      })
+      return NextResponse.redirect(new URL(`${origin}/login?error=token_exchange_failed&details=${encodeURIComponent(errorText.substring(0, 100))}`))
     }
 
     const tokens = await tokenResponse.json()
@@ -52,7 +63,7 @@ export async function GET(request: NextRequest) {
     const username = idTokenPayload?.['cognito:username'] || idTokenPayload?.sub || 'user'
 
     // Create response with redirect to home page
-    const response = NextResponse.redirect(new URL('/', request.url))
+    const response = NextResponse.redirect(new URL(`${origin}/`))
 
     // Set Cognito-compatible cookies
     // Format: CognitoIdentityServiceProvider.<client_id>.<username>.<token_type>
@@ -99,7 +110,7 @@ export async function GET(request: NextRequest) {
     return response
   } catch (err) {
     console.error('OAuth callback error:', err)
-    return NextResponse.redirect(new URL('/login?error=callback_failed', request.url))
+    return NextResponse.redirect(new URL(`${origin}/login?error=callback_failed`))
   }
 }
 
