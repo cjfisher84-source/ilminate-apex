@@ -2,6 +2,7 @@
 import { Box, Typography, Card, CardContent, Button, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
+import UserProfile from '@/components/UserProfile'
 import { GeoThreatMap, CrossChannelTimelineChart } from '@/components/Charts.client'
 import { mockCampaigns, mockPathAnalysis, type Campaign } from '@/lib/mock'
 import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
@@ -76,13 +77,12 @@ export default function InvestigationsPage() {
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ display: 'flex', gap: 2, width: isMobile ? '100%' : 'auto' }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
             <Link href="/" passHref legacyBehavior>
               <Button 
                 variant="outlined" 
                 component="a" 
                 size={isMobile ? 'medium' : 'large'}
-                fullWidth={isMobile}
                 className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{ 
                   borderColor: UNCW_TEAL,
@@ -100,29 +100,7 @@ export default function InvestigationsPage() {
                 ← Dashboard
               </Button>
             </Link>
-            <Link href="/api/auth/logout" passHref legacyBehavior>
-              <Button 
-                variant="outlined" 
-                component="a" 
-                size={isMobile ? 'medium' : 'large'}
-                fullWidth={isMobile}
-                className={isMobile ? 'mobile-touch-target' : ''}
-                sx={{ 
-                  borderColor: UNCW_TEAL,
-                  color: UNCW_TEAL,
-                  px: isMobile ? 3 : 4,
-                  py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '1rem' : '1.1rem',
-                  fontWeight: 600,
-                  '&:hover': { 
-                    borderColor: '#005555',
-                    bgcolor: 'rgba(0, 112, 112, 0.05)'
-                  }
-                }}
-              >
-                Logout
-              </Button>
-            </Link>
+            <UserProfile />
           </Box>
         </Box>
 
