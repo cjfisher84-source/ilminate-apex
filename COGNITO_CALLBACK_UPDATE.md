@@ -28,6 +28,7 @@ In the **Hosted UI settings** section, find **Allowed callback URLs** and add:
 
 ```
 https://apex.ilminate.com/api/auth/callback
+http://localhost:3000/api/auth/callback
 ```
 
 **Current URL (keep this too):**
@@ -35,11 +36,14 @@ https://apex.ilminate.com/api/auth/callback
 https://apex.ilminate.com/
 ```
 
-**Final list should include BOTH:**
+**Final list should include ALL THREE:**
 ```
 https://apex.ilminate.com/
 https://apex.ilminate.com/api/auth/callback
+http://localhost:3000/api/auth/callback
 ```
+
+> **Note**: The `localhost:3000` URL is needed for local development and testing.
 
 ### 5. Save Changes
 
