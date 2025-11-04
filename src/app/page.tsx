@@ -92,6 +92,29 @@ export default function Home() {
               </Typography>
             </Box>
           </Box>
+          <Link href="/api/auth/logout" passHref legacyBehavior>
+            <Button 
+              variant="outlined" 
+              component="a" 
+              size={isMobile ? 'medium' : 'large'}
+              fullWidth={isMobile}
+              className={isMobile ? 'mobile-touch-target' : ''}
+              sx={{ 
+                borderColor: theme.palette.primary.main,
+                color: theme.palette.primary.main,
+                px: isMobile ? 3 : 4,
+                py: isMobile ? 1.2 : 1.5,
+                fontSize: isMobile ? '1rem' : '1.1rem',
+                fontWeight: 600,
+                '&:hover': { 
+                  borderColor: '#005555',
+                  bgcolor: 'rgba(0, 112, 112, 0.05)'
+                }
+              }}
+            >
+              Logout
+            </Button>
+          </Link>
         </Box>
 
         {/* Navigation Icons - Single Row with Emojis */}

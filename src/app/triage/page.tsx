@@ -222,24 +222,44 @@ ${details || '(none)'}
               </Typography>
             </Box>
           </Box>
-          <Link href="/" passHref legacyBehavior>
-            <Button 
-              variant="outlined" 
-              component="a" 
-              size={isMobile ? 'medium' : 'large'}
-              color="primary"
-              fullWidth={isMobile}
-              className={isMobile ? 'mobile-touch-target' : ''}
-              sx={{ 
-                px: isMobile ? 3 : 4,
-                py: isMobile ? 1.2 : 1.5,
-                fontSize: isMobile ? '1rem' : '1.1rem',
-                fontWeight: 600
-              }}
-            >
-              ← Dashboard
-            </Button>
-          </Link>
+          <Box sx={{ display: 'flex', gap: 2, width: isMobile ? '100%' : 'auto' }}>
+            <Link href="/" passHref legacyBehavior>
+              <Button 
+                variant="outlined" 
+                component="a" 
+                size={isMobile ? 'medium' : 'large'}
+                color="primary"
+                fullWidth={isMobile}
+                className={isMobile ? 'mobile-touch-target' : ''}
+                sx={{ 
+                  px: isMobile ? 3 : 4,
+                  py: isMobile ? 1.2 : 1.5,
+                  fontSize: isMobile ? '1rem' : '1.1rem',
+                  fontWeight: 600
+                }}
+              >
+                ← Dashboard
+              </Button>
+            </Link>
+            <Link href="/api/auth/logout" passHref legacyBehavior>
+              <Button 
+                variant="outlined" 
+                component="a" 
+                size={isMobile ? 'medium' : 'large'}
+                color="primary"
+                fullWidth={isMobile}
+                className={isMobile ? 'mobile-touch-target' : ''}
+                sx={{ 
+                  px: isMobile ? 3 : 4,
+                  py: isMobile ? 1.2 : 1.5,
+                  fontSize: isMobile ? '1rem' : '1.1rem',
+                  fontWeight: 600
+                }}
+              >
+                Logout
+              </Button>
+            </Link>
+          </Box>
         </Box>
 
         <Box sx={{ 

@@ -30,7 +30,7 @@ function LoginContent() {
     cognitoUrl.searchParams.set('client_id', '1uoiq3h1afgo6799gie48vmlcj')
     cognitoUrl.searchParams.set('response_type', 'code')
     cognitoUrl.searchParams.set('scope', 'email openid profile')
-    cognitoUrl.searchParams.set('redirect_uri', 'https://apex.ilminate.com/')
+    cognitoUrl.searchParams.set('redirect_uri', 'https://apex.ilminate.com/api/auth/callback')
     cognitoUrl.searchParams.set('identity_provider', provider)
     
     window.location.href = cognitoUrl.toString()
