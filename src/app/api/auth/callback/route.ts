@@ -8,9 +8,19 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get('code')
   const error = searchParams.get('error')
   
-  // Get the origin from the request
-  const origin = request.nextUrl.origin
-  console.log('Callback handler - Origin:', origin, 'Full URL:', request.nextUrl.href)
+  // Get the origin - prefer headers over request.nextUrl.origin for Amplify compatibility
+  const host = request.headers.get('host') || request.headers.get('x-forwarded-host')
+  const protocol = request.headers.get('x-forwarded-proto') || (host?.includes('localhost') ? 'http' : 'https')
+  const origin = host ? `${protocol}://${host}` : request.nextUrl.origin
+  
+  console.log('Callback handler - Detected origin:', origin, {
+    host,
+    protocol,
+    'x-forwarded-host': request.headers.get('x-forwarded-host'),
+    'x-forwarded-proto': request.headers.get('x-forwarded-proto'),
+    'nextUrl.origin': request.nextUrl.origin,
+    'nextUrl.href': request.nextUrl.href
+  })
 
   // Handle OAuth errors
   if (error) {
