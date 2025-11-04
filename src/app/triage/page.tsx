@@ -17,6 +17,7 @@ import {
 } from '@mui/icons-material'
 import Link from 'next/link'
 import Image from 'next/image'
+import UserProfile from '@/components/UserProfile'
 import TriageResults from '@/components/TriageResults'
 import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
 
@@ -222,14 +223,13 @@ ${details || '(none)'}
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ display: 'flex', gap: 2, width: isMobile ? '100%' : 'auto' }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
             <Link href="/" passHref legacyBehavior>
               <Button 
                 variant="outlined" 
                 component="a" 
                 size={isMobile ? 'medium' : 'large'}
                 color="primary"
-                fullWidth={isMobile}
                 className={isMobile ? 'mobile-touch-target' : ''}
                 sx={{ 
                   px: isMobile ? 3 : 4,
@@ -241,24 +241,7 @@ ${details || '(none)'}
                 ← Dashboard
               </Button>
             </Link>
-            <Link href="/api/auth/logout" passHref legacyBehavior>
-              <Button 
-                variant="outlined" 
-                component="a" 
-                size={isMobile ? 'medium' : 'large'}
-                color="primary"
-                fullWidth={isMobile}
-                className={isMobile ? 'mobile-touch-target' : ''}
-                sx={{ 
-                  px: isMobile ? 3 : 4,
-                  py: isMobile ? 1.2 : 1.5,
-                  fontSize: isMobile ? '1rem' : '1.1rem',
-                  fontWeight: 600
-                }}
-              >
-                Logout
-              </Button>
-            </Link>
+            <UserProfile />
           </Box>
         </Box>
 
