@@ -73,17 +73,7 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  // ✅ METHOD 2: OAuth callback flow (has 'code' parameter from Cognito)
-  const authCode = searchParams.get('code');
-  if (authCode) {
-    // Verify it's from our Cognito domain
-    const referer = request.headers.get('referer') || '';
-    if (referer.includes(COGNITO_DOMAIN)) {
-      return NextResponse.next();
-    }
-  }
-
-  // ✅ METHOD 3: Valid Cognito session - MULTI-TENANT
+  // ✅ METHOD 2: Valid Cognito session - MULTI-TENANT
   const idToken = getCognitoIdToken(request)
   
   if (idToken) {
