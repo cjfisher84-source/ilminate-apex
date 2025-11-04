@@ -1,14 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Box, Button, Card, CardContent, Typography, TextField, Alert, CircularProgress } from '@mui/material'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 import './styles.css'
 
-export default function LoginPage() {
+function LoginContent() {
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [tokenInput, setTokenInput] = useState('')
+
+  // Check for unauthorized access error
+  useEffect(() => {
+    const errorParam = searchParams.get('error')
+    const emailParam = searchParams.get('email')
+    
+    if (errorParam === 'unauthorized' && emailParam) {
+      setError(`Access denied: ${emailParam} is not authorized to access this portal. Please contact support@ilminate.com to request access.`)
+    }
+  }, [searchParams])
 
   // SSO Login handlers
   const handleSSOLogin = (provider: 'Google' | 'AzureADv2') => {
@@ -312,6 +324,23 @@ export default function LoginPage() {
         </Typography>
       </Box>
     </Box>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh' 
+      }}>
+        <CircularProgress />
+      </Box>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }
 
