@@ -51,8 +51,37 @@ function LoginContent() {
     setLoading(true)
     setError('')
     
-    // Redirect to home with token
-    window.location.href = `/?k=${encodeURIComponent(tokenInput)}`
+    // Check for special test accounts
+    const token = tokenInput.trim()
+    
+    // Land Sea Air test account
+    if (token === 'lsa-test' || token === 'landseaair') {
+      // Set test user cookie for Land Sea Air
+      document.cookie = `apex_user_display=${encodeURIComponent(JSON.stringify({
+        email: 'test@landseaair-nc.com',
+        customerId: 'landseaair-nc.com',
+        role: 'customer'
+      }))}; path=/; max-age=86400`
+      
+      window.location.href = '/'
+      return
+    }
+    
+    // Standard test token
+    if (token === '7885c5de63b9b75428cacee0731b80509590783da34b02dd3373276b75ef8e25') {
+      // Set default test user
+      document.cookie = `apex_user_display=${encodeURIComponent(JSON.stringify({
+        email: 'test@ilminate.com',
+        customerId: 'ilminate.com',
+        role: 'admin'
+      }))}; path=/; max-age=86400`
+      
+      window.location.href = '/'
+      return
+    }
+    
+    // Unknown token - redirect with token parameter for backward compatibility
+    window.location.href = `/?k=${encodeURIComponent(token)}`
   }
 
   return (
