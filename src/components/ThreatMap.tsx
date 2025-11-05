@@ -95,14 +95,20 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
       const height = Math.max(500, h || 600)
 
       svg.attr('viewBox', `0 0 ${width} ${height}`).attr('role', 'img')
-
-      // Mercator projection with better framing
-      const projection = d3.geoMercator()
-        .fitExtent([[20, 20], [width - 20, height - 80]], world) // Add padding and space for legend
       
-      // Zoom in 15% for larger, more visible countries
+      // Add ocean/background
+      svg.append('rect')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('fill', '#0a0e1a') // Deep ocean blue-black
+
+      // Mercator projection with much better zoom
+      const projection = d3.geoMercator()
+        .fitExtent([[10, 10], [width - 10, height - 90]], world)
+      
+      // Zoom in 35% for much larger, more visible countries
       const currentScale = projection.scale()
-      projection.scale(currentScale * 1.15)
+      projection.scale(currentScale * 1.35)
       
       const path = d3.geoPath(projection)
 
@@ -119,6 +125,59 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
         )
       }
 
+      // Add radial gradient patterns for heatmap effect on countries
+      const defs = svg.append('defs')
+      
+      // Add drop shadow filter for threat countries
+      const filter = defs.append('filter')
+        .attr('id', 'threat-glow')
+        .attr('x', '-50%')
+        .attr('y', '-50%')
+        .attr('width', '200%')
+        .attr('height', '200%')
+      
+      filter.append('feGaussianBlur')
+        .attr('in', 'SourceAlpha')
+        .attr('stdDeviation', 3)
+        .attr('result', 'blur')
+      
+      filter.append('feOffset')
+        .attr('in', 'blur')
+        .attr('dx', 0)
+        .attr('dy', 2)
+        .attr('result', 'offsetBlur')
+      
+      const feMerge = filter.append('feMerge')
+      feMerge.append('feMergeNode').attr('in', 'offsetBlur')
+      feMerge.append('feMergeNode').attr('in', 'SourceGraphic')
+      
+      // Create gradient patterns for different threat levels
+      Object.keys(threatMap).forEach((countryCode) => {
+        const threat = threatMap[countryCode]
+        const baseColor = color(threat.count) as string
+        
+        const gradient = defs.append('radialGradient')
+          .attr('id', `heat-${countryCode}`)
+          .attr('cx', '50%')
+          .attr('cy', '50%')
+          .attr('r', '65%')
+        
+        gradient.append('stop')
+          .attr('offset', '0%')
+          .attr('stop-color', baseColor)
+          .attr('stop-opacity', 1)
+        
+        gradient.append('stop')
+          .attr('offset', '70%')
+          .attr('stop-color', baseColor)
+          .attr('stop-opacity', 0.85)
+          
+        gradient.append('stop')
+          .attr('offset', '100%')
+          .attr('stop-color', baseColor)
+          .attr('stop-opacity', 0.6)
+      })
+
       // Countries layer
       const g = svg.append('g')
 
@@ -130,15 +189,25 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
         .attr('fill', (d) => {
           const iso = getISO3(d)
           const meta = iso ? threatMap[iso] : undefined
-          return meta ? color(meta.count) : '#2a2f3e'
+          // Use gradient pattern for threat countries, solid for others
+          return meta ? `url(#heat-${iso})` : '#353a4a'
         })
         .attr('stroke', (d) => {
           const iso = getISO3(d)
           const meta = iso ? threatMap[iso] : undefined
-          return meta ? '#555' : '#444'
+          return meta ? '#000' : '#4a4f5e'
         })
-        .attr('stroke-width', 0.8)
+        .attr('stroke-width', (d) => {
+          const iso = getISO3(d)
+          const meta = iso ? threatMap[iso] : undefined
+          return meta ? 0.8 : 0.4
+        })
         .attr('opacity', 1)
+        .attr('filter', (d) => {
+          const iso = getISO3(d)
+          const meta = iso ? threatMap[iso] : undefined
+          return meta ? 'url(#threat-glow)' : 'none'
+        })
         .style('cursor', (d) => {
           const iso = getISO3(d)
           return iso && threatMap[iso] ? 'pointer' : 'default'
@@ -161,12 +230,13 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
           const severity = meta?.severity || ''
 
           if (meta) {
-            // Highlight the country on hover
+            // Dramatic highlight on hover
             d3.select(this)
-              .attr('stroke-width', 2.5)
+              .attr('stroke-width', 3)
               .attr('stroke', UNCW_TEAL)
               .attr('opacity', 1)
-              .style('filter', 'brightness(1.15)')
+              .style('filter', 'brightness(1.3) drop-shadow(0 0 8px rgba(0, 168, 168, 0.8))')
+              .raise() // Bring to front
 
             const severityColors: Record<string, string> = {
               Critical: '#ef4444',
@@ -198,9 +268,10 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
           const meta = iso ? threatMap[iso] : undefined
           
           d3.select(this)
-            .attr('stroke-width', 0.8)
-            .attr('stroke', meta ? '#555' : '#444')
+            .attr('stroke-width', meta ? 0.8 : 0.4)
+            .attr('stroke', meta ? '#000' : '#4a4f5e')
             .attr('opacity', 1)
+            .attr('filter', meta ? 'url(#threat-glow)' : 'none')
             .style('filter', 'none')
           tooltip.style('display', 'none')
         })
@@ -225,8 +296,7 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
         .attr('stroke', UNCW_TEAL)
         .attr('stroke-width', 2)
 
-      // Gradient ramp
-      const defs = svg.append('defs')
+      // Gradient ramp (reuse existing defs)
       const gradId = 'threat-ramp'
       const gradient = defs
         .append('linearGradient')
@@ -311,8 +381,9 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
           borderRadius: 8,
           overflow: 'hidden',
           position: 'relative',
-          background: '#1a1f2e',
-          border: `2px solid ${UNCW_TEAL}30`
+          background: 'linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%)',
+          border: `3px solid ${UNCW_TEAL}`,
+          boxShadow: `0 8px 32px rgba(0, 112, 112, 0.3), inset 0 0 60px rgba(0, 112, 112, 0.1)`
         }}
         aria-label="Global threat origins map"
       >
