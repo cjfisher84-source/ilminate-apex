@@ -5,8 +5,11 @@ import { Box, Typography, Chip, useTheme, Button } from '@mui/material'
 import { useEffect, useState, useRef, useMemo } from 'react'
 import { useIsMobile, getResponsiveChartHeight } from '@/lib/mobileUtils'
 import { log } from '@/utils/log'
-import ThreatMap from './ThreatMap'
+import dynamic from 'next/dynamic'
 import '../../styles/reports.css'
+
+// Load ThreatMap client-side only (D3 requires browser APIs)
+const ThreatMap = dynamic(() => import('./ThreatMap'), { ssr: false })
 
 const UNCW_TEAL = '#007070'
 const UNCW_GOLD = '#FFD700'
