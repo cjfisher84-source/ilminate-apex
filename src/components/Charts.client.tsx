@@ -5,6 +5,7 @@ import { Box, Typography, Chip, useTheme, Button } from '@mui/material'
 import { useEffect, useState, useRef, useMemo } from 'react'
 import { useIsMobile, getResponsiveChartHeight } from '@/lib/mobileUtils'
 import { log } from '@/utils/log'
+import ThreatMap from './ThreatMap'
 import '../../styles/reports.css'
 
 const UNCW_TEAL = '#007070'
@@ -768,26 +769,9 @@ export function GeoThreatMap() {
       
       {!showList ? (
         <>
-          {/* Geographic Threat Map Placeholder */}
-          <Box sx={{ 
-            position: 'relative', 
-            mb: 3,
-            height: 400,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            bgcolor: '#f8f9fa',
-            borderRadius: 2,
-            border: '2px dashed #e0e4e8'
-          }}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h6" sx={{ color: '#666', mb: 1 }}>
-                🌍 Global Threat Origins Map
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#999' }}>
-                Interactive map visualization coming soon
-              </Typography>
-            </Box>
+          {/* D3 Interactive World Map */}
+          <Box sx={{ mb: 3 }}>
+            <ThreatMap threats={geoThreats} />
           </Box>
         </>
       ) : (
