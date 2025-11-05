@@ -193,14 +193,13 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
               .attr('opacity', 0.7)
           }
         })
-        .on('mouseout', function () {
+        .on('mouseout', function (event, d) {
+          const iso = getISO3(d)
+          const meta = iso ? threatMap[iso] : undefined
+          
           d3.select(this)
             .attr('stroke-width', 0.8)
-            .attr('stroke', (d) => {
-              const iso = getISO3(d)
-              const meta = iso ? threatMap[iso] : undefined
-              return meta ? '#555' : '#444'
-            })
+            .attr('stroke', meta ? '#555' : '#444')
             .attr('opacity', 1)
             .style('filter', 'none')
           tooltip.style('display', 'none')
