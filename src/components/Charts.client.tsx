@@ -8,6 +8,33 @@ import { log } from '@/utils/log'
 import dynamic from 'next/dynamic'
 import '../../styles/reports.css'
 
+/**
+ * Get customer ID from cookie for chart data
+ */
+function useCustomerId(): string | null {
+  const [customerId, setCustomerId] = useState<string | null>(null)
+  
+  useEffect(() => {
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=')
+      acc[key] = decodeURIComponent(value)
+      return acc
+    }, {} as Record<string, string>)
+
+    const userDisplay = cookies['apex_user_display']
+    if (userDisplay) {
+      try {
+        const info = JSON.parse(userDisplay)
+        setCustomerId(info.customerId)
+      } catch (e) {
+        // Invalid cookie
+      }
+    }
+  }, [])
+  
+  return customerId
+}
+
 // Load ThreatMap client-side only (D3 requires browser APIs)
 const ThreatMap = dynamic(() => import('./ThreatMap'), { ssr: false })
 
@@ -19,7 +46,8 @@ const GOLD_DARK = '#E6C200'
 export function TimelineArea() {
   const isMobile = useIsMobile()
   const theme = useTheme()
-  const data = mockTimeline30d()
+  const customerId = useCustomerId()
+  const data = mockTimeline30d(customerId)
   const chartHeight = getResponsiveChartHeight(isMobile, 520)
   
   useEffect(() => {
@@ -130,7 +158,8 @@ export function QuarantineDeliveredBars() {
 
 export function CyberScoreDonut() {
   const theme = useTheme()
-  const scoreValue = mockCyberScore()
+  const customerId = useCustomerId()
+  const scoreValue = mockCyberScore(customerId)
   const score = scoreValue ?? 0 // Default to 0 if null (customer with no data yet)
   const data = [{name:'Score', value:score}, {name:'Gap', value:100-score}]
   
@@ -278,7 +307,8 @@ export function CyberScoreDonut() {
 export function AIThreatsBar() {
   const isMobile = useIsMobile()
   const theme = useTheme()
-  const data = mockAIThreats()
+  const customerId = useCustomerId()
+  const data = mockAIThreats(customerId)
   const chartHeight = getResponsiveChartHeight(isMobile, 500)
   
   useEffect(() => {
@@ -830,7 +860,8 @@ export function GeoThreatMap() {
 
 export function AIExploitDetectionChart() {
   const theme = useTheme()
-  const data = mockAIExploitDetection()
+  const customerId = useCustomerId()
+  const data = mockAIExploitDetection(customerId)
   
   useEffect(() => {
     log.chart('AIExploitDetectionChart mounted', { dataLength: data.length, theme: theme.palette.mode })
@@ -1011,7 +1042,8 @@ export function CrossChannelTimelineChart({ campaignId }: { campaignId: string }
 export function ThreatFamilyTypesChart() {
   const isMobile = useIsMobile()
   const theme = useTheme()
-  const data = mockThreatFamilies()
+  const customerId = useCustomerId()
+  const data = mockThreatFamilies(customerId)
   const chartHeight = getResponsiveChartHeight(isMobile, 420)
   
   useEffect(() => {
@@ -1114,7 +1146,8 @@ export function ThreatFamilyTypesChart() {
 // New Peer Comparison Chart
 export function PeerComparisonChart() {
   const theme = useTheme()
-  const data = mockPeerComparison()
+  const customerId = useCustomerId()
+  const data = mockPeerComparison(customerId)
   
   useEffect(() => {
     log.chart('PeerComparisonChart mounted', { theme: theme.palette.mode })

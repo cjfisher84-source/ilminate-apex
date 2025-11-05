@@ -293,7 +293,12 @@ export interface AIExploitCategory {
   examples: string[]
 }
 
-export function mockAIExploitDetection() {
+export function mockAIExploitDetection(customerId?: string | null) {
+  // Return empty array if mock data is disabled for this customer
+  if (!isMockDataEnabled(customerId)) {
+    return []
+  }
+  
   return [
     {
       category: 'Prompt Injection',
@@ -587,7 +592,12 @@ export interface PeerComparison {
   trend: 'better' | 'worse' | 'average'
 }
 
-export function mockPeerComparison(): PeerComparison[] {
+export function mockPeerComparison(customerId?: string | null): PeerComparison[] {
+  // Return empty array if mock data is disabled for this customer
+  if (!isMockDataEnabled(customerId)) {
+    return []
+  }
+  
   return [
     {
       metric: 'Attack Frequency (per day)',
