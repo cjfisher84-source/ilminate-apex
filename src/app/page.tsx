@@ -1,8 +1,8 @@
 'use client'
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, useTheme } from '@mui/material'
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, useTheme, Chip } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import CategoryCard from '@/components/CategoryCard'
 import SecurityAssistant from '@/components/SecurityAssistant'
 import ImageScanResults from '@/components/ImageScanResults'
@@ -10,17 +10,45 @@ import UserProfile from '@/components/UserProfile'
 import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart, GeoThreatMap, CrossChannelTimelineChart, ThreatFamilyTypesChart, PeerComparisonChart } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
 import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
+import { getCustomerBranding, isFeatureEnabled } from '@/lib/tenantUtils'
 
 export default function Home() {
   const theme = useTheme()
   const isMobile = useIsMobile()
-  const cats = mockCategoryCounts()
-  const abuse = mockDomainAbuse()
+  
+  // Customer ID and branding state
+  const [customerId, setCustomerId] = useState<string | null>(null)
+  const [branding, setBranding] = useState(getCustomerBranding(null))
+  
+  // Get customer-specific data
+  const cats = mockCategoryCounts(customerId)
+  const abuse = mockDomainAbuse(customerId)
   
   const containerPadding = getResponsivePadding(isMobile)
   const headerGap = getResponsiveSpacing(isMobile, 2, 3)
   const sectionGap = getResponsiveSpacing(isMobile, 3, 4)
   const logoSize = getResponsiveImageSize(isMobile, 100)
+  const customerLogoSize = getResponsiveImageSize(isMobile, 60)
+  
+  // Extract customer ID from user cookie
+  useEffect(() => {
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=')
+      acc[key] = decodeURIComponent(value)
+      return acc
+    }, {} as Record<string, string>)
+
+    const userDisplay = cookies['apex_user_display']
+    if (userDisplay) {
+      try {
+        const info = JSON.parse(userDisplay)
+        setCustomerId(info.customerId)
+        setBranding(getCustomerBranding(info.customerId))
+      } catch (e) {
+        console.error('Failed to parse user display cookie', e)
+      }
+    }
+  }, [])
 
   // Don't force scroll behavior - let browser handle it naturally
   // useEffect(() => {
@@ -47,7 +75,7 @@ export default function Home() {
       overflowX: 'hidden'
     }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto', width: '100%' }}>
-        {/* Header with Logo */}
+        {/* Co-Branded Header */}
         <Box sx={{ 
           display: 'flex', 
           flexDirection: isMobile ? 'column' : 'row',
@@ -59,41 +87,98 @@ export default function Home() {
           borderColor: 'primary.main',
           gap: isMobile ? 2 : 0
         }}>
+          {/* LEFT: Platform Branding (Ilminate) */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: headerGap }}>
-            {/* Ilminate Logo */}
             <Image 
               src="/ilminate-logo.png" 
               alt="Ilminate Logo" 
-              width={logoSize} 
-              height={logoSize}
+              width={isMobile ? 80 : logoSize} 
+              height={isMobile ? 80 : logoSize}
               priority
               style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
             />
             <Box>
               <Typography 
-                variant="h3" 
+                variant={isMobile ? 'h5' : 'h4'}
                 sx={{ 
                   fontWeight: 700, 
                   mb: 0.5, 
                   color: 'text.primary',
-                  fontSize: getResponsiveFontSize(isMobile, 'h3')
+                  fontSize: getResponsiveFontSize(isMobile, 'h4')
                 }}
               >
                 Ilminate <span style={{ color: theme.palette.primary.main }}>APEX</span>
               </Typography>
-              <Typography 
-                variant="subtitle1" 
-                sx={{ 
-                  color: 'text.secondary', 
-                  fontWeight: 500,
-                  fontSize: getResponsiveFontSize(isMobile, 'subtitle1')
-                }}
-              >
-                {isMobile ? 'Advanced Protection' : 'Advanced Protection & Exposure Intelligence'}
-              </Typography>
+              {!isMobile && (
+                <Typography 
+                  variant="body2"
+                  sx={{ 
+                    color: 'text.secondary', 
+                    fontWeight: 500
+                  }}
+                >
+                  Advanced Protection & Exposure Intelligence
+                </Typography>
+              )}
             </Box>
           </Box>
-          <UserProfile />
+
+          {/* RIGHT: Customer Branding + User Menu */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: isMobile ? 2 : 3,
+            flexDirection: isMobile ? 'row' : 'row'
+          }}>
+            {/* Customer Logo & Name (if customer is identified) */}
+            {customerId && customerId !== 'default' && branding.customerId !== 'default' && (
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1.5,
+                pr: isMobile ? 0 : 2,
+                borderRight: isMobile ? 'none' : '1px solid',
+                borderColor: 'divider'
+              }}>
+                <Image 
+                  src={branding.logo.primary}
+                  alt={branding.logo.alt}
+                  width={customerLogoSize}
+                  height={customerLogoSize}
+                  priority
+                  style={{ filter: 'drop-shadow(0 2px 8px rgba(0, 112, 112, 0.2))' }}
+                />
+                <Box sx={{ textAlign: isMobile ? 'left' : 'right' }}>
+                  <Typography 
+                    variant="h6"
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: 'text.primary',
+                      fontSize: isMobile ? '0.9rem' : '1.1rem'
+                    }}
+                  >
+                    {branding.companyName}
+                  </Typography>
+                  {!isMobile && (
+                    <Chip
+                      label={customerId}
+                      size="small"
+                      sx={{
+                        height: 20,
+                        fontSize: '0.7rem',
+                        fontWeight: 500,
+                        bgcolor: branding.theme?.primaryColor || 'rgba(0, 112, 112, 0.1)',
+                        color: branding.theme?.primaryColor ? 'white' : 'primary.main',
+                        mt: 0.5
+                      }}
+                    />
+                  )}
+                </Box>
+              </Box>
+            )}
+            
+            <UserProfile />
+          </Box>
         </Box>
 
         {/* Navigation Icons - Single Row with Emojis */}
@@ -584,42 +669,47 @@ export default function Home() {
           {/* AI Exploit Detection */}
           <AIExploitDetectionChart />
 
-          {/* EDR Section Header */}
-          <Box sx={{ mt: isMobile ? 2 : 4, mb: 2 }}>
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                fontWeight: 700, 
-                color: 'text.primary', 
-                mb: 1,
-                fontSize: getResponsiveFontSize(isMobile, 'h4')
-              }}
-            >
-              {isMobile ? 'EDR' : 'Endpoint Detection & Response (EDR)'}
-            </Typography>
-            <Typography 
-              variant="body1" 
-              sx={{ 
-                color: 'text.secondary',
-                fontSize: getResponsiveFontSize(isMobile, 'body1')
-              }}
-            >
-              Real-time endpoint security monitoring{isMobile ? '' : ', threat detection, and automated response across your infrastructure'}
-            </Typography>
-          </Box>
+          {/* EDR Section - Only show if enabled for customer */}
+          {isFeatureEnabled(customerId, 'edr') && (
+            <>
+              {/* EDR Section Header */}
+              <Box sx={{ mt: isMobile ? 2 : 4, mb: 2 }}>
+                <Typography 
+                  variant="h4" 
+                  sx={{ 
+                    fontWeight: 700, 
+                    color: 'text.primary', 
+                    mb: 1,
+                    fontSize: getResponsiveFontSize(isMobile, 'h4')
+                  }}
+                >
+                  {isMobile ? 'EDR' : 'Endpoint Detection & Response (EDR)'}
+                </Typography>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    color: 'text.secondary',
+                    fontSize: getResponsiveFontSize(isMobile, 'body1')
+                  }}
+                >
+                  Real-time endpoint security monitoring{isMobile ? '' : ', threat detection, and automated response across your infrastructure'}
+                </Typography>
+              </Box>
 
-          {/* EDR Metrics Timeline */}
-          <EDRMetricsLines />
+              {/* EDR Metrics Timeline */}
+              <EDRMetricsLines />
 
-          {/* EDR Additional Metrics */}
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
-            gap: 3 
-          }}>
-            <EDREndpointStatus />
-            <EDRThreatDetections />
-          </Box>
+              {/* EDR Additional Metrics */}
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+                gap: 3 
+              }}>
+                <EDREndpointStatus />
+                <EDRThreatDetections />
+              </Box>
+            </>
+          )}
         </Box>
       </Box>
     </Box>
