@@ -55,10 +55,13 @@ function getCustomerIdFromEmail(email: string): string | null {
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   
-  // Always allow login page and public assets
-  if (pathname === '/login' || pathname.startsWith('/_next') || pathname.startsWith('/api')) {
+  // Always allow login page and public assets (but NOT API routes - they need headers)
+  if (pathname === '/login' || pathname.startsWith('/_next')) {
     return NextResponse.next();
   }
+  
+  // API routes are allowed but need customer headers for multi-tenancy
+  const isApiRoute = pathname.startsWith('/api')
 
   // ✅ METHOD 1: Direct token access (for ilminate admin/testing only)
   const token = searchParams.get('k');
@@ -70,6 +73,7 @@ export function middleware(request: NextRequest) {
     response.headers.set('x-user-email', 'admin@ilminate.com')
     response.headers.set('x-customer-id', 'ilminate.com')
     response.headers.set('x-user-role', 'admin')
+    console.log('✅ Token auth - Admin access')
     return response
   }
 
@@ -85,11 +89,12 @@ export function middleware(request: NextRequest) {
         response.headers.set('x-customer-id', userInfo.customerId)
         response.headers.set('x-user-role', userInfo.role || 'customer')
         
-        console.log(`✅ Test Account: ${userInfo.email} → Customer: ${userInfo.customerId}`)
+        console.log(`✅ Test Account: ${userInfo.email} → Customer: ${userInfo.customerId} (API route: ${isApiRoute})`)
         
         return response
       }
     } catch (e) {
+      console.error('Failed to parse apex_user_display cookie:', e)
       // Invalid cookie, continue to Cognito check
     }
   }
@@ -122,7 +127,14 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // ❌ No valid authentication found - redirect to login
+  // ❌ No valid authentication found
+  // For API routes, allow through but without customer headers (will fail gracefully)
+  if (isApiRoute) {
+    console.log('⚠️ API route called without authentication:', pathname)
+    return NextResponse.next()
+  }
+  
+  // For page routes, redirect to login
   const loginUrl = new URL('/login', request.url);
   return NextResponse.redirect(loginUrl);
 }
@@ -130,7 +142,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Protect all main routes
+     * Protect all main routes and API routes (for multi-tenant header injection)
      */
     '/',
     '/threats/:path*',
@@ -142,5 +154,6 @@ export const config = {
     '/admin/:path*',
     '/account/:path*',
     '/notifications/:path*',
+    '/api/:path*', // Include API routes for customer ID headers
   ],
 };
