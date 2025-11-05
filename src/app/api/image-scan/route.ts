@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { getCustomerIdFromHeaders } from '@/lib/tenantUtils'
+import { isMockDataEnabled } from '@/lib/tenantUtils'
 
 /**
  * API Route: /api/image-scan
@@ -50,10 +53,34 @@ export interface ImageScanStats {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    // Get customer ID from headers
+    const customerId = getCustomerIdFromHeaders(request.headers)
+    
+    // Check if mock data should be shown for this customer
+    const showMockData = isMockDataEnabled(customerId)
+    
     // TODO: Replace with actual DynamoDB/API call to ilminate-agent
-    // const data = await fetchFromDynamoDB('ilminate-agent-scans')
+    // const data = await fetchFromDynamoDB('ilminate-agent-scans', customerId)
+    
+    // For customers with mock data disabled, return zeros
+    if (!showMockData) {
+      const emptyData: ImageScanStats = {
+        total_scans_24h: 0,
+        qr_codes_detected: 0,
+        malicious_qr_codes: 0,
+        offensive_images: 0,
+        logo_impersonations: 0,
+        hidden_links: 0,
+        screenshot_phishing: 0,
+        recent_threats: {
+          qr_threats: [],
+          image_threats: []
+        }
+      }
+      return NextResponse.json(emptyData)
+    }
     
     // For now, return mock data structure that matches ilminate-agent's output
     const mockData: ImageScanStats = {

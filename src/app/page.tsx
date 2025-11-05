@@ -492,7 +492,9 @@ export default function Home() {
                       title="Total number of dangerous emails blocked today"
                     >
                       <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Threats Blocked Today</Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main', fontSize: '1.1rem' }}>1,247</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main', fontSize: '1.1rem' }}>
+                        {cats.Phish + cats.Malware + cats.Spam + cats.BEC + cats.ATO}
+                      </Typography>
                     </Box>
                   </Link>
                   <Link href="/metrics/active-monitoring" style={{ textDecoration: 'none' }}>
@@ -542,7 +544,9 @@ export default function Home() {
                       title="Time since the most recent security incident"
                     >
                       <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Last Incident</Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'secondary.main', fontSize: '1.1rem' }}>2h ago</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.secondary', fontSize: '1.1rem' }}>
+                        {(cats.Phish + cats.Malware + cats.Spam + cats.BEC + cats.ATO) > 0 ? '2h ago' : 'No incidents'}
+                      </Typography>
                     </Box>
                   </Link>
                 </Box>
