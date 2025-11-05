@@ -130,7 +130,8 @@ export function QuarantineDeliveredBars() {
 
 export function CyberScoreDonut() {
   const theme = useTheme()
-  const score = mockCyberScore()
+  const scoreValue = mockCyberScore()
+  const score = scoreValue ?? 0 // Default to 0 if null (customer with no data yet)
   const data = [{name:'Score', value:score}, {name:'Gap', value:100-score}]
   
   useEffect(() => {
