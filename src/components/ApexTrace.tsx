@@ -329,6 +329,9 @@ export function ApexTrace() {
                     value={advancedFilters.threat_category}
                     onChange={(e) => setAdvancedFilters(prev => ({ ...prev, threat_category: e.target.value }))}
                     size="small"
+                    InputLabelProps={{
+                      shrink: true, // Force label to always be in shrunk state
+                    }}
                     SelectProps={{ 
                       native: true,
                       sx: {
@@ -344,7 +347,12 @@ export function ApexTrace() {
                         backgroundColor: 'transparent !important'
                       },
                       '& .MuiInputBase-input': {
-                        backgroundColor: 'transparent !important'
+                        backgroundColor: 'transparent !important',
+                        pt: 1
+                      },
+                      '& .MuiInputLabel-root': {
+                        backgroundColor: '#0f172a',
+                        px: 0.5
                       }
                     }}
                   >
@@ -361,6 +369,9 @@ export function ApexTrace() {
                     value={advancedFilters.apex_action}
                     onChange={(e) => setAdvancedFilters(prev => ({ ...prev, apex_action: e.target.value }))}
                     size="small"
+                    InputLabelProps={{
+                      shrink: true, // Force label to always be in shrunk state
+                    }}
                     SelectProps={{ 
                       native: true,
                       sx: {
@@ -376,7 +387,12 @@ export function ApexTrace() {
                         backgroundColor: 'transparent !important'
                       },
                       '& .MuiInputBase-input': {
-                        backgroundColor: 'transparent !important'
+                        backgroundColor: 'transparent !important',
+                        pt: 1
+                      },
+                      '& .MuiInputLabel-root': {
+                        backgroundColor: '#0f172a',
+                        px: 0.5
                       }
                     }}
                   >
