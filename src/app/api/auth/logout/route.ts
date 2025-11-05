@@ -20,6 +20,9 @@ export async function GET(request: NextRequest) {
 
   // Also clear the LastAuthUser cookie
   response.cookies.delete(`CognitoIdentityServiceProvider.${COGNITO_CLIENT_ID}.LastAuthUser`)
+  
+  // Clear the user display cookie
+  response.cookies.delete('apex_user_display')
 
   return response
 }

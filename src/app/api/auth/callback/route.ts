@@ -117,6 +117,22 @@ export async function GET(request: NextRequest) {
       path: '/',
     })
 
+    // Set user display info (non-httpOnly so JavaScript can read it for UI)
+    const email = idTokenPayload?.email || idTokenPayload?.['cognito:username'] || 'user@unknown.com'
+    const displayInfo = {
+      email,
+      customerId: email.split('@')[1] || 'unknown',
+      role: email.includes('@ilminate.com') ? 'admin' : 'user'
+    }
+    
+    response.cookies.set('apex_user_display', JSON.stringify(displayInfo), {
+      httpOnly: false, // Allow JavaScript to read this for UI display
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 3600,
+      path: '/',
+    })
+
     return response
   } catch (err) {
     console.error('OAuth callback error:', err)
