@@ -26,22 +26,32 @@ export default function AccountPage() {
     // Get user info from display cookie
     const cookies = document.cookie.split(';').reduce((acc, cookie) => {
       const [key, value] = cookie.trim().split('=')
-      acc[key] = decodeURIComponent(value)
+      acc[key] = value // Don't decode here - value is already raw
       return acc
     }, {} as Record<string, string>)
+
+    console.log('Account page - All cookies:', Object.keys(cookies))
+    console.log('Account page - apex_user_display cookie:', cookies['apex_user_display'])
 
     const displayCookie = cookies['apex_user_display']
     if (displayCookie) {
       try {
-        const info = JSON.parse(displayCookie)
+        const decoded = decodeURIComponent(displayCookie)
+        console.log('Account page - Decoded cookie:', decoded)
+        const info = JSON.parse(decoded)
+        console.log('Account page - Parsed user info:', info)
+        
         setUserInfo({
           email: info.email || 'Unknown',
           customerId: info.customerId || 'Unknown',
           role: info.role || 'user'
         })
       } catch (err) {
-        console.error('Failed to parse user info:', err)
+        console.error('Account page - Failed to parse user info:', err)
+        console.error('Account page - Raw cookie value:', displayCookie)
       }
+    } else {
+      console.warn('Account page - No apex_user_display cookie found')
     }
   }, [])
 
