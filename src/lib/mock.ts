@@ -1,3 +1,5 @@
+import { isMockDataEnabled } from './tenantUtils'
+
 export type ThreatKind = 'Phish' | 'Malware' | 'Spam' | 'BEC' | 'ATO'
 export const KINDS: ThreatKind[] = ['Phish','Malware','Spam','BEC','ATO']
 
@@ -7,7 +9,18 @@ export function lastNDays(n=30){
   return out
 }
 
-export function mockCategoryCounts(){
+export function mockCategoryCounts(customerId?: string | null){
+  // Return empty data if mock data is disabled for this customer
+  if (!isMockDataEnabled(customerId)) {
+    return {
+      Phish: 0,
+      Malware: 0,
+      Spam: 0,
+      BEC: 0,
+      ATO: 0,
+    }
+  }
+  
   // Emulate last 24h totals (email + edr surfaced as top categories) - deterministic values
   return {
     Phish: 750,
@@ -18,7 +31,17 @@ export function mockCategoryCounts(){
   }
 }
 
-export function mockTimeline30d(){
+export function mockTimeline30d(customerId?: string | null){
+  // Return empty timeline if mock data is disabled for this customer
+  if (!isMockDataEnabled(customerId)) {
+    return lastNDays(30).map(date => ({
+      date,
+      total: 0,
+      quarantined: 0,
+      delivered: 0
+    }))
+  }
+  
   // per day: total, quarantined, delivered (delivered = passed content/policy)
   return lastNDays(30).map(date => {
     const total = Math.floor(8000 + Math.random()*15000) // Much higher volume: 8k-23k emails per day
@@ -28,16 +51,26 @@ export function mockTimeline30d(){
   })
 }
 
-export function mockCyberScore(){
+export function mockCyberScore(customerId?: string | null){
+  // Return null if mock data is disabled for this customer
+  if (!isMockDataEnabled(customerId)) {
+    return null
+  }
+  
   // compute score out of 100 from recent exposure signals
-  const t = mockTimeline30d()
+  const t = mockTimeline30d(customerId)
   const sums = t.reduce((a,x)=>{a.q+=x.quarantined; a.t+=x.total; return a},{q:0,t:0})
   const ratio = 1 - (sums.q / Math.max(1,sums.t))   // more quarantine => lower score
   const score = Math.round(Math.max(40, Math.min(98, 55 + ratio*45)))
   return score
 }
 
-export function mockDomainAbuse(){
+export function mockDomainAbuse(customerId?: string | null){
+  // Return empty array if mock data is disabled for this customer
+  if (!isMockDataEnabled(customerId)) {
+    return []
+  }
+  
   // domains seen sending "as you" -> shows DMARC value - deterministic values
   const sample = ['ilminate-support.com','ilminate-login.net','apex-secure-mail.com','billing-ilminate.co','alerts-ilminate.io']
   return sample.map((d, index) => ({
