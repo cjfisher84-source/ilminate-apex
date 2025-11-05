@@ -56,12 +56,18 @@ function LoginContent() {
     
     // Land Sea Air test account
     if (token === 'lsa-test' || token === 'landseaair') {
-      // Set test user cookie for Land Sea Air
-      document.cookie = `apex_user_display=${encodeURIComponent(JSON.stringify({
+      console.log('Setting LSA test account cookie')
+      const userInfo = {
         email: 'test@landseaair-nc.com',
         customerId: 'landseaair-nc.com',
         role: 'customer'
-      }))}; path=/; max-age=86400`
+      }
+      // Set test user cookie for Land Sea Air
+      const cookieValue = encodeURIComponent(JSON.stringify(userInfo))
+      document.cookie = `apex_user_display=${cookieValue}; path=/; max-age=86400; SameSite=Lax`
+      
+      console.log('LSA cookie set:', cookieValue)
+      console.log('Redirecting to dashboard...')
       
       window.location.href = '/'
       return
@@ -69,12 +75,18 @@ function LoginContent() {
     
     // Standard test token
     if (token === '7885c5de63b9b75428cacee0731b80509590783da34b02dd3373276b75ef8e25') {
-      // Set default test user
-      document.cookie = `apex_user_display=${encodeURIComponent(JSON.stringify({
+      console.log('Setting admin test account cookie')
+      const userInfo = {
         email: 'test@ilminate.com',
         customerId: 'ilminate.com',
         role: 'admin'
-      }))}; path=/; max-age=86400`
+      }
+      // Set default test user
+      const cookieValue = encodeURIComponent(JSON.stringify(userInfo))
+      document.cookie = `apex_user_display=${cookieValue}; path=/; max-age=86400; SameSite=Lax`
+      
+      console.log('Admin cookie set:', cookieValue)
+      console.log('Redirecting to dashboard...')
       
       window.location.href = '/'
       return
