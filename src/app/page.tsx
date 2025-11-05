@@ -135,26 +135,37 @@ export default function Home() {
               <Box sx={{ 
                 display: 'flex', 
                 alignItems: 'center', 
-                gap: 1.5,
-                pr: isMobile ? 0 : 2,
+                gap: 2,
+                pr: isMobile ? 0 : 3,
                 borderRight: isMobile ? 'none' : '1px solid',
                 borderColor: 'divider'
               }}>
-                <Image 
-                  src={branding.logo.primary}
-                  alt={branding.logo.alt}
-                  width={customerLogoSize}
-                  height={customerLogoSize}
-                  priority
-                  style={{ filter: 'drop-shadow(0 2px 8px rgba(0, 112, 112, 0.2))' }}
-                />
+                <Box sx={{
+                  bgcolor: 'white',
+                  borderRadius: 2,
+                  p: 1.5,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                  border: '1px solid',
+                  borderColor: 'rgba(0, 0, 0, 0.08)'
+                }}>
+                  <Image 
+                    src={branding.logo.primary}
+                    alt={branding.logo.alt}
+                    width={isMobile ? 50 : 70}
+                    height={isMobile ? 50 : 70}
+                    priority
+                  />
+                </Box>
                 <Box sx={{ textAlign: isMobile ? 'left' : 'right' }}>
                   <Typography 
                     variant="h6"
                     sx={{ 
                       fontWeight: 600, 
                       color: 'text.primary',
-                      fontSize: isMobile ? '0.9rem' : '1.1rem'
+                      fontSize: isMobile ? '0.95rem' : '1.2rem'
                     }}
                   >
                     {branding.companyName}
@@ -342,8 +353,8 @@ export default function Home() {
             </Box>
           </Box>
 
-          {/* Advanced Image Detection Section */}
-          <ImageScanResults />
+          {/* Advanced Image Detection Section - Only show with mock data */}
+          {isFeatureEnabled(customerId, 'mockData') && <ImageScanResults />}
 
           {/* MITRE ATT&CK Matrix Highlight */}
           <Link href="/reports/attack" style={{ textDecoration: 'none' }}>
@@ -407,7 +418,8 @@ export default function Home() {
             </Paper>
           </Link>
 
-          {/* Cyber Score Section */}
+          {/* Cyber Score Section - Only show with mock data */}
+          {isFeatureEnabled(customerId, 'mockData') && (
           <Box>
             <Box sx={{ mb: isMobile ? 2 : 3 }}>
               <Typography 
@@ -539,11 +551,13 @@ export default function Home() {
               <SecurityAssistant />
             </Box>
           </Box>
+          )}
 
-          {/* Timeline */}
-          <TimelineArea />
+          {/* Timeline - Only show with mock data */}
+          {isFeatureEnabled(customerId, 'mockData') && <TimelineArea />}
 
-          {/* Threat Family Types and Peer Comparison */}
+          {/* Threat Family Types and Peer Comparison - Only show with mock data */}
+          {isFeatureEnabled(customerId, 'mockData') && (
           <Box sx={{ 
             display: 'grid', 
             gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
@@ -552,6 +566,7 @@ export default function Home() {
             <ThreatFamilyTypesChart />
             <PeerComparisonChart />
           </Box>
+          )}
 
           {/* Domain / Brand Abuse (DMARC value) */}
           <Box className={isMobile ? 'mobile-table-wrapper' : ''}>
@@ -663,11 +678,11 @@ export default function Home() {
             </TableContainer>
           </Box>
 
-          {/* AI Threats */}
-          <AIThreatsBar />
+          {/* AI Threats - Only show with mock data */}
+          {isFeatureEnabled(customerId, 'mockData') && <AIThreatsBar />}
 
-          {/* AI Exploit Detection */}
-          <AIExploitDetectionChart />
+          {/* AI Exploit Detection - Only show with mock data */}
+          {isFeatureEnabled(customerId, 'mockData') && <AIExploitDetectionChart />}
 
           {/* EDR Section - Only show if enabled for customer */}
           {isFeatureEnabled(customerId, 'edr') && (
