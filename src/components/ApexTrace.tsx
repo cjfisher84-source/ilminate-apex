@@ -329,8 +329,24 @@ export function ApexTrace() {
                     value={advancedFilters.threat_category}
                     onChange={(e) => setAdvancedFilters(prev => ({ ...prev, threat_category: e.target.value }))}
                     size="small"
-                    SelectProps={{ native: true }}
-                    sx={{ minWidth: 200 }}
+                    SelectProps={{ 
+                      native: true,
+                      sx: {
+                        '& option': {
+                          backgroundColor: '#0f172a',
+                          color: '#f1f5f9'
+                        }
+                      }
+                    }}
+                    sx={{ 
+                      minWidth: 200,
+                      '& select': {
+                        backgroundColor: 'transparent !important'
+                      },
+                      '& .MuiInputBase-input': {
+                        backgroundColor: 'transparent !important'
+                      }
+                    }}
                   >
                     <option value="">All Categories</option>
                     <option value="phishing">Phishing</option>
@@ -345,8 +361,24 @@ export function ApexTrace() {
                     value={advancedFilters.apex_action}
                     onChange={(e) => setAdvancedFilters(prev => ({ ...prev, apex_action: e.target.value }))}
                     size="small"
-                    SelectProps={{ native: true }}
-                    sx={{ minWidth: 200 }}
+                    SelectProps={{ 
+                      native: true,
+                      sx: {
+                        '& option': {
+                          backgroundColor: '#0f172a',
+                          color: '#f1f5f9'
+                        }
+                      }
+                    }}
+                    sx={{ 
+                      minWidth: 200,
+                      '& select': {
+                        backgroundColor: 'transparent !important'
+                      },
+                      '& .MuiInputBase-input': {
+                        backgroundColor: 'transparent !important'
+                      }
+                    }}
                   >
                     <option value="">All Actions</option>
                     <option value="quarantine">Quarantine</option>
