@@ -300,16 +300,91 @@ export default function AccountPage() {
         )}
 
         {!userInfo && (
-          <Card sx={{ bgcolor: 'background.paper', border: '2px solid', borderColor: 'divider', boxShadow: 2 }}>
-            <CardContent sx={{ p: 4, textAlign: 'center' }}>
-              <Typography variant="h6" sx={{ color: 'text.secondary', mb: 2 }}>
-                Unable to load account information
+          <Card sx={{ bgcolor: 'background.paper', border: '2px solid', borderColor: 'error.main', boxShadow: 2 }}>
+            <Box sx={{ p: 3, borderBottom: '2px solid', borderColor: 'error.main', bgcolor: 'rgba(239, 68, 68, 0.05)' }}>
+              <Typography variant="h5" sx={{ fontWeight: 700, color: 'error.main' }}>
+                ⚠️ Unable to Load Account Information
               </Typography>
-              <Link href="/api/auth/logout" passHref legacyBehavior>
-                <Button variant="outlined" component="a">
-                  Return to Login
-                </Button>
-              </Link>
+            </Box>
+            <CardContent sx={{ p: 4 }}>
+              <Typography variant="body1" sx={{ color: 'text.primary', mb: 3, lineHeight: 1.8 }}>
+                Your account information couldn't be loaded. This typically happens when:
+              </Typography>
+              
+              <Box component="ul" sx={{ pl: 3, mb: 3, color: 'text.secondary' }}>
+                <li>
+                  <Typography variant="body2" sx={{ mb: 1.5 }}>
+                    <strong>Your session has expired</strong> - You may need to log in again
+                  </Typography>
+                </li>
+                <li>
+                  <Typography variant="body2" sx={{ mb: 1.5 }}>
+                    <strong>Browser cookies are blocked</strong> - Check your browser settings
+                  </Typography>
+                </li>
+                <li>
+                  <Typography variant="body2" sx={{ mb: 1.5 }}>
+                    <strong>Private/Incognito mode</strong> - Cookies may not persist properly
+                  </Typography>
+                </li>
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 2 }}>
+                💡 Quick Fixes
+              </Typography>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Link href="/api/auth/logout" passHref legacyBehavior style={{ textDecoration: 'none' }}>
+                  <Button 
+                    variant="contained" 
+                    component="a"
+                    fullWidth
+                    sx={{
+                      bgcolor: UNCW_TEAL,
+                      color: 'white',
+                      fontWeight: 600,
+                      py: 1.5,
+                      '&:hover': { bgcolor: '#005555' }
+                    }}
+                  >
+                    🔄 Return to Login & Sign In Again
+                  </Button>
+                </Link>
+
+                <Link href="/" passHref legacyBehavior style={{ textDecoration: 'none' }}>
+                  <Button 
+                    variant="outlined" 
+                    component="a"
+                    fullWidth
+                    sx={{
+                      borderColor: 'text.secondary',
+                      color: 'text.secondary',
+                      fontWeight: 600,
+                      py: 1.5
+                    }}
+                  >
+                    ← Return to Dashboard
+                  </Button>
+                </Link>
+              </Box>
+
+              <Box sx={{ 
+                mt: 4, 
+                p: 2, 
+                bgcolor: 'rgba(0, 112, 112, 0.05)', 
+                borderRadius: 2,
+                border: '1px solid',
+                borderColor: 'primary.main'
+              }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mb: 1 }}>
+                  💬 Need Help?
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  If this problem persists, contact support at <strong style={{ color: UNCW_TEAL }}>support@ilminate.com</strong>
+                </Typography>
+              </Box>
             </CardContent>
           </Card>
         )}
