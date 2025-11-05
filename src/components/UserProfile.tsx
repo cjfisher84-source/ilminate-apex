@@ -219,7 +219,36 @@ export default function UserProfile() {
 
         <Divider />
 
-        {/* Quick Actions */}
+        {/* Account & Settings */}
+        <Link href="/account" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem
+            onClick={handleClose}
+            sx={{
+              py: 1.5,
+              '&:hover': { bgcolor: 'action.hover' }
+            }}
+          >
+            <Box sx={{ mr: 2, fontSize: '1.2rem' }}>👤</Box>
+            <Typography variant="body2">Account Details</Typography>
+          </MenuItem>
+        </Link>
+
+        <Link href="/notifications" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem
+            onClick={handleClose}
+            sx={{
+              py: 1.5,
+              '&:hover': { bgcolor: 'action.hover' }
+            }}
+          >
+            <Box sx={{ mr: 2, fontSize: '1.2rem' }}>🔔</Box>
+            <Typography variant="body2">Notifications</Typography>
+          </MenuItem>
+        </Link>
+
+        <Divider />
+
+        {/* Quick Navigation */}
         <Link href="/" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem
             onClick={handleClose}

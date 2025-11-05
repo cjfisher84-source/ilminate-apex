@@ -119,5 +119,7 @@ export const config = {
     '/reports/:path*',
     '/quarantine/:path*',
     '/admin/:path*',
+    '/account/:path*',
+    '/notifications/:path*',
   ],
 };
