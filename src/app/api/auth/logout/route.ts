@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const COGNITO_CLIENT_ID = '1uoiq3h1afgo6799gie48vmlcj'
+const COGNITO_DOMAIN = 'ilminate-customer-portal-jqo56pdt.auth.us-east-1.amazoncognito.com'
 
 export async function GET(request: NextRequest) {
   // Get the origin from headers (Amplify-compatible)
@@ -10,8 +11,16 @@ export async function GET(request: NextRequest) {
   
   console.log('Logout - Detected origin:', origin)
   
-  // Create response that redirects to login
-  const response = NextResponse.redirect(new URL(`${origin}/login`))
+  // Redirect to Cognito logout endpoint
+  // This properly clears the Cognito session AND the federated Google session
+  const logoutUrl = new URL(`https://${COGNITO_DOMAIN}/logout`)
+  logoutUrl.searchParams.set('client_id', COGNITO_CLIENT_ID)
+  logoutUrl.searchParams.set('logout_uri', `${origin}/login`)
+  
+  console.log('Redirecting to Cognito logout:', logoutUrl.toString())
+  
+  // Create response that redirects to Cognito logout
+  const response = NextResponse.redirect(logoutUrl)
 
   // Get all cookies to find Cognito session cookies
   const cookies = request.cookies.getAll()
