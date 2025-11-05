@@ -28,7 +28,8 @@ function useResize(ref: React.RefObject<HTMLElement>) {
 }
 
 // Public GeoJSON with country polygons and ISO codes
-const WORLD_GEOJSON_URL = 'https://unpkg.com/geojson-world@1.0.0/countries.geo.json'
+// Using Natural Earth data via datahub.io
+const WORLD_GEOJSON_URL = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson'
 
 type WorldFeature = GeoJSON.Feature<
   GeoJSON.Geometry,
