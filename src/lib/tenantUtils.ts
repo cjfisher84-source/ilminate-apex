@@ -141,17 +141,17 @@ export function getCustomerFeatures(customerId: string | null): CustomerFeatures
  * Check if a specific feature is enabled for a customer
  */
 export function isFeatureEnabled(
-  customerId: string | null,
+  customerId: string | null | undefined,
   feature: keyof CustomerFeatures
 ): boolean {
-  const features = getCustomerFeatures(customerId)
+  const features = getCustomerFeatures(customerId ?? null)
   return features[feature] ?? false
 }
 
 /**
  * Check if mock data should be shown for a customer
  */
-export function isMockDataEnabled(customerId: string | null): boolean {
+export function isMockDataEnabled(customerId: string | null | undefined): boolean {
   return isFeatureEnabled(customerId, 'mockData')
 }
 
