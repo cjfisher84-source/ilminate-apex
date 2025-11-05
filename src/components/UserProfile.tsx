@@ -219,28 +219,45 @@ export default function UserProfile() {
 
         <Divider />
 
-        {/* Menu Items */}
-        <MenuItem
-          onClick={handleClose}
-          sx={{
-            py: 1.5,
-            '&:hover': { bgcolor: 'action.hover' }
-          }}
-        >
-          <Box sx={{ mr: 2, fontSize: '1.2rem' }}>👤</Box>
-          <Typography variant="body2">Account Settings</Typography>
-        </MenuItem>
+        {/* Quick Actions */}
+        <Link href="/" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem
+            onClick={handleClose}
+            sx={{
+              py: 1.5,
+              '&:hover': { bgcolor: 'action.hover' }
+            }}
+          >
+            <Box sx={{ mr: 2, fontSize: '1.2rem' }}>🏠</Box>
+            <Typography variant="body2">Dashboard</Typography>
+          </MenuItem>
+        </Link>
 
-        <MenuItem
-          onClick={handleClose}
-          sx={{
-            py: 1.5,
-            '&:hover': { bgcolor: 'action.hover' }
-          }}
-        >
-          <Box sx={{ mr: 2, fontSize: '1.2rem' }}>🔔</Box>
-          <Typography variant="body2">Notifications</Typography>
-        </MenuItem>
+        <Link href="/triage" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem
+            onClick={handleClose}
+            sx={{
+              py: 1.5,
+              '&:hover': { bgcolor: 'action.hover' }
+            }}
+          >
+            <Box sx={{ mr: 2, fontSize: '1.2rem' }}>🔍</Box>
+            <Typography variant="body2">AI Triage</Typography>
+          </MenuItem>
+        </Link>
+
+        <Link href="/investigations" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem
+            onClick={handleClose}
+            sx={{
+              py: 1.5,
+              '&:hover': { bgcolor: 'action.hover' }
+            }}
+          >
+            <Box sx={{ mr: 2, fontSize: '1.2rem' }}>🕵️</Box>
+            <Typography variant="body2">Investigations</Typography>
+          </MenuItem>
+        </Link>
 
         <Divider />
 
