@@ -73,7 +73,28 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  // ✅ METHOD 2: Valid Cognito session - MULTI-TENANT
+  // ✅ METHOD 2: Test account via apex_user_display cookie
+  const userDisplayCookie = request.cookies.get('apex_user_display')
+  
+  if (userDisplayCookie) {
+    try {
+      const userInfo = JSON.parse(decodeURIComponent(userDisplayCookie.value))
+      if (userInfo.email && userInfo.customerId) {
+        const response = NextResponse.next()
+        response.headers.set('x-user-email', userInfo.email)
+        response.headers.set('x-customer-id', userInfo.customerId)
+        response.headers.set('x-user-role', userInfo.role || 'customer')
+        
+        console.log(`✅ Test Account: ${userInfo.email} → Customer: ${userInfo.customerId}`)
+        
+        return response
+      }
+    } catch (e) {
+      // Invalid cookie, continue to Cognito check
+    }
+  }
+
+  // ✅ METHOD 3: Valid Cognito session - MULTI-TENANT
   const idToken = getCognitoIdToken(request)
   
   if (idToken) {
