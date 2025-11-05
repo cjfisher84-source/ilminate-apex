@@ -81,7 +81,12 @@ export function mockDomainAbuse(customerId?: string | null){
   }))
 }
 
-export function mockAIThreats(){
+export function mockAIThreats(customerId?: string | null){
+  // Return empty array if mock data is disabled for this customer
+  if (!isMockDataEnabled(customerId)) {
+    return []
+  }
+  
   // breakdown of AI-related threat techniques detected with context - deterministic values
   return [
     { 
@@ -535,7 +540,12 @@ export interface ThreatFamily {
   description: string
 }
 
-export function mockThreatFamilies(): ThreatFamily[] {
+export function mockThreatFamilies(customerId?: string | null): ThreatFamily[] {
+  // Return empty array if mock data is disabled for this customer
+  if (!isMockDataEnabled(customerId)) {
+    return []
+  }
+  
   // Use deterministic values to prevent hydration mismatch
   const families = [
     { name: 'Info Stealers', baseCount: 450, severity: 'Critical' as const, description: 'Malware designed to steal sensitive information like passwords, credit cards, and personal data', multiplier: 0.9 },
