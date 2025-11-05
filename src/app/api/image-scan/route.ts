@@ -58,14 +58,19 @@ export async function GET(request: NextRequest) {
     // Get customer ID from headers
     const customerId = getCustomerIdFromHeaders(request.headers)
     
+    console.log('Image Scan API - Customer ID:', customerId)
+    
     // Check if mock data should be shown for this customer
     const showMockData = isMockDataEnabled(customerId)
+    
+    console.log('Image Scan API - Show Mock Data:', showMockData, 'for customer:', customerId)
     
     // TODO: Replace with actual DynamoDB/API call to ilminate-agent
     // const data = await fetchFromDynamoDB('ilminate-agent-scans', customerId)
     
     // For customers with mock data disabled, return zeros
     if (!showMockData) {
+      console.log('Returning zero data for customer:', customerId)
       const emptyData: ImageScanStats = {
         total_scans_24h: 0,
         qr_codes_detected: 0,
@@ -81,6 +86,8 @@ export async function GET(request: NextRequest) {
       }
       return NextResponse.json(emptyData)
     }
+    
+    console.log('Returning mock data for customer:', customerId)
     
     // For now, return mock data structure that matches ilminate-agent's output
     const mockData: ImageScanStats = {
