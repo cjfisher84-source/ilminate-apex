@@ -706,6 +706,7 @@ export function EDRThreatDetections() {
 export function GeoThreatMap() {
   const [showList, setShowList] = useState(false)
   const geoThreats = mockGeoThreatMap()
+  const theme = useTheme()
   
   const severityColors = {
     Critical: '#ef4444',
@@ -715,16 +716,16 @@ export function GeoThreatMap() {
   
   return (
     <div style={{ 
-      backgroundColor: '#FFFFFF', 
+      backgroundColor: theme.palette.background.paper, 
       borderRadius: 16, 
       padding: 32, 
-      border: '2px solid #E0E4E8',
+      border: `2px solid ${theme.palette.divider}`,
       boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)',
       minHeight: 400
     }}>
       <div style={{ 
         marginBottom: 24, 
-        color: '#1a1a1a', 
+        color: theme.palette.text.primary, 
         fontSize: '1.3rem', 
         fontWeight: 700,
         display: 'flex',
@@ -756,11 +757,11 @@ export function GeoThreatMap() {
       </div>
       
       {/* Threat Summary */}
-      <Box sx={{ mb: 3, p: 3, bgcolor: '#F8FAFB', borderRadius: 2 }}>
+      <Box sx={{ mb: 3, p: 3, bgcolor: theme.palette.mode === 'dark' ? '#0f172a' : '#F8FAFB', borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}>
         <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: UNCW_TEAL }}>
           🌍 Threat Origins by Geography
         </Typography>
-        <Typography variant="body2" sx={{ color: '#666', mb: 2, lineHeight: 1.6 }}>
+        <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 2, lineHeight: 1.6 }}>
           Hover over countries to see threat details. Darker colors indicate higher threat volumes.
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
@@ -784,13 +785,14 @@ export function GeoThreatMap() {
           <Box key={idx} sx={{ 
             p: 2, 
             mb: 2, 
-            border: '1px solid #E0E4E8', 
+            border: `1px solid ${theme.palette.divider}`, 
             borderRadius: 2,
-            '&:hover': { bgcolor: '#F8FAFB' }
+            bgcolor: theme.palette.background.default,
+            '&:hover': { bgcolor: theme.palette.action.hover }
           }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
                   {threat.country}
                 </Typography>
                 <Chip 
@@ -808,13 +810,13 @@ export function GeoThreatMap() {
                 {threat.threatCount}
               </Typography>
             </Box>
-            <Typography variant="body2" sx={{ color: '#666', mb: 1, fontSize: '0.85rem' }}>
+            <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 1, fontSize: '0.85rem' }}>
               <strong>Domain:</strong> {threat.domain}
             </Typography>
-            <Typography variant="body2" sx={{ color: '#666', mb: 1, fontSize: '0.85rem' }}>
+            <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 1, fontSize: '0.85rem' }}>
               <strong>Threat Types:</strong> {threat.threatTypes.join(', ')}
             </Typography>
-            <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem', lineHeight: 1.4 }}>
+            <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.8rem', lineHeight: 1.4 }}>
               {threat.description}
             </Typography>
           </Box>
