@@ -49,21 +49,32 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
     let isCancelled = false
 
     async function draw() {
-      // Convert GeoThreat[] to ISO3 map
-      const threatMap: Record<string, { count: number; last_seen: string; severity: string }> = {}
-      threats.forEach((t) => {
-        threatMap[t.countryCode] = {
-          count: t.threatCount,
-          last_seen: t.lastSeen,
-          severity: t.severity
+      try {
+        console.log('ThreatMap: Starting draw with', threats.length, 'threats')
+        
+        // Convert GeoThreat[] to ISO3 map
+        const threatMap: Record<string, { count: number; last_seen: string; severity: string }> = {}
+        threats.forEach((t) => {
+          threatMap[t.countryCode] = {
+            count: t.threatCount,
+            last_seen: t.lastSeen,
+            severity: t.severity
+          }
+        })
+        
+        console.log('ThreatMap: Threat map created with', Object.keys(threatMap).length, 'countries')
+
+        // Fetch world GeoJSON
+        console.log('ThreatMap: Fetching GeoJSON from', WORLD_GEOJSON_URL)
+        const response = await fetch(WORLD_GEOJSON_URL)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch GeoJSON: ${response.statusText}`)
         }
-      })
+        const world = await response.json()
+        if (isCancelled) return
 
-      // Fetch world GeoJSON
-      const world = await fetch(WORLD_GEOJSON_URL).then((r) => r.json())
-      if (isCancelled) return
-
-      const features: WorldFeature[] = world.features || []
+        const features: WorldFeature[] = world.features || []
+        console.log('ThreatMap: Loaded', features.length, 'country features')
 
       // Compute color scale domain from data
       const counts = threats.map((d) => d.threatCount || 0)
@@ -225,6 +236,11 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
         .attr('font-weight', 600)
         .attr('fill', UNCW_TEAL)
         .text('Threat Volume (darker = more)')
+        
+        console.log('ThreatMap: Map rendered successfully!')
+      } catch (error) {
+        console.error('ThreatMap: Error rendering map:', error)
+      }
     }
 
     draw()
@@ -244,7 +260,7 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
           borderRadius: 8,
           overflow: 'hidden',
           position: 'relative',
-          background: 'linear-gradient(180deg, rgba(248,250,252,1), rgba(241,245,249,1))'
+          background: '#1a1f2e'
         }}
         aria-label="Global threat origins map"
       >
