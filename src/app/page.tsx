@@ -353,8 +353,8 @@ export default function Home() {
             </Box>
           </Box>
 
-          {/* Advanced Image Detection Section - Only show with mock data */}
-          {isFeatureEnabled(customerId, 'mockData') && <ImageScanResults />}
+          {/* Advanced Image Detection Section */}
+          <ImageScanResults />
 
           {/* MITRE ATT&CK Matrix Highlight */}
           <Link href="/reports/attack" style={{ textDecoration: 'none' }}>
@@ -418,8 +418,7 @@ export default function Home() {
             </Paper>
           </Link>
 
-          {/* Cyber Score Section - Only show with mock data */}
-          {isFeatureEnabled(customerId, 'mockData') && (
+          {/* Cyber Score Section */}
           <Box>
             <Box sx={{ mb: isMobile ? 2 : 3 }}>
               <Typography 
@@ -551,13 +550,11 @@ export default function Home() {
               <SecurityAssistant />
             </Box>
           </Box>
-          )}
 
-          {/* Timeline - Only show with mock data */}
-          {isFeatureEnabled(customerId, 'mockData') && <TimelineArea />}
+          {/* Timeline */}
+          <TimelineArea />
 
-          {/* Threat Family Types and Peer Comparison - Only show with mock data */}
-          {isFeatureEnabled(customerId, 'mockData') && (
+          {/* Threat Family Types and Peer Comparison */}
           <Box sx={{ 
             display: 'grid', 
             gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
@@ -566,7 +563,6 @@ export default function Home() {
             <ThreatFamilyTypesChart />
             <PeerComparisonChart />
           </Box>
-          )}
 
           {/* Domain / Brand Abuse (DMARC value) */}
           <Box className={isMobile ? 'mobile-table-wrapper' : ''}>
@@ -678,11 +674,11 @@ export default function Home() {
             </TableContainer>
           </Box>
 
-          {/* AI Threats - Only show with mock data */}
-          {isFeatureEnabled(customerId, 'mockData') && <AIThreatsBar />}
+          {/* AI Threats */}
+          <AIThreatsBar />
 
-          {/* AI Exploit Detection - Only show with mock data */}
-          {isFeatureEnabled(customerId, 'mockData') && <AIExploitDetectionChart />}
+          {/* AI Exploit Detection */}
+          <AIExploitDetectionChart />
 
           {/* EDR Section - Only show if enabled for customer */}
           {isFeatureEnabled(customerId, 'edr') && (
