@@ -96,10 +96,14 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
 
       svg.attr('viewBox', `0 0 ${width} ${height}`).attr('role', 'img')
 
-      // Mercator projection with better framing - zoom in 10% for larger view
+      // Mercator projection with better framing
       const projection = d3.geoMercator()
         .fitExtent([[20, 20], [width - 20, height - 80]], world) // Add padding and space for legend
-        .scale(projection.scale() * 1.15) // Zoom in 15% for larger, more visible countries
+      
+      // Zoom in 15% for larger, more visible countries
+      const currentScale = projection.scale()
+      projection.scale(currentScale * 1.15)
+      
       const path = d3.geoPath(projection)
 
       // Tooltip helpers
