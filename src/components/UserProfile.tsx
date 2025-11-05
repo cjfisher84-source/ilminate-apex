@@ -16,31 +16,33 @@ export default function UserProfile() {
   const open = Boolean(anchorEl)
 
   useEffect(() => {
-    // Try to get user info from cookies
+    // Try to get user info from the display cookie
     const cookies = document.cookie.split(';').reduce((acc, cookie) => {
       const [key, value] = cookie.trim().split('=')
-      acc[key] = value
+      acc[key] = decodeURIComponent(value)
       return acc
     }, {} as Record<string, string>)
 
-    // Look for Cognito ID token cookie
-    const idTokenKey = Object.keys(cookies).find(key => 
-      key.includes('CognitoIdentityServiceProvider') && key.endsWith('.idToken')
-    )
+    console.log('UserProfile: Looking for apex_user_display cookie')
 
-    if (idTokenKey) {
+    // Look for the user display cookie
+    const displayCookie = cookies['apex_user_display']
+
+    if (displayCookie) {
       try {
-        const token = cookies[idTokenKey]
-        const payload = parseJWT(token)
+        const info = JSON.parse(displayCookie)
+        console.log('UserProfile: Loaded user info:', info)
         
         setUserInfo({
-          email: payload?.email || payload?.['cognito:username'] || 'Unknown User',
-          customerId: extractDomain(payload?.email || ''),
-          role: payload?.['custom:role'] || 'User'
+          email: info.email || 'Unknown User',
+          customerId: info.customerId || 'Unknown',
+          role: info.role || 'user'
         })
       } catch (err) {
-        console.error('Failed to parse user info:', err)
+        console.error('UserProfile: Failed to parse user display cookie:', err)
       }
+    } else {
+      console.warn('UserProfile: No apex_user_display cookie found - user may not be logged in via OAuth')
     }
   }, [])
 
@@ -50,23 +52,6 @@ export default function UserProfile() {
 
   const handleClose = () => {
     setAnchorEl(null)
-  }
-
-  const parseJWT = (token: string): any => {
-    try {
-      const parts = token.split('.')
-      if (parts.length !== 3) return null
-      const payload = parts[1]
-      const decoded = atob(payload)
-      return JSON.parse(decoded)
-    } catch {
-      return null
-    }
-  }
-
-  const extractDomain = (email: string): string => {
-    const parts = email.split('@')
-    return parts.length === 2 ? parts[1] : 'Unknown'
   }
 
   const getInitials = (email: string): string => {
@@ -83,8 +68,30 @@ export default function UserProfile() {
     return '#94a3b8'
   }
 
+  // Fallback: Show simple logout button if we can't load user info
   if (!userInfo) {
-    return null
+    return (
+      <Link href="/api/auth/logout" passHref legacyBehavior>
+        <Button 
+          variant="outlined" 
+          component="a"
+          sx={{ 
+            borderColor: 'primary.main',
+            color: 'primary.main',
+            px: 3,
+            py: 1.2,
+            fontSize: '1rem',
+            fontWeight: 600,
+            '&:hover': { 
+              borderColor: '#005555',
+              bgcolor: 'rgba(0, 112, 112, 0.05)'
+            }
+          }}
+        >
+          Logout
+        </Button>
+      </Link>
+    )
   }
 
   return (
