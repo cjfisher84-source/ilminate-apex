@@ -119,7 +119,7 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
         .attr('opacity', 0.95)
         .style('cursor', (d) => {
           const iso = getISO3(d)
-          return threatMap[iso] ? 'pointer' : 'default'
+          return iso && threatMap[iso] ? 'pointer' : 'default'
         })
         .on('mousemove', function (event, d) {
           const iso = getISO3(d)
