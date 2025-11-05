@@ -15,9 +15,10 @@ export async function POST(req: NextRequest) {
     const { prompt } = await req.json();
 
     // Get real data from mock functions (deterministic)
+    // Note: Returns null for customers with mock data disabled
     const scoreValue = mockCyberScore();
     const score = {
-      score: scoreValue,
+      score: scoreValue ?? 0, // Default to 0 if null (customer with no data yet)
       protectionRate: 94.2,
       responseTime: '2.3m',
       falsePositiveRate: '0.8%'
@@ -29,6 +30,39 @@ export async function POST(req: NextRequest) {
     const lower = String(prompt || '').toLowerCase();
 
     let reply = '';
+    
+    // Handle case where customer has no data yet (production customer awaiting integration)
+    if (scoreValue === null || aiThreats.length === 0) {
+      reply = `Welcome to APEX Security Assistant!
+
+I'm ready to help you with security analysis and threat intelligence, but I don't see any data in your environment yet.
+
+To start seeing security insights:
+
+1️⃣ **Complete Google Workspace Integration**
+   - Enable Gmail API
+   - Configure service account
+   - See the onboarding guide for details
+
+2️⃣ **Configure DMARC Reporting**
+   - Add DMARC DNS records
+   - Email authentication data will flow automatically
+
+3️⃣ **Start Analyzing Threats**
+   - Once data flows, I can provide:
+   - Real-time threat analysis
+   - Security posture insights
+   - Incident investigation assistance
+   - Remediation recommendations
+
+Need help? Contact support@ilminate.com or check the APEX Command Guide (click your profile → APEX Command Guide).`;
+      
+      return NextResponse.json({ 
+        reply,
+        status: 'no_data',
+        helpful: true 
+      });
+    }
     
     if (lower.includes('investigate') || lower.includes('threat')) {
       // Use real AI threats data
