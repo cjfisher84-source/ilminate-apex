@@ -216,10 +216,10 @@ export function mockGeoThreatMap(customerId?: string | null) {
       countryCode: 'NGA', // Use 3-letter ISO code
       latitude: 9.0820,
       longitude: 8.6753,
-      threatCount: 450, // Increased to Medium-High (yellow)
+      threatCount: 250, // Medium (yellow)
       threatTypes: ['BEC', 'Phish'],
-      lastSeen: new Date(Date.now() - Math.random() * 10800000).toISOString(),
-      severity: 'High' as const,
+      lastSeen: new Date(Date.now() - 10800000).toISOString(),
+      severity: 'Medium' as const,
       domain: 'billing-ilminate.co',
       description: 'Business email compromise with gift card requests'
     },
