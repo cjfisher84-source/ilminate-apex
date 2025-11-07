@@ -36,7 +36,7 @@ function useCustomerId(): string | null {
 }
 
 // Load ThreatMap client-side only (D3 requires browser APIs)
-const ThreatMap = dynamic(() => import('./ThreatMap'), { ssr: false })
+const ThreatMap = dynamic(() => import('./ThreatMap.simple'), { ssr: false })
 
 const UNCW_TEAL = '#007070'
 const UNCW_GOLD = '#FFD700'
