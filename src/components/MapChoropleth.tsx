@@ -27,7 +27,7 @@ const MapChoropleth: React.FC<Props> = ({
   const [mouse, setMouse] = useState<[number, number] | null>(null)
 
   const geojson = useMemo(() => {
-    const fc = feature(worldData as any, (worldData as any).objects.countries)
+    const fc = feature(worldData as any, (worldData as any).objects.countries) as unknown
     return fc as GeoJSON.FeatureCollection<GeoJSON.Geometry, any>
   }, [])
 
