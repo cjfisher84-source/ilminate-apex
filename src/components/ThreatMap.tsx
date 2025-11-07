@@ -81,34 +81,37 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
       const counts = threats.map((d) => d.threatCount || 0)
       const maxCount = counts.length ? d3.max(counts)! : 1
 
-      // Enhanced heatmap scale: Yellow → Orange → Red for clear threat visualization
-      const color = d3
-        .scaleSequential(d3.interpolateYlOrRd)
-        .domain([0, maxCount * 0.85]) // Compress domain to make colors more vibrant
+      // Threat severity color scale: Green → Yellow → Orange → Red
+      const getThreatColor = (count: number) => {
+        if (count === 0) return '#e5e7eb' // Gray for no threats
+        if (count < 100) return '#10b981' // Green - Low
+        if (count < 500) return '#eab308' // Yellow - Medium
+        if (count < 1000) return '#f97316' // Orange - High
+        return '#ef4444' // Red - Critical (Russia, etc.)
+      }
 
       // Build SVG
       const svg = d3.select(svgRef.current!)
       svg.selectAll('*').remove() // clear on rerender
 
-      // Responsive dimensions - increased for better visibility
-      const width = Math.max(320, w || 960)
-      const height = Math.max(500, h || 600)
+      // Responsive dimensions - MUCH LARGER map
+      const width = Math.max(400, w || 1200)
+      const height = Math.max(700, h || 800) // Increased from 600
 
       svg.attr('viewBox', `0 0 ${width} ${height}`).attr('role', 'img')
       
-      // Add ocean/background
+      // White background (as requested)
       svg.append('rect')
         .attr('width', width)
         .attr('height', height)
-        .attr('fill', '#0a0e1a') // Deep ocean blue-black
+        .attr('fill', '#ffffff')
 
-      // Mercator projection with much better zoom
+      // Mercator projection - exclude Arctic by adjusting center and zoom
       const projection = d3.geoMercator()
-        .fitExtent([[10, 10], [width - 10, height - 90]], world)
-      
-      // Zoom in 35% for much larger, more visible countries
-      const currentScale = projection.scale()
-      projection.scale(currentScale * 1.35)
+        .center([0, 20]) // Center further south to exclude Arctic
+        .scale(width / 6.5) // Adjusted scale
+        .translate([width / 2, height / 2])
+        .clipAngle(90) // Clip the projection to visible hemisphere
       
       const path = d3.geoPath(projection)
 
@@ -128,7 +131,7 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
       // Add radial gradient patterns for heatmap effect on countries
       const defs = svg.append('defs')
       
-      // Add drop shadow filter for threat countries
+      // Add drop shadow filter for high-threat countries
       const filter = defs.append('filter')
         .attr('id', 'threat-glow')
         .attr('x', '-50%')
@@ -138,45 +141,18 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
       
       filter.append('feGaussianBlur')
         .attr('in', 'SourceAlpha')
-        .attr('stdDeviation', 3)
+        .attr('stdDeviation', 2)
         .attr('result', 'blur')
       
       filter.append('feOffset')
         .attr('in', 'blur')
         .attr('dx', 0)
-        .attr('dy', 2)
+        .attr('dy', 1)
         .attr('result', 'offsetBlur')
       
       const feMerge = filter.append('feMerge')
       feMerge.append('feMergeNode').attr('in', 'offsetBlur')
       feMerge.append('feMergeNode').attr('in', 'SourceGraphic')
-      
-      // Create gradient patterns for different threat levels
-      Object.keys(threatMap).forEach((countryCode) => {
-        const threat = threatMap[countryCode]
-        const baseColor = color(threat.count) as string
-        
-        const gradient = defs.append('radialGradient')
-          .attr('id', `heat-${countryCode}`)
-          .attr('cx', '50%')
-          .attr('cy', '50%')
-          .attr('r', '65%')
-        
-        gradient.append('stop')
-          .attr('offset', '0%')
-          .attr('stop-color', baseColor)
-          .attr('stop-opacity', 1)
-        
-        gradient.append('stop')
-          .attr('offset', '70%')
-          .attr('stop-color', baseColor)
-          .attr('stop-opacity', 0.85)
-          
-        gradient.append('stop')
-          .attr('offset', '100%')
-          .attr('stop-color', baseColor)
-          .attr('stop-opacity', 0.6)
-      })
 
       // Countries layer
       const g = svg.append('g')
@@ -189,24 +165,21 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
         .attr('fill', (d) => {
           const iso = getISO3(d)
           const meta = iso ? threatMap[iso] : undefined
-          // Use gradient pattern for threat countries, solid for others
-          return meta ? `url(#heat-${iso})` : '#353a4a'
+          // Color by threat severity
+          return meta ? getThreatColor(meta.count) : '#e5e7eb' // Gray for no threats
         })
-        .attr('stroke', (d) => {
-          const iso = getISO3(d)
-          const meta = iso ? threatMap[iso] : undefined
-          return meta ? '#000' : '#4a4f5e'
-        })
+        .attr('stroke', '#333')
         .attr('stroke-width', (d) => {
           const iso = getISO3(d)
           const meta = iso ? threatMap[iso] : undefined
-          return meta ? 0.8 : 0.4
+          return meta ? 1.5 : 0.5
         })
         .attr('opacity', 1)
         .attr('filter', (d) => {
           const iso = getISO3(d)
           const meta = iso ? threatMap[iso] : undefined
-          return meta ? 'url(#threat-glow)' : 'none'
+          // Only apply glow to high-threat countries (>500 threats)
+          return meta && meta.count >= 500 ? 'url(#threat-glow)' : 'none'
         })
         .style('cursor', (d) => {
           const iso = getISO3(d)
@@ -233,9 +206,9 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
             // Dramatic highlight on hover
             d3.select(this)
               .attr('stroke-width', 3)
-              .attr('stroke', UNCW_TEAL)
-              .attr('opacity', 1)
-              .style('filter', 'brightness(1.3) drop-shadow(0 0 8px rgba(0, 168, 168, 0.8))')
+              .attr('stroke', '#000')
+              .attr('opacity', 0.8)
+              .style('filter', 'brightness(1.2) drop-shadow(0 0 8px rgba(0, 0, 0, 0.5))')
               .raise() // Bring to front
 
             const severityColors: Record<string, string> = {
@@ -250,10 +223,10 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
               .style('left', `${event.pageX + 12}px`)
               .style('top', `${event.pageY + 12}px`)
               .html(
-                `<div style="font-weight:700; font-size:15px; margin-bottom:6px; color:#fff; border-bottom: 2px solid ${UNCW_TEAL}; padding-bottom: 4px;">${name}</div>
-                 <div style="margin-bottom:4px; font-size:14px;"><span style="font-weight:600;">Threats:</span> <span style="color:${UNCW_TEAL}; font-weight:700; font-size:16px;">${count.toLocaleString()}</span></div>
-                 <div style="margin-bottom:4px;"><span style="font-weight:600;">Severity:</span> <span style="color:${severityColors[severity] || '#fff'}; font-weight:700;">${severity}</span></div>
-                 <div style="font-size:11px; color:#aaa; margin-top:6px; padding-top:4px; border-top:1px solid #444;">Last seen: ${last}</div>`
+                `<div style="font-weight:700; font-size:15px; margin-bottom:8px; color:#000; border-bottom: 2px solid ${getThreatColor(count)}; padding-bottom: 6px;">${name}</div>
+                 <div style="margin-bottom:6px; font-size:14px; color:#333;"><span style="font-weight:600;">Threats:</span> <span style="color:${getThreatColor(count)}; font-weight:700; font-size:16px;">${count.toLocaleString()}</span></div>
+                 <div style="margin-bottom:6px; color:#333;"><span style="font-weight:600;">Severity:</span> <span style="color:${severityColors[severity] || '#333'}; font-weight:700;">${severity}</span></div>
+                 <div style="font-size:11px; color:#666; margin-top:8px; padding-top:6px; border-top:1px solid #ddd;">Last seen: ${last}</div>`
               )
           } else {
             // Slight highlight for countries without threat data
@@ -268,19 +241,51 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
           const meta = iso ? threatMap[iso] : undefined
           
           d3.select(this)
-            .attr('stroke-width', meta ? 0.8 : 0.4)
-            .attr('stroke', meta ? '#000' : '#4a4f5e')
+            .attr('stroke-width', meta ? 1.5 : 0.5)
+            .attr('stroke', '#333')
             .attr('opacity', 1)
-            .attr('filter', meta ? 'url(#threat-glow)' : 'none')
+            .attr('filter', meta && meta.count >= 500 ? 'url(#threat-glow)' : 'none')
             .style('filter', 'none')
           tooltip.style('display', 'none')
         })
 
-      // Enhanced Legend with better visibility
-      const legendWidth = 240
-      const legendHeight = 16
+      // Add country name labels on threat countries
+      g.selectAll('text.country-label')
+        .data(features.filter(d => {
+          const iso = getISO3(d)
+          return iso && threatMap[iso] // Only countries with threats
+        }))
+        .join('text')
+        .attr('class', 'country-label')
+        .attr('transform', (d) => {
+          const centroid = path.centroid(d as any)
+          return `translate(${centroid[0]}, ${centroid[1]})`
+        })
+        .attr('text-anchor', 'middle')
+        .attr('dy', '.35em')
+        .attr('font-size', (d) => {
+          const iso = getISO3(d)
+          const meta = iso ? threatMap[iso] : undefined
+          // Larger text for higher threat countries
+          return meta && meta.count >= 500 ? 14 : 11
+        })
+        .attr('font-weight', 700)
+        .attr('fill', '#000')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 3)
+        .attr('paint-order', 'stroke')
+        .style('pointer-events', 'none')
+        .text((d) => {
+          const name = d.properties?.name as string
+          const iso = getISO3(d)
+          const meta = iso ? threatMap[iso] : undefined
+          // Show country name
+          return name || 'Unknown'
+        })
+
+      // Enhanced Legend with discrete threat levels
       const legendX = 20
-      const legendY = height - 60
+      const legendY = height - 100
 
       const legend = svg.append('g').attr('transform', `translate(${legendX},${legendY})`)
 
@@ -288,75 +293,58 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
       legend
         .append('rect')
         .attr('x', -10)
-        .attr('y', -30)
-        .attr('width', legendWidth + 20)
-        .attr('height', 65)
-        .attr('fill', 'rgba(0,0,0,0.75)')
+        .attr('y', -40)
+        .attr('width', 200)
+        .attr('height', 115)
+        .attr('fill', 'rgba(255, 255, 255, 0.95)')
         .attr('rx', 8)
-        .attr('stroke', UNCW_TEAL)
+        .attr('stroke', '#333')
         .attr('stroke-width', 2)
 
-      // Gradient ramp (reuse existing defs)
-      const gradId = 'threat-ramp'
-      const gradient = defs
-        .append('linearGradient')
-        .attr('id', gradId)
-        .attr('x1', '0%')
-        .attr('x2', '100%')
-        .attr('y1', '0%')
-        .attr('y2', '0%')
-
-      const stops = d3.range(0, 1.001, 0.05)
-      stops.forEach((t) => {
-        gradient
-          .append('stop')
-          .attr('offset', `${t * 100}%`)
-          .attr('stop-color', color(t * maxCount * 0.85) as string)
-      })
-
-      legend
-        .append('rect')
-        .attr('width', legendWidth)
-        .attr('height', legendHeight)
-        .attr('fill', `url(#${gradId})`)
-        .attr('rx', 4)
-        .attr('stroke', '#fff')
-        .attr('stroke-width', 1.5)
-
-      const scale = d3
-        .scaleLinear()
-        .domain([0, maxCount])
-        .range([0, legendWidth])
-
-      const axis = d3.axisBottom(scale).ticks(5).tickSize(6).tickFormat(d3.format('~s'))
-
-      legend
-        .append('g')
-        .attr('transform', `translate(0, ${legendHeight})`)
-        .call(axis as any)
-        .call((g: any) => {
-          g.select('.domain').remove()
-          g.selectAll('text').attr('fill', '#fff').attr('font-size', 11).attr('font-weight', 600)
-          g.selectAll('line').attr('stroke', '#fff').attr('stroke-width', 1.5)
-        })
-
+      // Title
       legend
         .append('text')
         .attr('x', 0)
-        .attr('y', -12)
-        .attr('font-size', 13)
+        .attr('y', -22)
+        .attr('font-size', 14)
         .attr('font-weight', 700)
-        .attr('fill', UNCW_TEAL)
-        .text('🌡️ THREAT HEATMAP')
-        
-      legend
-        .append('text')
-        .attr('x', 0)
-        .attr('y', -28)
-        .attr('font-size', 11)
-        .attr('font-weight', 500)
-        .attr('fill', '#ccc')
-        .text('Hover over countries for details')
+        .attr('fill', '#000')
+        .text('Threat Severity')
+
+      // Discrete color legend items
+      const legendItems = [
+        { label: 'Critical (>1000)', color: '#ef4444' },
+        { label: 'High (500-1000)', color: '#f97316' },
+        { label: 'Medium (100-500)', color: '#eab308' },
+        { label: 'Low (<100)', color: '#10b981' },
+        { label: 'No Threats', color: '#e5e7eb' }
+      ]
+
+      legendItems.forEach((item, i) => {
+        const y = i * 18
+
+        // Color box
+        legend
+          .append('rect')
+          .attr('x', 0)
+          .attr('y', y)
+          .attr('width', 16)
+          .attr('height', 16)
+          .attr('fill', item.color)
+          .attr('stroke', '#333')
+          .attr('stroke-width', 1)
+          .attr('rx', 2)
+
+        // Label
+        legend
+          .append('text')
+          .attr('x', 22)
+          .attr('y', y + 12)
+          .attr('font-size', 11)
+          .attr('font-weight', 500)
+          .attr('fill', '#333')
+          .text(item.label)
+      })
         
         console.log('ThreatMap: Map rendered successfully!')
       } catch (error) {
@@ -377,13 +365,13 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
         ref={wrapRef}
         style={{
           width: '100%',
-          height: '600px',
+          height: '800px', // Increased from 600px
           borderRadius: 8,
           overflow: 'hidden',
           position: 'relative',
-          background: 'linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%)',
-          border: `3px solid ${UNCW_TEAL}`,
-          boxShadow: `0 8px 32px rgba(0, 112, 112, 0.3), inset 0 0 60px rgba(0, 112, 112, 0.1)`
+          background: '#ffffff', // White background
+          border: '3px solid #d1d5db',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
         }}
         aria-label="Global threat origins map"
       >
@@ -395,13 +383,13 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
             position: 'fixed',
             pointerEvents: 'none',
             zIndex: 1000,
-            background: 'rgba(0,0,0,0.92)',
-            color: '#fff',
-            padding: '10px 12px',
+            background: 'rgba(255, 255, 255, 0.98)',
+            color: '#000',
+            padding: '12px 14px',
             borderRadius: 8,
             fontSize: 13,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-            border: `1px solid ${UNCW_TEAL}`,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+            border: '2px solid #333',
             maxWidth: '280px'
           }}
         />
