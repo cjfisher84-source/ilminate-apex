@@ -736,7 +736,8 @@ export function EDRThreatDetections() {
 
 export function GeoThreatMap() {
   const [showList, setShowList] = useState(false)
-  const geoThreats = mockGeoThreatMap()
+  const customerId = useCustomerId()
+  const geoThreats = mockGeoThreatMap(customerId)
   const theme = useTheme()
   
   const severityColors = {
