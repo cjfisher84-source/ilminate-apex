@@ -27,7 +27,7 @@ const MapChoropleth: React.FC<Props> = ({
   const [mouse, setMouse] = useState<[number, number] | null>(null)
 
   const geojson = useMemo(() => {
-    const fc = feature(worldData as any, (worldData as any).objects.countries) as unknown
+    const fc = feature(worldData as any, (worldData as any).objects.countries)
     return fc as GeoJSON.FeatureCollection<GeoJSON.Geometry, any>
   }, [])
 
@@ -39,7 +39,7 @@ const MapChoropleth: React.FC<Props> = ({
 
   const maxVal = useMemo(() => d3.max(counts, (d) => d.count) ?? 0, [counts])
   const color = useMemo(
-    () => d3.scaleQuantize<string>().domain([0, maxVal || 1]).range(d3.schemeReds[9]),
+    () => d3.scaleQuantize<string>().domain([0, maxVal || 1]).range(d3.schemeReds[7]),
     [maxVal]
   )
 
@@ -49,9 +49,7 @@ const MapChoropleth: React.FC<Props> = ({
     const svg = d3.select(svgRef.current)
     svg.selectAll("*").remove()
 
-    const projection = d3.geoNaturalEarth1()
-      .fitSize([width, height - 40], geojson) // Leave space at bottom
-      .center([0, 15]) // Center slightly south to avoid Arctic
+    const projection = d3.geoNaturalEarth1().fitSize([width, height], geojson)
 
     const path = d3.geoPath(projection)
 
