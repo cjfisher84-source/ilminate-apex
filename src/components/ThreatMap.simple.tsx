@@ -117,16 +117,16 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
               .attr('stroke', '#333')
           })
 
-        // Add country labels for threat countries - PROPERLY ALIGNED
+        // Add country labels for threat countries - CENTERED ON COUNTRIES
         const labelData = [
-          { name: 'USA', x: 230, y: 310, threats: 85, color: getThreatColor(85) },
-          { name: 'BRAZIL', x: 370, y: 520, threats: 120, color: getThreatColor(120) },
-          { name: 'NIGERIA', x: 520, y: 380, threats: 250, color: getThreatColor(250) },
-          { name: 'RUSSIA', x: 720, y: 250, threats: 1250, color: getThreatColor(1250) },
-          { name: 'CHINA', x: 780, y: 320, threats: 650, color: getThreatColor(650) },
-          { name: 'INDIA', x: 750, y: 360, threats: 450, color: getThreatColor(450) },
-          { name: 'IRAN', x: 650, y: 320, threats: 750, color: getThreatColor(750) },
-          { name: 'N. KOREA', x: 850, y: 300, threats: 850, color: getThreatColor(850) }
+          { name: 'USA', x: 220, y: 280, threats: 85, color: getThreatColor(85) },
+          { name: 'BRAZIL', x: 340, y: 490, threats: 120, color: getThreatColor(120) },
+          { name: 'NIGERIA', x: 510, y: 380, threats: 250, color: getThreatColor(250) },
+          { name: 'RUSSIA', x: 700, y: 230, threats: 1250, color: getThreatColor(1250) },
+          { name: 'CHINA', x: 770, y: 310, threats: 650, color: getThreatColor(650) },
+          { name: 'INDIA', x: 700, y: 360, threats: 450, color: getThreatColor(450) },
+          { name: 'IRAN', x: 640, y: 330, threats: 750, color: getThreatColor(750) },
+          { name: 'N. KOREA', x: 820, y: 295, threats: 850, color: getThreatColor(850) }
         ]
 
         labelData.forEach(label => {
