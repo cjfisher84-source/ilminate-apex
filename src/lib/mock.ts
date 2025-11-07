@@ -216,7 +216,7 @@ export function mockGeoThreatMap(customerId?: string | null) {
       countryCode: 'NGA', // Use 3-letter ISO code
       latitude: 9.0820,
       longitude: 8.6753,
-      threatCount: Math.floor(180 + Math.random() * 150),
+      threatCount: 450, // Increased to Medium-High (yellow)
       threatTypes: ['BEC', 'Phish'],
       lastSeen: new Date(Date.now() - Math.random() * 10800000).toISOString(),
       severity: 'High' as const,
@@ -228,7 +228,7 @@ export function mockGeoThreatMap(customerId?: string | null) {
       countryCode: 'PRK', // Use 3-letter ISO code
       latitude: 40.3399,
       longitude: 127.5101,
-      threatCount: Math.floor(95 + Math.random() * 80),
+      threatCount: 850, // Increased to High (orange)
       threatTypes: ['Malware', 'Phish'],
       lastSeen: new Date(Date.now() - Math.random() * 14400000).toISOString(),
       severity: 'Critical' as const,
@@ -240,7 +240,7 @@ export function mockGeoThreatMap(customerId?: string | null) {
       countryCode: 'IRN', // Use 3-letter ISO code
       latitude: 32.4279,
       longitude: 53.6880,
-      threatCount: Math.floor(140 + Math.random() * 120),
+      threatCount: 750, // Increased to High (orange)
       threatTypes: ['Malware', 'ATO'],
       lastSeen: new Date(Date.now() - Math.random() * 18000000).toISOString(),
       severity: 'High' as const,
@@ -276,7 +276,7 @@ export function mockGeoThreatMap(customerId?: string | null) {
       countryCode: 'IND', // Use 3-letter ISO code
       latitude: 20.5937,
       longitude: 78.9629,
-      threatCount: Math.floor(120 + Math.random() * 100),
+      threatCount: 450, // Set to Medium (yellow)
       threatTypes: ['Spam', 'Phish'],
       lastSeen: new Date(Date.now() - Math.random() * 28800000).toISOString(),
       severity: 'Medium' as const,

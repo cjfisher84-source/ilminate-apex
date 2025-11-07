@@ -64,6 +64,28 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
           return '#e5e7eb'                     // Gray - No threats
         }
 
+        // Create country ID to threat mapping
+        const countryIdToThreat = new Map()
+        threatMap.forEach((data, code) => {
+          // Map ISO codes to numeric IDs
+          const idMap: Record<string, string> = {
+            'RUS': '643',  // Russia
+            'CHN': '156',  // China
+            'NGA': '566',  // Nigeria
+            'USA': '840',  // United States
+            'BRA': '76',   // Brazil
+            'IND': '356',  // India
+            'PRK': '408',  // North Korea
+            'IRN': '364'   // Iran
+          }
+          const numericId = idMap[code]
+          if (numericId) {
+            countryIdToThreat.set(numericId, data)
+          }
+        })
+
+        console.log('Threat map entries:', Array.from(countryIdToThreat.entries()))
+
         // Draw countries
         svg.append('g')
           .selectAll('path')
@@ -71,24 +93,15 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
           .join('path')
           .attr('d', path as any)
           .attr('fill', (d: any) => {
-            const countryId = d.id
-            // Try to match by numeric ID or properties
-            let threat = null
+            const countryId = String(d.id)
+            const threat = countryIdToThreat.get(countryId)
             
-            // Check against our threat map
-            for (const [code, data] of threatMap.entries()) {
-              // Simple matching - this will work for major countries
-              if (countryId === '643') threat = data // Russia
-              else if (countryId === '156') threat = data // China
-              else if (countryId === '566') threat = data // Nigeria
-              else if (countryId === '840') threat = data // USA
-              else if (countryId === '76') threat = data // Brazil
-              else if (countryId === '356') threat = data // India
-              else if (countryId === '408') threat = data // North Korea
-              else if (countryId === '364') threat = data // Iran
+            if (threat) {
+              const color = getThreatColor(threat.count)
+              console.log(`Country ${countryId}: ${threat.count} threats -> ${color}`)
+              return color
             }
-            
-            return threat ? getThreatColor(threat.count) : '#e5e7eb'
+            return '#e5e7eb' // Gray for no threats
           })
           .attr('stroke', '#333')
           .attr('stroke-width', 0.5)
@@ -104,38 +117,43 @@ export default function ThreatMap({ threats }: ThreatMapProps) {
               .attr('stroke', '#333')
           })
 
-        // Add country labels for threat countries
+        // Add country labels for threat countries - PROPERLY ALIGNED
         const labelData = [
-          { name: 'RUSSIA', x: 600, y: 180, color: '#ef4444', threats: 1250 },
-          { name: 'CHINA', x: 750, y: 250, color: '#f97316', threats: 650 },
-          { name: 'USA', x: 250, y: 250, color: '#10b981', threats: 85 },
-          { name: 'NIGERIA', x: 500, y: 350, color: '#eab308', threats: 250 },
-          { name: 'BRAZIL', x: 350, y: 500, color: '#10b981', threats: 120 }
+          { name: 'USA', x: 230, y: 310, threats: 85, color: getThreatColor(85) },
+          { name: 'BRAZIL', x: 370, y: 520, threats: 120, color: getThreatColor(120) },
+          { name: 'NIGERIA', x: 520, y: 380, threats: 250, color: getThreatColor(250) },
+          { name: 'RUSSIA', x: 720, y: 250, threats: 1250, color: getThreatColor(1250) },
+          { name: 'CHINA', x: 780, y: 320, threats: 650, color: getThreatColor(650) },
+          { name: 'INDIA', x: 750, y: 360, threats: 450, color: getThreatColor(450) },
+          { name: 'IRAN', x: 650, y: 320, threats: 750, color: getThreatColor(750) },
+          { name: 'N. KOREA', x: 850, y: 300, threats: 850, color: getThreatColor(850) }
         ]
 
         labelData.forEach(label => {
+          // Country name
           svg.append('text')
             .attr('x', label.x)
             .attr('y', label.y)
             .attr('text-anchor', 'middle')
-            .attr('font-size', 14)
+            .attr('font-size', label.threats >= 500 ? 15 : 12)
             .attr('font-weight', 700)
-            .attr('fill', '#000')
-            .attr('stroke', '#fff')
+            .attr('fill', '#fff')
+            .attr('stroke', '#000')
             .attr('stroke-width', 3)
             .attr('paint-order', 'stroke')
             .text(label.name)
             .style('pointer-events', 'none')
 
+          // Threat count
           svg.append('text')
             .attr('x', label.x)
             .attr('y', label.y + 16)
             .attr('text-anchor', 'middle')
-            .attr('font-size', 11)
-            .attr('font-weight', 600)
-            .attr('fill', label.color)
-            .attr('stroke', '#fff')
-            .attr('stroke-width', 2)
+            .attr('font-size', 10)
+            .attr('font-weight', 700)
+            .attr('fill', '#fff')
+            .attr('stroke', '#000')
+            .attr('stroke-width', 2.5)
             .attr('paint-order', 'stroke')
             .text(`${label.threats} threats`)
             .style('pointer-events', 'none')
