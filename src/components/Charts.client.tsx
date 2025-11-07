@@ -3,6 +3,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, 
 import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mockEDREndpointBreakdown, mockEDRThreatTypes, mockGeoThreatMap, mockAIExploitDetection, mockCrossChannelTimeline, mockThreatFamilies, mockPeerComparison } from '@/lib/mock'
 import { Box, Typography, Chip, useTheme, Button } from '@mui/material'
 import { useEffect, useState, useRef, useMemo } from 'react'
+import React from 'react'
 import { useIsMobile, getResponsiveChartHeight } from '@/lib/mobileUtils'
 import { log } from '@/utils/log'
 import dynamic from 'next/dynamic'
@@ -35,8 +36,8 @@ function useCustomerId(): string | null {
   return customerId
 }
 
-// Load ThreatMap client-side only (D3 requires browser APIs)
-const ThreatMap = dynamic(() => import('./ThreatMap.simple'), { ssr: false })
+// Load MapChoropleth client-side only (D3 requires browser APIs)
+const MapChoropleth = dynamic(() => import('./MapChoropleth'), { ssr: false })
 
 const UNCW_TEAL = '#007070'
 const UNCW_GOLD = '#FFD700'
@@ -740,6 +741,14 @@ export function GeoThreatMap() {
   const geoThreats = mockGeoThreatMap(customerId)
   const theme = useTheme()
   
+  // Convert threat data to format MapChoropleth expects
+  const threatCounts = useMemo(() => {
+    return geoThreats.map(t => ({
+      iso3: t.countryCode,
+      count: t.threatCount
+    }))
+  }, [geoThreats])
+  
   const severityColors = {
     Critical: '#ef4444',
     High: '#f97316',
@@ -805,9 +814,17 @@ export function GeoThreatMap() {
       
       {!showList ? (
         <>
-          {/* D3 Interactive World Map */}
+          {/* D3 Interactive World Map with Auto-Aligned Labels */}
           <Box sx={{ mb: 3 }}>
-            <ThreatMap threats={geoThreats} />
+            <MapChoropleth 
+              counts={threatCounts}
+              width={1200}
+              height={800}
+              onCountryClick={(iso3, name) => {
+                console.log(`Clicked: ${name} (${iso3})`)
+                // Future: Navigate to country-specific threats
+              }}
+            />
           </Box>
         </>
       ) : (
