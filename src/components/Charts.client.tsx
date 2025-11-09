@@ -39,6 +39,9 @@ function useCustomerId(): string | null {
 // Load MapChoropleth client-side only (D3 requires browser APIs)
 const MapChoropleth = dynamic(() => import('./MapChoropleth'), { ssr: false })
 
+// Load ThreatHeatmap client-side only (D3 + TopoJSON require browser APIs)
+const ThreatHeatmap = dynamic(() => import('./ThreatHeatmap'), { ssr: false })
+
 const UNCW_TEAL = '#007070'
 const UNCW_GOLD = '#FFD700'
 const TEAL_LIGHT = '#4DB8B8'
@@ -1253,5 +1256,13 @@ export function PeerComparisonChart() {
       </ResponsiveContainer>
     </div>
   )
+}
+
+/**
+ * Enhanced Threat Heatmap with Yellow→Red gradient
+ * Shows global threat distribution with intensity based on volume × severity
+ */
+export function ThreatHeatmapChart() {
+  return <ThreatHeatmap />
 }
 
