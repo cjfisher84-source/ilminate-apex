@@ -182,7 +182,7 @@ export default function ThreatHeatmap() {
         // Groups for layering
         const gCountries = svg.append('g').attr('class', 'countries')
         const gBorders = svg.append('g').attr('class', 'borders')
-        const gLabels = svg.append('g').attr('class', 'labels').style('display', showLabels ? null : 'none')
+        const gLabels = svg.append('g').attr('class', 'labels')
 
         // Draw countries
         const countryPaths = gCountries.selectAll('path.country')
@@ -218,7 +218,6 @@ export default function ThreatHeatmap() {
           .attr('fill', 'none')
           .attr('stroke', 'rgba(255,255,255,.18)')
           .attr('stroke-width', 0.6)
-          .style('display', showBorders ? null : 'none')
 
         // Labels (toggle)
         const labelsData = countries.filter(c => c.code && scoreByISO3.get(c.code))
@@ -246,8 +245,8 @@ export default function ThreatHeatmap() {
           .style('pointer-events', 'none')
 
         // Update visibility based on state
-        gBorders.style('display', showBorders ? null : 'none')
-        gLabels.style('display', showLabels ? null : 'none')
+        gBorders.style('display', showBorders ? '' : 'none')
+        gLabels.style('display', showLabels ? '' : 'none')
 
         // Build gradient legend
         buildLegend(color, maxScore)
