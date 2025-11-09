@@ -28,7 +28,7 @@ const MapChoropleth: React.FC<Props> = ({
 
   const geojson = useMemo(() => {
     const fc = feature(worldData as any, (worldData as any).objects.countries)
-    return fc as GeoJSON.FeatureCollection<GeoJSON.Geometry, any>
+    return fc as unknown as GeoJSON.FeatureCollection<GeoJSON.Geometry, any>
   }, [])
 
   const index = useMemo<ThreatIndex>(() => {
