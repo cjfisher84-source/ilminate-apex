@@ -18,6 +18,7 @@ import {
 import Link from 'next/link'
 import Image from 'next/image'
 import UserProfile from '@/components/UserProfile'
+import NavigationBar from '@/components/NavigationBar'
 import TriageResults from '@/components/TriageResults'
 import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
 
@@ -244,6 +245,9 @@ ${details || '(none)'}
             <UserProfile />
           </Box>
         </Box>
+
+        {/* Navigation Bar */}
+        <NavigationBar />
 
         <Box sx={{ 
           display: 'flex', 

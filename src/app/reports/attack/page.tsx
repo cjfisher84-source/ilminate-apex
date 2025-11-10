@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Card, CircularProgress, List, ListItem, ListItemText, Chip, Button } from '@mui/material';
 import Link from 'next/link';
+import NavigationBar from '@/components/NavigationBar';
 import AttackMatrix from '@/components/AttackMatrix';
 import { getTechniqueMeta, TechniqueMeta } from '@/lib/attackMeta';
 
@@ -154,6 +155,9 @@ export default function AttackReport() {
           </Button>
         </Link>
       </Box>
+
+      {/* Navigation Bar */}
+      <NavigationBar />
 
       {/* Matrix */}
       <Card sx={{ 

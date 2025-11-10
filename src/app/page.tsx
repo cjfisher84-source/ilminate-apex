@@ -7,6 +7,7 @@ import CategoryCard from '@/components/CategoryCard'
 import SecurityAssistant from '@/components/SecurityAssistant'
 import ImageScanResults from '@/components/ImageScanResults'
 import UserProfile from '@/components/UserProfile'
+import NavigationBar from '@/components/NavigationBar'
 import { TimelineArea, QuarantineDeliveredBars, CyberScoreDonut, AIThreatsBar, EDRMetricsLines, EDREndpointStatus, EDRThreatDetections, AIExploitDetectionChart, CrossChannelTimelineChart, ThreatFamilyTypesChart, PeerComparisonChart } from '@/components/Charts.client'
 import { mockCategoryCounts, GLOSSARY, mockDomainAbuse } from '@/lib/mock'
 import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
@@ -192,128 +193,8 @@ export default function Home() {
           </Box>
         </Box>
 
-        {/* Navigation Icons - Single Row with Emojis */}
-        <Box sx={{ 
-          display: 'flex', 
-          flexWrap: isMobile ? 'wrap' : 'nowrap', 
-          gap: 3, 
-          justifyContent: 'space-around',
-          mb: 3,
-          p: 3,
-          bgcolor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 2
-        }}>
-          <Link href="/investigations" passHref legacyBehavior>
-            <Button
-              component="a"
-              variant="text"
-              title="Deep dive into active and recent security campaigns with timeline analysis"
-              sx={{ 
-                color: 'text.secondary',
-                fontSize: isMobile ? '1rem' : '1.2rem',
-                fontWeight: 600,
-                '&:hover': { 
-                  color: 'primary.main',
-                  bgcolor: 'rgba(0, 168, 168, 0.08)'
-                }
-              }}
-            >
-              🔍 Investigations
-            </Button>
-          </Link>
-          <Link href="/apex-trace" passHref legacyBehavior>
-            <Button
-              component="a"
-              variant="text"
-              title="Super fast message search across email data with advanced filtering"
-              sx={{ 
-                color: 'text.secondary',
-                fontSize: isMobile ? '1rem' : '1.2rem',
-                fontWeight: 600,
-                '&:hover': { 
-                  color: 'primary.main',
-                  bgcolor: 'rgba(0, 168, 168, 0.08)'
-                }
-              }}
-            >
-              🔎 APEX Trace
-            </Button>
-          </Link>
-          <Link href="/triage" passHref legacyBehavior>
-            <Button
-              component="a"
-              variant="text"
-              title="AI-powered threat analysis and classification for suspicious emails"
-              sx={{ 
-                color: 'text.secondary',
-                fontSize: isMobile ? '1rem' : '1.2rem',
-                fontWeight: 600,
-                '&:hover': { 
-                  color: 'primary.main',
-                  bgcolor: 'rgba(0, 168, 168, 0.08)'
-                }
-              }}
-            >
-              ⚡ Triage
-            </Button>
-          </Link>
-          <Link href="/quarantine" passHref legacyBehavior>
-            <Button
-              component="a"
-              variant="text"
-              title="Review and manage messages held for security review"
-              sx={{ 
-                color: 'text.secondary',
-                fontSize: isMobile ? '1rem' : '1.2rem',
-                fontWeight: 600,
-                '&:hover': { 
-                  color: 'primary.main',
-                  bgcolor: 'rgba(0, 168, 168, 0.08)'
-                }
-              }}
-            >
-              🛡️ Quarantine
-            </Button>
-          </Link>
-          <Link href="/harborsim" passHref legacyBehavior>
-            <Button
-              component="a"
-              variant="text"
-              title="Email security training platform with phishing simulation templates"
-              sx={{ 
-                color: 'text.secondary',
-                fontSize: isMobile ? '1rem' : '1.2rem',
-                fontWeight: 600,
-                '&:hover': { 
-                  color: 'primary.main',
-                  bgcolor: 'rgba(0, 168, 168, 0.08)'
-                }
-              }}
-            >
-              📧 HarborSim
-            </Button>
-          </Link>
-          <Link href="/reports/attack" passHref legacyBehavior>
-            <Button
-              component="a"
-              variant="text"
-              title="View security events mapped to ATT&CK techniques for threat intelligence"
-              sx={{ 
-                color: 'text.secondary',
-                fontSize: isMobile ? '1rem' : '1.2rem',
-                fontWeight: 600,
-                '&:hover': { 
-                  color: 'primary.main',
-                  bgcolor: 'rgba(0, 168, 168, 0.08)'
-                }
-              }}
-            >
-              🎯 MITRE ATT&CK
-            </Button>
-          </Link>
-        </Box>
+        {/* Navigation Bar */}
+        <NavigationBar />
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: sectionGap }}>
           {/* Threat Categories Section */}
