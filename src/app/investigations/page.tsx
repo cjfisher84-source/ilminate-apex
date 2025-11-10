@@ -3,7 +3,7 @@ import { Box, Typography, Card, CardContent, Button, Chip, Table, TableBody, Tab
 import Link from 'next/link'
 import Image from 'next/image'
 import UserProfile from '@/components/UserProfile'
-import { GeoThreatMap, CrossChannelTimelineChart } from '@/components/Charts.client'
+import { CrossChannelTimelineChart } from '@/components/Charts.client'
 import { mockCampaigns, mockPathAnalysis, type Campaign } from '@/lib/mock'
 import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
 
@@ -301,9 +301,6 @@ export default function InvestigationsPage() {
               </Box>
             </CardContent>
           </Card>
-
-          {/* Global Threat Origins Map */}
-          <GeoThreatMap />
 
           {/* Cross-Channel Timeline */}
           <CrossChannelTimelineChart campaignId={activeCampaign.id} />
