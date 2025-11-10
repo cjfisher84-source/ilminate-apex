@@ -21,26 +21,31 @@ export default function SecurityAssistant() {
   const [msgs, setMsgs] = React.useState<Msg[]>([
     { role: 'assistant', text: 'Hi! I can investigate threats, suggest posture improvements, and summarize trends. Pick a quick action or ask anything.' }
   ]);
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const messagesBoxRef = React.useRef<HTMLDivElement>(null);
   const cardRef = React.useRef<HTMLDivElement>(null);
+  const [lastMsgCount, setLastMsgCount] = React.useState(0);
 
-  // Improved scroll behavior: scroll card to top when assistant responds
+  // Fixed scroll behavior: scroll messages box to TOP when assistant responds
   React.useEffect(() => {
-    if (msgs.length > 0 && msgs[msgs.length - 1].role === 'assistant' && !busy) {
-      // First scroll the card to top of viewport
+    // Check if we got a new assistant message
+    if (msgs.length > lastMsgCount && msgs[msgs.length - 1].role === 'assistant' && !busy) {
+      setLastMsgCount(msgs.length);
+      
+      // Scroll the messages box to TOP to show the start of the response
       setTimeout(() => {
-        cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        
-        // Then scroll the messages box to show the latest assistant message from top
-        setTimeout(() => {
-          if (messagesBoxRef.current) {
-            messagesBoxRef.current.scrollTop = messagesBoxRef.current.scrollHeight;
+        if (messagesBoxRef.current) {
+          // Find the last assistant message element
+          const messageElements = messagesBoxRef.current.querySelectorAll('[data-role="assistant"]');
+          const lastAssistantMsg = messageElements[messageElements.length - 1];
+          
+          if (lastAssistantMsg) {
+            // Scroll this message to the top of the box
+            lastAssistantMsg.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
-        }, 400);
-      }, 100);
+        }
+      }, 150);
     }
-  }, [msgs, busy]);
+  }, [msgs, busy, lastMsgCount]);
 
   // Component mount logging
   React.useEffect(() => {
@@ -137,15 +142,19 @@ export default function SecurityAssistant() {
         }}>
           <Stack spacing={1}>
             {msgs.map((m, i) => (
-              <Box key={i} sx={{
-                alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
-                maxWidth: '85%',
-                background: m.role === 'user' ? '#007070' : 'transparent',
-                border: m.role === 'assistant' ? '1px solid #334155' : 'none',
-                color: '#f1f5f9',
-                p: 1, 
-                borderRadius: '10px',
-              }}>
+              <Box 
+                key={i} 
+                data-role={m.role}
+                sx={{
+                  alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+                  maxWidth: '85%',
+                  background: m.role === 'user' ? '#007070' : 'transparent',
+                  border: m.role === 'assistant' ? '1px solid #334155' : 'none',
+                  color: '#f1f5f9',
+                  p: 1, 
+                  borderRadius: '10px',
+                }}
+              >
                 <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
                   {m.text}
                 </Typography>
@@ -157,7 +166,6 @@ export default function SecurityAssistant() {
                 <Typography variant="caption">Working…</Typography>
               </Stack>
             )}
-            <div ref={messagesEndRef} />
           </Stack>
         </Box>
 
