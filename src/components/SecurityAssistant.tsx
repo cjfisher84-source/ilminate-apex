@@ -22,11 +22,22 @@ export default function SecurityAssistant() {
     { role: 'assistant', text: 'Hi! I can investigate threats, suggest posture improvements, and summarize trends. Pick a quick action or ask anything.' }
   ]);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const cardRef = React.useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom of messages box on new messages
   React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [msgs]);
+
+  // Scroll card to top of viewport when new assistant message arrives
+  React.useEffect(() => {
+    if (msgs.length > 0 && msgs[msgs.length - 1].role === 'assistant' && !busy) {
+      // Wait a moment for the message to render, then scroll card to top
+      setTimeout(() => {
+        cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    }
+  }, [msgs, busy]);
 
   // Component mount logging
   React.useEffect(() => {
@@ -65,7 +76,7 @@ export default function SecurityAssistant() {
   }
 
   return (
-    <Card sx={{
+    <Card ref={cardRef} sx={{
       backgroundColor: '#1e293b',
       border: '2px solid #334155',
       height: 420, 
