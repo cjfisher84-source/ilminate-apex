@@ -3,6 +3,7 @@ import { Box, Typography, Card, CardContent, Button, Chip, Table, TableBody, Tab
 import Link from 'next/link'
 import Image from 'next/image'
 import UserProfile from '@/components/UserProfile'
+import NavigationBar from '@/components/NavigationBar'
 import { CrossChannelTimelineChart } from '@/components/Charts.client'
 import { mockCampaigns, mockPathAnalysis, type Campaign } from '@/lib/mock'
 import { useIsMobile, getResponsivePadding, getResponsiveSpacing, getResponsiveFontSize, getResponsiveImageSize } from '@/lib/mobileUtils'
@@ -103,6 +104,9 @@ export default function InvestigationsPage() {
             <UserProfile />
           </Box>
         </Box>
+
+        {/* Navigation Bar */}
+        <NavigationBar />
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 2.5 : 3 }}>
           {/* Active Campaigns Overview */}

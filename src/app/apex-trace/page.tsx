@@ -1,6 +1,7 @@
 'use client'
 import { Box, Typography, Button } from '@mui/material'
 import { ApexTrace } from '@/components/ApexTrace'
+import NavigationBar from '@/components/NavigationBar'
 import { useIsMobile } from '@/lib/mobileUtils'
 
 const UNCW_TEAL = '#007070'
@@ -91,6 +92,9 @@ export default function ApexTracePage() {
             ← Dashboard
           </Button>
         </Box>
+
+        {/* Navigation Bar */}
+        <NavigationBar />
 
         {/* APEX Trace Component */}
         <ApexTrace />

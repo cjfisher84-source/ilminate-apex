@@ -30,6 +30,7 @@ import {
   Search as SearchIcon,
   FilterList as FilterIcon
 } from '@mui/icons-material'
+import NavigationBar from '@/components/NavigationBar'
 import { useIsMobile, getResponsivePadding } from '@/lib/mobileUtils'
 import type { QuarantinedMessage } from '@/lib/mock'
 
@@ -158,6 +159,9 @@ export default function QuarantinePage() {
             </Button>
           </Link>
         </Box>
+
+        {/* Navigation Bar */}
+        <NavigationBar />
 
         {/* Filters */}
         <Paper sx={{ p: 2, mb: 3, border: 1, borderColor: 'divider' }}>

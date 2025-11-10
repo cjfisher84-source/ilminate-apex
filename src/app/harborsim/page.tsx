@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Box, Typography, Card, CardContent, Button, CircularProgress, Alert } from '@mui/material'
+import NavigationBar from '@/components/NavigationBar'
 
 interface Template {
   id: string
@@ -134,6 +135,9 @@ export default function HarborSimList() {
             </Button>
           </Link>
         </Box>
+
+        {/* Navigation Bar */}
+        <NavigationBar />
 
         {/* Content */}
         {loading ? (
