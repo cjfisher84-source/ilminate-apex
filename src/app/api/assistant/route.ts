@@ -1,15 +1,114 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockCyberScore, mockAIThreats, mockThreatFamilies } from '@/lib/mock';
+import { mockCyberScore, mockAIThreats, mockThreatFamilies, mockCampaigns, mockGeoThreatMap, mockTimeline30d } from '@/lib/mock';
 
 /**
- * Security Assistant API
+ * Security Assistant API - Enhanced with Multi-Model AI
  * 
  * Provides intelligent responses to security queries by analyzing
- * real threat data from the dashboard.
+ * real threat data from the dashboard and using AI for natural language understanding.
  * 
- * Current: Deterministic mock responses (SSR-safe)
- * Future: Wire to AWS Lambda for live LLM analysis
+ * Supports:
+ * - Claude (Anthropic) - Primary model
+ * - OpenAI GPT-4 - Fallback model
+ * - Real threat intelligence (campaigns, geo threats, timelines)
+ * - Campaign-specific queries (e.g., "ClickFix")
  */
+
+// AI Model configuration
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+/**
+ * Query AI models (Claude or OpenAI) for sophisticated threat analysis
+ */
+async function queryAIModel(userQuery: string, context: any): Promise<string> {
+  const systemPrompt = `You are a cybersecurity analyst assistant for Ilminate APEX, a threat intelligence platform. 
+  
+Your role is to analyze security data and provide clear, actionable insights about threats, campaigns, and security posture.
+
+Current environment data:
+- Security Score: ${context.score.score}/100
+- Protection Rate: ${context.score.protectionRate}%
+- Active Campaigns: ${context.activeCampaigns.length}
+- Total Threats (30d): ${context.totalThreats}
+- AI Threats: ${context.aiThreats.length} categories
+- Geo Threats: ${context.geoThreats.length} countries
+
+Active campaigns:
+${context.campaigns.map((c: any) => `- ${c.name} (${c.threatType}, ${c.status}): ${c.targets} targets, ${c.interactions.compromised} compromised`).join('\n')}
+
+Be concise, use bullet points, and provide actionable recommendations. Format responses for easy reading.`;
+
+  // Try Claude (Anthropic) first
+  if (ANTHROPIC_API_KEY) {
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-3-5-sonnet-20241022',
+          max_tokens: 1024,
+          system: systemPrompt,
+          messages: [
+            {
+              role: 'user',
+              content: userQuery
+            }
+          ]
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.content[0].text;
+      }
+    } catch (err) {
+      console.error('Claude API error:', err);
+    }
+  }
+
+  // Fallback to OpenAI if Claude fails or isn't configured
+  if (OPENAI_API_KEY) {
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4-turbo-preview',
+          max_tokens: 1024,
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt
+            },
+            {
+              role: 'user',
+              content: userQuery
+            }
+          ]
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.choices[0].message.content;
+      }
+    } catch (err) {
+      console.error('OpenAI API error:', err);
+    }
+  }
+
+  // If both fail, throw error to use fallback logic
+  throw new Error('No AI models available');
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { prompt } = await req.json();
@@ -25,6 +124,22 @@ export async function POST(req: NextRequest) {
     };
     const aiThreats = mockAIThreats();
     const threatFamilies = mockThreatFamilies();
+    const campaigns = mockCampaigns();
+    const geoThreats = mockGeoThreatMap();
+    const timeline = mockTimeline30d();
+    
+    // Build context for AI models
+    const context = {
+      score,
+      aiThreats,
+      threatFamilies,
+      campaigns,
+      geoThreats,
+      timeline,
+      totalThreats: geoThreats.reduce((sum, t) => sum + t.threatCount, 0),
+      activeCampaigns: campaigns.filter(c => c.status === 'active'),
+      criticalCampaigns: campaigns.filter(c => c.threatType === 'BEC' || c.threatType === 'Malware')
+    };
     
     // Analyze prompt intent
     const lower = String(prompt || '').toLowerCase();
@@ -64,7 +179,107 @@ Need help? Contact support@ilminate.com or check the APEX Command Guide (click y
       });
     }
     
-    if (lower.includes('investigate') || lower.includes('threat')) {
+    // Campaign-specific queries (e.g., ClickFix, specific threat campaigns)
+    if (lower.includes('clickfix') || lower.includes('click fix')) {
+      const clickFixCampaign = campaigns.find(c => 
+        c.name.toLowerCase().includes('credential') || 
+        c.threatType === 'Phish'
+      );
+      
+      if (clickFixCampaign) {
+        reply = `ClickFix Campaign Analysis:
+
+🎯 **Status:** ${clickFixCampaign.status === 'active' ? '🔴 ACTIVE - Ongoing threat' : '✅ Contained/Resolved'}
+
+📊 **Campaign Details:**
+• Name: ${clickFixCampaign.name}
+• Type: ${clickFixCampaign.threatType}
+• Started: ${clickFixCampaign.startDate}
+• Source: ${clickFixCampaign.source.geo} (${clickFixCampaign.source.ip})
+• Domain: ${clickFixCampaign.source.domain}
+
+📈 **Impact Metrics:**
+• Targets: ${clickFixCampaign.targets} users
+• Delivered: ${clickFixCampaign.interactions.delivered}
+• Opened: ${clickFixCampaign.interactions.opened}
+• Clicked: ${clickFixCampaign.interactions.clicked}
+• Compromised: ${clickFixCampaign.interactions.compromised}
+• Reported by users: ${clickFixCampaign.interactions.reported}
+
+🛡️ **In Your Environment:**
+${clickFixCampaign.status === 'active' ? 
+  `YES - We're seeing this campaign. It's currently ACTIVE and targeting your users.\n\n⚠️ Immediate Actions:\n1. Quarantine all emails from ${clickFixCampaign.source.domain}\n2. Force password resets for ${clickFixCampaign.interactions.compromised} compromised accounts\n3. Block source IP: ${clickFixCampaign.source.ip}\n4. Send user awareness alert about this campaign` :
+  `This campaign has been ${clickFixCampaign.status}. Last activity: ${clickFixCampaign.endDate}\n\n✅ Resolution:\n• All malicious messages quarantined\n• Compromised accounts remediated\n• Source domain blocked\n• Users notified`}`;
+      } else {
+        reply = `I don't see any active ClickFix campaigns in your environment currently.
+
+Your active campaigns:
+${context.activeCampaigns.length > 0 ? context.activeCampaigns.map(c => `• ${c.name} (${c.threatType}) - ${c.status}`).join('\n') : '• No active campaigns detected'}
+
+Last 30 days threat activity:
+• Total threats: ${context.totalThreats}
+• Critical sources: ${geoThreats.filter(t => t.severity === 'Critical').length}
+• Protection rate: ${score.protectionRate}%`;
+      }
+    }
+    
+    // General campaign queries
+    else if (lower.includes('campaign') || lower.includes('active') || lower.includes('ongoing')) {
+      const activeCamps = context.activeCampaigns;
+      const resolvedRecent = campaigns.filter(c => c.status === 'resolved').slice(0, 2);
+      
+      reply = `Campaign Overview:
+
+🔴 **Active Campaigns (${activeCamps.length}):**
+${activeCamps.map(c => `
+• **${c.name}**
+  Type: ${c.threatType} | Started: ${c.startDate}
+  Targets: ${c.targets} | Compromised: ${c.interactions.compromised}
+  Source: ${c.source.geo} (${c.source.domain})`).join('\n')}
+
+✅ **Recently Resolved:**
+${resolvedRecent.map(c => `• ${c.name} (${c.threatType}) - Resolved ${c.endDate}`).join('\n')}
+
+📊 **Campaign Metrics:**
+• Total targets: ${campaigns.reduce((sum, c) => sum + c.targets, 0)}
+• Total compromised: ${campaigns.reduce((sum, c) => sum + c.interactions.compromised, 0)}
+• Average click rate: ${Math.round((campaigns.reduce((sum, c) => sum + c.interactions.clicked, 0) / campaigns.reduce((sum, c) => sum + c.targets, 0)) * 100)}%
+
+⚠️ **Immediate Actions Needed:**
+${activeCamps.length > 0 ? activeCamps.map(c => `• Block ${c.source.domain} and reset ${c.interactions.compromised} compromised accounts`).join('\n') : '• No immediate actions required - all campaigns contained'}`;
+    }
+    
+    // Specific threat type queries
+    else if (lower.includes('phishing') || lower.includes('phish')) {
+      const phishCampaigns = campaigns.filter(c => c.threatType === 'Phish');
+      const totalPhishTargets = phishCampaigns.reduce((sum, c) => sum + c.targets, 0);
+      
+      reply = `Phishing Campaign Analysis:
+
+📧 **Active Phishing Campaigns:** ${phishCampaigns.filter(c => c.status === 'active').length}
+
+${phishCampaigns.slice(0, 3).map(c => `
+**${c.name}**
+• Status: ${c.status.toUpperCase()}
+• Targets: ${c.targets} users
+• Clicked: ${c.interactions.clicked} (${Math.round((c.interactions.clicked/c.targets)*100)}%)
+• Compromised: ${c.interactions.compromised}
+• Source: ${c.source.domain}`).join('\n')}
+
+📊 **Overall Phishing Stats:**
+• Total targets: ${totalPhishTargets}
+• Protection rate: ${score.protectionRate}%
+• User awareness: ${phishCampaigns.reduce((sum, c) => sum + c.interactions.reported, 0)} reports from users
+
+💡 **Recommendations:**
+1. Run phishing simulation training (use HarborSim)
+2. Enable advanced email authentication (DMARC p=reject)
+3. Deploy browser isolation for high-risk users
+4. Block identified phishing domains`;
+    }
+    
+    // Threat investigation queries
+    else if (lower.includes('investigate') || lower.includes('threat')) {
       // Use real AI threats data
       const topThreat = aiThreats[0];
       const totalThreats = aiThreats.reduce((sum, t) => sum + t.count, 0);
@@ -151,14 +366,28 @@ ${aiThreats.slice(0, 3).map(t => `• ${t.type}: ${t.count} incidents`).join('\n
 
 Overall Health: ${score.score > 85 ? '🟢 Excellent' : score.score > 70 ? '🟡 Good' : '🔴 Needs Attention'}`;
       
-    } else {
-      // Fallback with contextual help
+    } 
+    
+    // If no simple pattern match, try AI models for natural language understanding
+    if (!reply && (ANTHROPIC_API_KEY || OPENAI_API_KEY)) {
+      try {
+        reply = await queryAIModel(prompt, context);
+      } catch (aiError) {
+        console.error('AI model error, falling back:', aiError);
+        // Fall through to default response
+      }
+    }
+    
+    // Final fallback with contextual help
+    if (!reply) {
       reply = `I can help you with:
 
 🔍 **Threat Investigation**
 • "Investigate today's top threat"
 • "What's the highest risk right now?"
 • "Show me recent AI threats"
+• "Is the ClickFix campaign still happening?"
+• "Are we seeing [campaign name] in our environment?"
 
 🛡️ **Security Posture**
 • "How can I improve our security?"
@@ -169,8 +398,14 @@ Overall Health: ${score.score > 85 ? '🟢 Excellent' : score.score > 70 ? '🟡
 • "Summarize 30-day risk trends"
 • "What's our protection rate?"
 • "Show me threat statistics"
+• "What campaigns are active?"
 
-Try asking: "What's our security score?" or use one of the quick action buttons above!`;
+💡 **Campaign Queries**
+• "Tell me about active campaigns"
+• "What's the executive wire transfer scam?"
+• "Show me phishing campaigns"
+
+Try asking: "Is the ClickFix campaign still happening?" or use one of the quick action buttons above!`;
     }
 
     return NextResponse.json({ reply });
