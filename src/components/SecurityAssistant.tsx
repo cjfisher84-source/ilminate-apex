@@ -3,8 +3,10 @@
 import * as React from 'react';
 import {
   Box, Card, CardContent, Typography,
-  Button, TextField, CircularProgress, Chip, Stack
+  Button, TextField, CircularProgress, Chip, Stack,
+  Dialog, DialogTitle, DialogContent, DialogActions, IconButton
 } from '@mui/material';
+import { Close as CloseIcon, OpenInNew as OpenInNewIcon } from '@mui/icons-material';
 import { log } from '@/utils/log';
 
 type Msg = { role: 'user'|'assistant', text: string };
@@ -24,26 +26,23 @@ export default function SecurityAssistant() {
   const messagesBoxRef = React.useRef<HTMLDivElement>(null);
   const cardRef = React.useRef<HTMLDivElement>(null);
   const [lastMsgCount, setLastMsgCount] = React.useState(0);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalContent, setModalContent] = React.useState<Msg | null>(null);
 
-  // Fixed scroll behavior: scroll messages box to TOP when assistant responds
+  // Auto-open modal for long assistant responses
   React.useEffect(() => {
     // Check if we got a new assistant message
     if (msgs.length > lastMsgCount && msgs[msgs.length - 1].role === 'assistant' && !busy) {
       setLastMsgCount(msgs.length);
+      const lastMsg = msgs[msgs.length - 1];
       
-      // Scroll the messages box to TOP to show the start of the response
-      setTimeout(() => {
-        if (messagesBoxRef.current) {
-          // Find the last assistant message element
-          const messageElements = messagesBoxRef.current.querySelectorAll('[data-role="assistant"]');
-          const lastAssistantMsg = messageElements[messageElements.length - 1];
-          
-          if (lastAssistantMsg) {
-            // Scroll this message to the top of the box
-            lastAssistantMsg.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }
-      }, 150);
+      // Auto-open modal for responses longer than 200 characters
+      if (lastMsg.text.length > 200) {
+        setTimeout(() => {
+          setModalContent(lastMsg);
+          setModalOpen(true);
+        }, 150);
+      }
     }
   }, [msgs, busy, lastMsgCount]);
 
@@ -84,6 +83,7 @@ export default function SecurityAssistant() {
   }
 
   return (
+    <>
     <Card ref={cardRef} sx={{
       backgroundColor: '#1e293b',
       border: '2px solid #334155',
@@ -145,6 +145,13 @@ export default function SecurityAssistant() {
               <Box 
                 key={i} 
                 data-role={m.role}
+                onClick={() => {
+                  // Click assistant messages to view in modal
+                  if (m.role === 'assistant' && m.text.length > 100) {
+                    setModalContent(m);
+                    setModalOpen(true);
+                  }
+                }}
                 sx={{
                   alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
                   maxWidth: '85%',
@@ -153,11 +160,22 @@ export default function SecurityAssistant() {
                   color: '#f1f5f9',
                   p: 1, 
                   borderRadius: '10px',
+                  cursor: m.role === 'assistant' && m.text.length > 100 ? 'pointer' : 'default',
+                  transition: 'all 0.2s ease',
+                  '&:hover': m.role === 'assistant' && m.text.length > 100 ? {
+                    borderColor: '#00a8a8',
+                    backgroundColor: 'rgba(0, 168, 168, 0.05)'
+                  } : {}
                 }}
               >
                 <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
                   {m.text}
                 </Typography>
+                {m.role === 'assistant' && m.text.length > 200 && (
+                  <Typography variant="caption" sx={{ display: 'block', mt: 1, color: '#00a8a8', fontSize: '0.7rem' }}>
+                    Click to view full response ↗
+                  </Typography>
+                )}
               </Box>
             ))}
             {busy && (
@@ -223,6 +241,100 @@ export default function SecurityAssistant() {
         </Stack>
       </CardContent>
     </Card>
+
+    {/* Full Response Modal */}
+    <Dialog
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          bgcolor: '#1e293b',
+          border: '2px solid #00a8a8',
+          borderRadius: '16px',
+          maxHeight: '80vh'
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        bgcolor: '#0f172a', 
+        color: '#00a8a8', 
+        fontWeight: 700,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderBottom: '1px solid #334155'
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <OpenInNewIcon sx={{ fontSize: '1.2rem' }} />
+          Security Assistant Response
+        </Box>
+        <IconButton 
+          onClick={() => setModalOpen(false)}
+          size="small"
+          sx={{ color: '#94a3b8', '&:hover': { color: '#00a8a8' } }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      
+      <DialogContent sx={{ 
+        bgcolor: '#1e293b', 
+        color: '#f1f5f9',
+        p: 3,
+        overflowY: 'auto'
+      }}>
+        {modalContent && (
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              whiteSpace: 'pre-wrap', 
+              lineHeight: 1.8,
+              fontSize: '1rem'
+            }}
+          >
+            {modalContent.text}
+          </Typography>
+        )}
+      </DialogContent>
+      
+      <DialogActions sx={{ 
+        bgcolor: '#0f172a', 
+        borderTop: '1px solid #334155',
+        p: 2,
+        gap: 2
+      }}>
+        <Button
+          onClick={() => setModalOpen(false)}
+          variant="outlined"
+          sx={{
+            borderColor: '#334155',
+            color: '#f1f5f9',
+            '&:hover': {
+              borderColor: '#00a8a8',
+              bgcolor: 'rgba(0, 168, 168, 0.1)'
+            }
+          }}
+        >
+          Close
+        </Button>
+        <Button
+          onClick={() => {
+            setModalOpen(false);
+            setInput('');
+          }}
+          variant="contained"
+          sx={{
+            bgcolor: '#00a8a8',
+            '&:hover': { bgcolor: '#007070' }
+          }}
+        >
+          Ask Another Question
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </>
   );
 }
 
