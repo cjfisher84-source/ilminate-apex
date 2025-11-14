@@ -19,10 +19,10 @@ const CUSTOMER_ID = '7159b266-2289-499e-807a-2cdd316f5122' // TODO: Get from aut
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { messageId: string } }
+  { params }: { params: Promise<{ messageId: string }> }
 ) {
   try {
-    const { messageId } = params
+    const { messageId } = await params
     
     // Query DynamoDB for specific message
     // We need to scan since we don't have the sort key
