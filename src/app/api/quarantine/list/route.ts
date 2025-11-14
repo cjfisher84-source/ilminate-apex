@@ -3,11 +3,12 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb'
 
 // Initialize DynamoDB client
+// Note: Amplify doesn't allow env vars starting with "AWS", so we use custom names
 const dynamoClient = new DynamoDBClient({ 
-  region: process.env.AWS_REGION || 'us-east-2',
-  credentials: process.env.AWS_ACCESS_KEY_ID ? {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+  region: process.env.DYNAMODB_REGION || process.env.REGION || 'us-east-2',
+  credentials: process.env.DYNAMODB_ACCESS_KEY_ID ? {
+    accessKeyId: process.env.DYNAMODB_ACCESS_KEY_ID,
+    secretAccessKey: process.env.DYNAMODB_SECRET_ACCESS_KEY || '',
   } : undefined
 })
 
