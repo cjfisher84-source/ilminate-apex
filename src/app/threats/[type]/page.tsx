@@ -1,11 +1,11 @@
 'use client'
-import { Box, Typography, Card, CardContent, Button, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
+import { Box, Typography, Card, CardContent, Button, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useTheme } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from 'recharts'
 
-const UNCW_TEAL = '#007070'
+const UNCW_TEAL = '#00a8a8' // Updated to match dark theme primary
 const UNCW_GOLD = '#FFD700'
 
 // Mock threat-specific data generators
@@ -154,6 +154,7 @@ const THREAT_INFO: Record<string, { title: string; description: string; color: s
 }
 
 export default function ThreatDetailPage() {
+  const theme = useTheme()
   const params = useParams()
   const type = params?.type as string || 'phish'
   const info = THREAT_INFO[type] || THREAT_INFO.phish
@@ -161,7 +162,7 @@ export default function ThreatDetailPage() {
   const examples = mockThreatExamples(type)
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#F5F7FA', p: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: 4 }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {/* Header */}
         <Box sx={{ 
@@ -170,7 +171,7 @@ export default function ThreatDetailPage() {
           alignItems: 'center', 
           mb: 4,
           pb: 3,
-          borderBottom: '2px solid #007070'
+          borderBottom: `2px solid ${theme.palette.primary.main}`
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                     <Image 
@@ -179,13 +180,13 @@ export default function ThreatDetailPage() {
                       width={100} 
                       height={100}
                       priority
-                      style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 112, 112, 0.3))' }}
+                      style={{ filter: 'drop-shadow(0 4px 12px rgba(0, 168, 168, 0.3))' }}
                     />
             <Box>
-              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: '#1a1a1a' }}>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 0.5, color: 'text.primary' }}>
                 {info.title}
               </Typography>
-              <Typography variant="subtitle1" sx={{ color: '#666', fontWeight: 500 }}>
+              <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                 Detailed Threat Analysis & Metrics
               </Typography>
             </Box>
@@ -196,15 +197,15 @@ export default function ThreatDetailPage() {
               component="a" 
               size="large"
               sx={{ 
-                borderColor: '#007070',
-                color: '#007070',
+                borderColor: 'primary.main',
+                color: 'primary.main',
                 px: 4,
                 py: 1.5,
                 fontSize: '1.1rem',
                 fontWeight: 600,
                 '&:hover': { 
-                  borderColor: '#005555',
-                  bgcolor: 'rgba(0, 112, 112, 0.05)'
+                  borderColor: 'primary.dark',
+                  bgcolor: 'rgba(0, 168, 168, 0.1)'
                 }
               }}
             >
@@ -215,38 +216,38 @@ export default function ThreatDetailPage() {
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Threat Overview */}
-          <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
+          <Card sx={{ bgcolor: 'background.paper', border: `2px solid ${theme.palette.divider}`, boxShadow: '0 4px 16px rgba(0, 168, 168, 0.15)' }}>
             <CardContent sx={{ p: 4 }}>
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: info.color }}>
                 Threat Overview
               </Typography>
-              <Typography variant="body1" sx={{ color: '#666', lineHeight: 1.8 }}>
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.8 }}>
                 {info.description}
               </Typography>
             </CardContent>
           </Card>
 
           {/* 30-Day Trend */}
-          <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
+          <Card sx={{ bgcolor: 'background.paper', border: `2px solid ${theme.palette.divider}`, boxShadow: '0 4px 16px rgba(0, 168, 168, 0.15)' }}>
             <CardContent sx={{ p: 4 }}>
-              <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: '#1a1a1a' }}>
+              <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: 'text.primary' }}>
                 30-Day Trend Analysis
               </Typography>
               <div style={{ height: 350 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={timeline} margin={{ top: 10, right: 20, left: 0, bottom: 40 }}>
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#666' }} angle={-45} textAnchor="end" height={60} />
-                    <YAxis tick={{ fontSize: 11, fill: '#666' }} width={50} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: theme.palette.text.secondary }} angle={-45} textAnchor="end" height={60} />
+                    <YAxis tick={{ fontSize: 11, fill: theme.palette.text.secondary }} width={50} />
                     <Tooltip 
                       cursor={false}
-                      contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #007070', borderRadius: 12, padding: 12 }}
-                      labelStyle={{ color: '#94a3b8' }}
-                      itemStyle={{ color: '#f1f5f9' }}
+                      contentStyle={{ backgroundColor: theme.palette.background.paper, border: `2px solid ${theme.palette.primary.main}`, borderRadius: 12, padding: 12 }}
+                      labelStyle={{ color: theme.palette.text.secondary }}
+                      itemStyle={{ color: theme.palette.text.primary }}
                     />
-                    <Legend wrapperStyle={{ paddingTop: 20 }} />
+                    <Legend wrapperStyle={{ paddingTop: 20, color: theme.palette.text.primary }} />
                     <Line type="monotone" dataKey="detected" name="Detected" stroke={UNCW_TEAL} strokeWidth={3} dot={{ fill: UNCW_TEAL, r: 4 }} />
                     <Line type="monotone" dataKey="blocked" name="Blocked" stroke={UNCW_GOLD} strokeWidth={3} dot={{ fill: UNCW_GOLD, r: 4 }} />
-                    <Line type="monotone" dataKey="reported" name="User Reported" stroke="#666" strokeWidth={2} dot={{ fill: '#666', r: 3 }} />
+                    <Line type="monotone" dataKey="reported" name="User Reported" stroke={theme.palette.text.secondary} strokeWidth={2} dot={{ fill: theme.palette.text.secondary, r: 3 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -255,30 +256,30 @@ export default function ThreatDetailPage() {
 
           {/* Key Indicators & Mitigation */}
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-            <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
+            <Card sx={{ bgcolor: 'background.paper', border: `2px solid ${theme.palette.divider}`, boxShadow: '0 4px 16px rgba(0, 168, 168, 0.15)' }}>
               <CardContent sx={{ p: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, color: UNCW_TEAL }}>
                   Key Indicators
                 </Typography>
-                <Box component="ul" sx={{ pl: 3, m: 0, color: '#666', lineHeight: 2 }}>
+                <Box component="ul" sx={{ pl: 3, m: 0, color: 'text.secondary', lineHeight: 2 }}>
                   {info.indicators.map((indicator, idx) => (
                     <li key={idx} style={{ marginBottom: 8 }}>
-                      <Typography variant="body2">{indicator}</Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>{indicator}</Typography>
                     </li>
                   ))}
                 </Box>
               </CardContent>
             </Card>
 
-            <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
+            <Card sx={{ bgcolor: 'background.paper', border: `2px solid ${theme.palette.divider}`, boxShadow: '0 4px 16px rgba(0, 168, 168, 0.15)' }}>
               <CardContent sx={{ p: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, color: UNCW_GOLD }}>
                   Mitigation Strategies
                 </Typography>
-                <Box component="ul" sx={{ pl: 3, m: 0, color: '#666', lineHeight: 2 }}>
+                <Box component="ul" sx={{ pl: 3, m: 0, color: 'text.secondary', lineHeight: 2 }}>
                   {info.mitigation.map((strategy, idx) => (
                     <li key={idx} style={{ marginBottom: 8 }}>
-                      <Typography variant="body2">{strategy}</Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>{strategy}</Typography>
                     </li>
                   ))}
                 </Box>
@@ -287,33 +288,33 @@ export default function ThreatDetailPage() {
           </Box>
 
           {/* Recent Examples */}
-          <Card sx={{ bgcolor: '#FFFFFF', border: '2px solid #E0E4E8', boxShadow: '0 4px 16px rgba(0, 112, 112, 0.08)' }}>
-            <Box sx={{ p: 3, borderBottom: '2px solid #007070', bgcolor: '#F8FAFB' }}>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+          <Card sx={{ bgcolor: 'background.paper', border: `2px solid ${theme.palette.divider}`, boxShadow: '0 4px 16px rgba(0, 168, 168, 0.15)' }}>
+            <Box sx={{ p: 3, borderBottom: `2px solid ${theme.palette.primary.main}`, bgcolor: 'background.paper' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>
                 Recent Examples (Last 7 Days)
               </Typography>
             </Box>
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F8FAFB' }}>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Subject</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Sender</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Threat Score</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#666', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</TableCell>
+                  <TableRow sx={{ bgcolor: 'background.paper' }}>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Subject</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Sender</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Threat Score</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {examples.map((ex, idx) => (
-                    <TableRow key={idx} sx={{ '&:hover': { bgcolor: '#F8FAFB' } }}>
-                      <TableCell sx={{ color: '#1a1a1a', fontWeight: 500 }}>{ex.subject}</TableCell>
-                      <TableCell sx={{ color: '#666', fontFamily: 'monospace', fontSize: '0.85rem' }}>{ex.sender}</TableCell>
+                    <TableRow key={idx} sx={{ '&:hover': { bgcolor: 'rgba(0, 168, 168, 0.05)' } }}>
+                      <TableCell sx={{ color: 'text.primary', fontWeight: 500 }}>{ex.subject}</TableCell>
+                      <TableCell sx={{ color: 'text.secondary', fontFamily: 'monospace', fontSize: '0.85rem' }}>{ex.sender}</TableCell>
                       <TableCell>
                         <Chip 
                           label={ex.score} 
                           size="small"
                           sx={{ 
-                            bgcolor: ex.score >= 90 ? '#ef4444' : ex.score >= 80 ? '#f97316' : '#FFD700',
+                            bgcolor: ex.score >= 90 ? theme.palette.error.main : ex.score >= 80 ? theme.palette.warning.main : UNCW_GOLD,
                             color: 'white',
                             fontWeight: 700
                           }}
