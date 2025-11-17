@@ -65,11 +65,104 @@ export async function GET(request: NextRequest) {
     
     console.log('Image Scan API - Show Mock Data:', showMockData, 'for customer:', customerId)
     
-    // TODO: Replace with actual DynamoDB/API call to ilminate-agent
-    // const data = await fetchFromDynamoDB('ilminate-agent-scans', customerId)
-    
-    // For customers with mock data disabled, return zeros
+    // Try to fetch real data from DynamoDB first
     if (!showMockData) {
+      try {
+        const { queryImageScans } = await import('@/lib/dynamodb')
+        const scans = await queryImageScans({
+          customerId: customerId || undefined,
+          days: 1, // Last 24 hours
+          limit: 10000
+        })
+
+        if (scans.length > 0) {
+          // Process scans to build statistics
+          const qrThreats: QRCodeThreat[] = []
+          const imageThreats: ImageThreat[] = []
+          
+          let qrCodesDetected = 0
+          let maliciousQRCodes = 0
+          let offensiveImages = 0
+          let logoImpersonations = 0
+          let hiddenLinks = 0
+          let screenshotPhishing = 0
+
+          scans.forEach((scan: any) => {
+            const scanType = scan.scan_type || scan.scanType
+            const threatDetected = scan.threat_detected || scan.threatDetected || false
+            const threatScore = scan.threat_score || scan.threatScore || 0
+
+            if (scanType === 'qr_code' || scanType === 'QR_CODE') {
+              qrCodesDetected++
+              if (threatDetected && threatScore > 0.5) {
+                maliciousQRCodes++
+                qrThreats.push({
+                  messageId: scan.messageId || scan.message_id || '',
+                  timestamp: scan.timestamp || new Date().toISOString(),
+                  sender: scan.sender || scan.senderEmail || '',
+                  subject: scan.subject || '',
+                  qr_url: scan.detection_details?.qr_url || scan.qr_url || '',
+                  threat_score: threatScore,
+                  indicators: scan.detection_details?.indicators || scan.indicators || [],
+                  detection_method: scan.detection_details?.detection_method || scan.detection_method || 'unknown'
+                })
+              }
+            } else if (scanType === 'image_threat' || scanType === 'IMAGE_THREAT') {
+              const threatType = scan.detection_details?.threat_type || scan.threat_type || ''
+              
+              if (threatType === 'offensive' || threatType === 'OFFENSIVE') {
+                offensiveImages++
+              } else if (threatType === 'logo_impersonation' || threatType === 'LOGO_IMPERSONATION') {
+                logoImpersonations++
+              } else if (threatType === 'hidden_link' || threatType === 'HIDDEN_LINK') {
+                hiddenLinks++
+              } else if (threatType === 'screenshot_phishing' || threatType === 'SCREENSHOT_PHISHING') {
+                screenshotPhishing++
+              }
+
+              if (threatDetected) {
+                imageThreats.push({
+                  messageId: scan.messageId || scan.message_id || '',
+                  timestamp: scan.timestamp || new Date().toISOString(),
+                  sender: scan.sender || scan.senderEmail || '',
+                  subject: scan.subject || '',
+                  threat_type: threatType,
+                  threat_score: threatScore,
+                  brand: scan.detection_details?.brand || scan.brand,
+                  indicators: scan.detection_details?.indicators || scan.indicators || [],
+                  has_text: Boolean(scan.extracted_text || scan.has_text),
+                  extracted_text: scan.extracted_text
+                })
+              }
+            }
+          })
+
+          const realData: ImageScanStats = {
+            total_scans_24h: scans.length,
+            qr_codes_detected: qrCodesDetected,
+            malicious_qr_codes: maliciousQRCodes,
+            offensive_images: offensiveImages,
+            logo_impersonations: logoImpersonations,
+            hidden_links: hiddenLinks,
+            screenshot_phishing: screenshotPhishing,
+            recent_threats: {
+              qr_threats: qrThreats.slice(0, 10), // Limit to 10 most recent
+              image_threats: imageThreats.slice(0, 10)
+            }
+          }
+
+          return NextResponse.json(realData)
+        }
+      } catch (dbError: any) {
+        // If table doesn't exist or error, return zeros
+        if (dbError.name === 'ResourceNotFoundException') {
+          console.log('Image scans table does not exist yet')
+        } else {
+          console.error('Error fetching image scans:', dbError)
+        }
+      }
+
+      // Return zeros if no data found
       console.log('Returning zero data for customer:', customerId)
       const emptyData: ImageScanStats = {
         total_scans_24h: 0,

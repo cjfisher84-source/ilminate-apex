@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       // Filter by days
       const cutoffDate = new Date()
       cutoffDate.setDate(cutoffDate.getDate() - days)
-      filtered = filtered.filter(m => new Date(m.quarantineTimestamp) >= cutoffDate)
+      filtered = filtered.filter(m => m.quarantineDate >= cutoffDate)
       
       return NextResponse.json({
         success: true,
