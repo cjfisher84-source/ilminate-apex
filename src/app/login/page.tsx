@@ -22,7 +22,7 @@ function LoginContent() {
   }, [searchParams])
 
   // SSO Login handlers
-  const handleSSOLogin = (provider: 'Google' | 'AzureADv2') => {
+  const handleSSOLogin = (provider: 'Google' | 'AzureAD' | 'AzureADv2') => {
     setLoading(true)
     
     // Use current origin for redirect URI (works in dev and prod)
@@ -231,7 +231,7 @@ function LoginContent() {
               variant="outlined"
               size="large"
               disabled={loading}
-              onClick={() => handleSSOLogin('AzureADv2')}
+              onClick={() => handleSSOLogin('AzureAD')}
               sx={{
                 py: 2,
                 fontSize: '1.1rem',
