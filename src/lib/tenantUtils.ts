@@ -97,6 +97,23 @@ export const CUSTOMER_FEATURES: Record<string, CustomerFeatures> = {
     security_events: true,
     notifications: true,
     mockData: false // No mock data for Land Sea Air
+  },
+  'ilminate.com': {
+    email_security: true,
+    dmarc_monitoring: true,
+    apex_trace: true,
+    ai_triage: true,
+    investigations: true,
+    quarantine: true,
+    harborsim: true,
+    edr: true,
+    edr_endpoints: true,
+    edr_metrics: true,
+    edr_threats: true,
+    attack_reports: true,
+    security_events: true,
+    notifications: true,
+    mockData: false // Use real data from DynamoDB for ilminate.com
   }
 }
 
