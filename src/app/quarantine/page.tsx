@@ -1,582 +1,532 @@
-"use client";
-
-import React, { useEffect, useMemo, useState, useCallback } from "react";
-import useSWR from 'swr';
-
-// ============================================================================
-// TYPES - Aligned with actual API response
-// ============================================================================
-
-type Severity = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
-type Disposition = "quarantined" | "released" | "deleted";
-type DateFilter = "24h" | "7d" | "30d" | "all";
-type SeverityFilter = "all" | Severity;
-
-// Actual API response structure
-interface QuarantineMessage {
-  messageId: string;
-  subject: string;
-  sender: string;
-  senderEmail: string;
-  recipients: string[];
-  quarantineTimestamp: number;
-  riskScore: number; // 0-100
-  severity: Severity;
-  detectionReasons: string[];
-  bodyPreview: string;
-  s3Key?: string;
-  hasAttachments: boolean;
-  attachments: Array<{ name: string; size: number; contentType: string }>;
-  status: Disposition;
-  mailboxType: "microsoft365" | "google_workspace";
-}
-
-// API response wrapper
-interface QuarantineApiResponse {
-  success: boolean;
-  data: QuarantineMessage[];
-  count: number;
-  source: string;
-  error?: string;
-}
-
-// ============================================================================
-// UTILITIES
-// ============================================================================
-
-const severityColor: Record<Severity, string> = {
-  CRITICAL: "bg-red-500",
-  HIGH: "bg-amber-400",
-  MEDIUM: "bg-yellow-400",
-  LOW: "bg-emerald-400",
-};
-
-const severityLabel: Record<Severity, string> = {
-  CRITICAL: "Critical",
-  HIGH: "High",
-  MEDIUM: "Medium",
-  LOW: "Low",
-};
-
-// Extract domain from email
-const getDomain = (email: string): string => {
-  const match = email.match(/@(.+)/);
-  return match ? match[1] : email;
-};
-
-// Convert date filter to days
-const dateFilterToDays = (filter: DateFilter): number => {
-  switch (filter) {
-    case "24h": return 1;
-    case "7d": return 7;
-    case "30d": return 30;
-    case "all": return 365; // Max 1 year
-  }
-};
-
-// Debounce hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
-// ============================================================================
-// API FETCHER
-// ============================================================================
-
-const fetcher = async (url: string): Promise<QuarantineMessage[]> => {
-  const res = await fetch(url);
-  
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-  }
-
-  const data: QuarantineApiResponse = await res.json();
-  
-  if (!data.success) {
-    throw new Error(data.error || 'Failed to fetch quarantine messages');
-  }
-
-  return data.data;
-};
-
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
+'use client'
+import { useState, useEffect } from 'react'
+import { 
+  Box, 
+  Typography, 
+  Paper, 
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  TextField,
+  MenuItem,
+  Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  useTheme,
+  CircularProgress,
+  Alert
+} from '@mui/material'
+import Link from 'next/link'
+import { 
+  Close as CloseIcon,
+  AttachFile as AttachFileIcon,
+  Search as SearchIcon,
+  FilterList as FilterIcon
+} from '@mui/icons-material'
+import NavigationBar from '@/components/NavigationBar'
+import { useIsMobile, getResponsivePadding } from '@/lib/mobileUtils'
+import type { QuarantinedMessage } from '@/lib/mock'
 
 export default function QuarantinePage() {
-  const [search, setSearch] = useState("");
-  const [dateFilter, setDateFilter] = useState<DateFilter>("7d");
-  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
-  const [selectedMessage, setSelectedMessage] = useState<QuarantineMessage | null>(null);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const theme = useTheme()
+  const isMobile = useIsMobile()
+  const containerPadding = getResponsivePadding(isMobile)
 
-  // Debounce search input
-  const debouncedSearch = useDebounce(search, 300);
+  // State
+  const [messages, setMessages] = useState<QuarantinedMessage[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedMessage, setSelectedMessage] = useState<QuarantinedMessage | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  
+  // Filters
+  const [searchTerm, setSearchTerm] = useState('')
+  const [severityFilter, setSeverityFilter] = useState('ALL')
+  const [daysFilter, setDaysFilter] = useState('30')
 
-  // Build API URL
-  const apiUrl = useMemo(() => {
-    const params = new URLSearchParams();
-    
-    if (debouncedSearch) {
-      params.append('search', debouncedSearch);
-    }
-    
-    if (severityFilter !== 'all') {
-      params.append('severity', severityFilter);
-    }
-    
-    params.append('days', dateFilterToDays(dateFilter).toString());
-    
-    return `/api/quarantine/list?${params.toString()}`;
-  }, [debouncedSearch, severityFilter, dateFilter]);
-
-  // Fetch data with SWR
-  const { data: messages = [], error, isLoading, mutate } = useSWR<QuarantineMessage[]>(
-    apiUrl,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      dedupingInterval: 5000, // 5 seconds
-      errorRetryCount: 3,
-      errorRetryInterval: 1000,
-    }
-  );
-
-  // Selection helpers
-  const allSelected = useMemo(() => {
-    if (!messages.length) return false;
-    return messages.every((m) => selectedIds.has(m.messageId));
-  }, [messages, selectedIds]);
-
-  const toggleSelectAll = useCallback(() => {
-    if (allSelected) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(messages.map((m) => m.messageId)));
-    }
-  }, [allSelected, messages]);
-
-  const toggleSelect = useCallback((id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
-
-  // Bulk actions
-  const handleBulkAction = useCallback(async (action: "release" | "delete" | "export") => {
-    if (!selectedIds.size) return;
-
-    const idsArray = Array.from(selectedIds);
-
+  // Fetch messages
+  const fetchMessages = async () => {
+    setLoading(true)
     try {
-      // TODO: Implement API endpoints
-      if (action === "export") {
-        // Export logic
-        console.log("Export", idsArray);
-      } else {
-        // Release or delete
-        const res = await fetch(`/api/quarantine/${action}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messageIds: idsArray }),
-        });
-
-        if (res.ok) {
-          // Refresh data
-          mutate();
-          setSelectedIds(new Set());
-        } else {
-          throw new Error(`Failed to ${action} messages`);
-        }
+      const params = new URLSearchParams()
+      if (severityFilter !== 'ALL') params.append('severity', severityFilter)
+      if (searchTerm) params.append('search', searchTerm)
+      params.append('days', daysFilter)
+      
+      const res = await fetch(`/api/quarantine/list?${params.toString()}`)
+      const data = await res.json()
+      
+      if (data.success) {
+        setMessages(data.data)
       }
-    } catch (err) {
-      console.error(`Bulk ${action} error:`, err);
-      alert(`Failed to ${action} messages. Please try again.`);
+    } catch (error) {
+      console.error('Failed to fetch quarantine messages:', error)
+    } finally {
+      setLoading(false)
     }
-  }, [selectedIds, mutate]);
+  }
 
-  // Single message actions
-  const handleReleaseSingle = useCallback(async (message: QuarantineMessage) => {
-    try {
-      const res = await fetch(`/api/quarantine/release`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messageId: message.messageId }),
-      });
+  // Initial load
+  useEffect(() => {
+    fetchMessages()
+  }, [severityFilter, daysFilter])
 
-      if (res.ok) {
-        mutate();
-        setSelectedMessage(null);
-      } else {
-        throw new Error('Failed to release message');
+  // Handle search with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm !== undefined) {
+        fetchMessages()
       }
-    } catch (err) {
-      console.error('Release error:', err);
-      alert('Failed to release message. Please try again.');
-    }
-  }, [mutate]);
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
 
-  const handleDeleteSingle = useCallback(async (message: QuarantineMessage) => {
-    if (!confirm(`Are you sure you want to delete "${message.subject}"?`)) {
-      return;
-    }
+  // View message details
+  const handleViewMessage = (message: QuarantinedMessage) => {
+    setSelectedMessage(message)
+    setDialogOpen(true)
+  }
 
-    try {
-      const res = await fetch(`/api/quarantine/delete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messageId: message.messageId }),
-      });
+  // Close dialog
+  const handleCloseDialog = () => {
+    setDialogOpen(false)
+    setTimeout(() => setSelectedMessage(null), 200)
+  }
 
-      if (res.ok) {
-        mutate();
-        setSelectedMessage(null);
-      } else {
-        throw new Error('Failed to delete message');
-      }
-    } catch (err) {
-      console.error('Delete error:', err);
-      alert('Failed to delete message. Please try again.');
+  // Get severity color
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'CRITICAL': return '#ef4444'
+      case 'HIGH': return '#f97316'
+      case 'MEDIUM': return '#eab308'
+      case 'LOW': return '#22c55e'
+      default: return theme.palette.text.secondary
     }
-  }, [mutate]);
+  }
+
+  // Format date
+  const formatDate = (date: Date) => {
+    const d = new Date(date)
+    return d.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      {/* Header */}
-      <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold tracking-tight">Quarantine</h1>
-          <p className="text-sm text-slate-400">
-            Review and manage messages held by Ilminate APEX before they reach inboxes.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 text-xs text-slate-400">
-            <span className="inline-flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-red-500" /> Critical
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-amber-400" /> High
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-yellow-400" /> Medium
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" /> Low
-            </span>
-          </div>
-        </div>
-      </header>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: containerPadding }}>
+      <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
+        {/* Header */}
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: isMobile ? 'flex-start' : 'center',
+          flexDirection: isMobile ? 'column' : 'row',
+          mb: 3,
+          gap: isMobile ? 2 : 0
+        }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+              Quarantined Messages
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+              View and manage messages that have been quarantined based on threat detection
+            </Typography>
+          </Box>
+          <Link href="/" passHref legacyBehavior>
+            <Button 
+              variant="outlined" 
+              component="a" 
+              size={isMobile ? 'medium' : 'large'}
+              color="primary"
+              fullWidth={isMobile}
+              sx={{ 
+                px: isMobile ? 3 : 4,
+                py: isMobile ? 1.2 : 1.5,
+                fontSize: isMobile ? '1rem' : '1.1rem',
+                fontWeight: 600
+              }}
+            >
+              ← Dashboard
+            </Button>
+          </Link>
+        </Box>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Filters Sidebar */}
-        <aside className="hidden lg:flex lg:w-72 border-r border-slate-800 bg-slate-950/80 flex-col">
-          <div className="px-5 py-4 border-b border-slate-800">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-              Filters
-            </div>
-          </div>
-          <div className="flex-1 px-5 py-4 space-y-6 overflow-y-auto text-sm">
-            {/* Date Range */}
-            <div>
-              <div className="font-medium mb-2 text-slate-300">Date range</div>
-              <div className="grid grid-cols-2 gap-2">
-                {(["24h", "7d", "30d", "all"] as DateFilter[]).map((val) => (
-                  <button
-                    key={val}
-                    onClick={() => setDateFilter(val)}
-                    className={`rounded-md px-2.5 py-1.5 text-xs border transition ${
-                      dateFilter === val
-                        ? "bg-teal-500/10 border-teal-500 text-teal-200"
-                        : "border-slate-700 text-slate-300 hover:border-slate-500"
-                    }`}
-                  >
-                    {val === "24h" ? "Last 24h" : val === "7d" ? "Last 7 days" : val === "30d" ? "Last 30 days" : "All time"}
-                  </button>
-                ))}
-              </div>
-            </div>
+        {/* Navigation Bar */}
+        <NavigationBar />
+
+        {/* Filters */}
+        <Paper sx={{ p: 2, mb: 3, border: 1, borderColor: 'divider' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 2, 
+            flexWrap: 'wrap',
+            alignItems: 'center'
+          }}>
+            {/* Search */}
+            <TextField
+              placeholder="Search subject, sender..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              size="small"
+              sx={{ minWidth: isMobile ? '100%' : 300 }}
+              InputProps={{
+                startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+              }}
+            />
 
             {/* Severity Filter */}
-            <div>
-              <div className="font-medium mb-2 text-slate-300">Severity</div>
-              <div className="space-y-1">
-                {(["all", "CRITICAL", "HIGH", "MEDIUM", "LOW"] as SeverityFilter[]).map((val) => (
-                  <button
-                    key={val}
-                    onClick={() => setSeverityFilter(val)}
-                    className={`w-full flex items-center justify-between rounded-md px-2.5 py-1.5 text-xs border transition ${
-                      severityFilter === val
-                        ? "bg-slate-800 border-teal-500 text-teal-200"
-                        : "border-slate-800 text-slate-300 hover:border-slate-600"
-                    }`}
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      {val !== "all" && (
-                        <span className={`w-2 h-2 rounded-full ${severityColor[val]}`} />
-                      )}
-                      <span className="capitalize">{val === "all" ? "All" : severityLabel[val]}</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </aside>
+            <TextField
+              select
+              label="Severity"
+              value={severityFilter}
+              onChange={(e) => setSeverityFilter(e.target.value)}
+              size="small"
+              sx={{ minWidth: 150 }}
+            >
+              <MenuItem value="ALL">All Severities</MenuItem>
+              <MenuItem value="CRITICAL">Critical</MenuItem>
+              <MenuItem value="HIGH">High</MenuItem>
+              <MenuItem value="MEDIUM">Medium</MenuItem>
+              <MenuItem value="LOW">Low</MenuItem>
+            </TextField>
 
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col">
-          {/* Search and Actions */}
-          <div className="border-b border-slate-800 px-4 lg:px-6 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex-1 flex items-center gap-2">
-              <div className="relative flex-1 max-w-lg">
-                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">
-                  🔍
-                </span>
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search subject, sender, recipient..."
-                  className="w-full bg-slate-900 border border-slate-700 rounded-md pl-8 pr-3 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-2 justify-between md:justify-end">
-              <div className="hidden md:flex text-xs text-slate-400 mr-2">
-                {isLoading ? "Loading…" : `${messages.length} message${messages.length === 1 ? "" : "s"}`}
-              </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => handleBulkAction("export")}
-                  disabled={!selectedIds.size}
-                  className="text-xs border border-slate-700 rounded-md px-2.5 py-1.5 text-slate-200 hover:border-slate-500 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Export
-                </button>
-                <button
-                  onClick={() => handleBulkAction("delete")}
-                  disabled={!selectedIds.size}
-                  className="text-xs border border-red-700/70 rounded-md px-2.5 py-1.5 text-red-300 hover:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed"
+            {/* Days Filter */}
+            <TextField
+              select
+              label="Time Range"
+              value={daysFilter}
+              onChange={(e) => setDaysFilter(e.target.value)}
+              size="small"
+              sx={{ minWidth: 150 }}
+            >
+              <MenuItem value="7">Last 7 days</MenuItem>
+              <MenuItem value="30">Last 30 days</MenuItem>
+              <MenuItem value="90">Last 90 days</MenuItem>
+            </TextField>
+
+            {/* Results Count */}
+            <Box sx={{ ml: 'auto' }}>
+              <Chip 
+                label={`${messages.length} messages`}
+                sx={{ 
+                  bgcolor: 'primary.main', 
+                  color: 'primary.contrastText',
+                  fontWeight: 600
+                }}
+              />
+            </Box>
+          </Box>
+        </Paper>
+
+        {/* Messages Table */}
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+            <CircularProgress />
+          </Box>
+        ) : messages.length === 0 ? (
+          <Alert severity="info">
+            No quarantined messages found for the selected filters.
+          </Alert>
+        ) : (
+          <TableContainer component={Paper} sx={{ border: 1, borderColor: 'divider' }}>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: 'background.default' }}>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Severity
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Date
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Sender
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Subject
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Risk
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Action
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {messages.map((message) => (
+                  <TableRow 
+                    key={message.id}
+                    sx={{ 
+                      '&:hover': { bgcolor: 'background.default' },
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleViewMessage(message)}
+                  >
+                    <TableCell>
+                      <Chip
+                        label={message.severity}
+                        size="small"
+                        sx={{
+                          bgcolor: getSeverityColor(message.severity),
+                          color: 'white',
+                          fontWeight: 700,
+                          fontSize: '0.7rem'
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ fontSize: '0.875rem' }}>
+                      {formatDate(message.quarantineDate)}
+                    </TableCell>
+                    <TableCell>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {message.sender}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          {message.senderEmail}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {message.hasAttachments && (
+                          <AttachFileIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                        )}
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            maxWidth: 300,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {message.subject}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          fontWeight: 700,
+                          color: getSeverityColor(message.severity)
+                        }}
+                      >
+                        {message.riskScore}/100
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleViewMessage(message)
+                        }}
+                      >
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+
+        {/* Message Detail Dialog */}
+        <Dialog
+          open={dialogOpen}
+          onClose={handleCloseDialog}
+          maxWidth="md"
+          fullWidth
+          fullScreen={isMobile}
+        >
+          {selectedMessage && (
+            <>
+              <DialogTitle sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                borderBottom: 2,
+                borderColor: 'primary.main'
+              }}>
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    Quarantined Message Detail
+                  </Typography>
+                  <Chip
+                    label={`${selectedMessage.severity} - ${selectedMessage.riskScore}/100`}
+                    size="small"
+                    sx={{
+                      mt: 1,
+                      bgcolor: getSeverityColor(selectedMessage.severity),
+                      color: 'white',
+                      fontWeight: 700
+                    }}
+                  />
+                </Box>
+                <IconButton onClick={handleCloseDialog}>
+                  <CloseIcon />
+                </IconButton>
+              </DialogTitle>
+
+              <DialogContent sx={{ pt: 3 }}>
+                {/* Message Info */}
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+                    Message Information
+                  </Typography>
+                  <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    <Box>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>From:</Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                        {selectedMessage.sender} &lt;{selectedMessage.senderEmail}&gt;
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>To:</Typography>
+                      <Typography variant="body2">
+                        {selectedMessage.recipients.join(', ')}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>Subject:</Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                        {selectedMessage.subject}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>Quarantined:</Typography>
+                      <Typography variant="body2">
+                        {new Date(selectedMessage.quarantineDate).toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* Threat Indicators */}
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+                    Threat Indicators
+                  </Typography>
+                  <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {selectedMessage.detectionReasons.map((reason, index) => (
+                      <Box 
+                        key={index}
+                        sx={{ 
+                          p: 1.5, 
+                          bgcolor: 'background.default', 
+                          borderRadius: 2,
+                          border: 1,
+                          borderColor: 'divider'
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          • {reason}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+
+                {/* Message Preview */}
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+                    Message Preview
+                  </Typography>
+                  <Paper sx={{ 
+                    mt: 1, 
+                    p: 2, 
+                    bgcolor: 'background.default',
+                    border: 1,
+                    borderColor: 'divider'
+                  }}>
+                    <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                      {selectedMessage.bodyPreview}
+                    </Typography>
+                  </Paper>
+                </Box>
+
+                {/* Attachments */}
+                {selectedMessage.hasAttachments && (
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+                      Attachments ({selectedMessage.attachments.length})
+                    </Typography>
+                    <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      {selectedMessage.attachments.map((attachment, index) => (
+                        <Box 
+                          key={index}
+                          sx={{ 
+                            p: 1.5, 
+                            bgcolor: 'background.default', 
+                            borderRadius: 2,
+                            border: 1,
+                            borderColor: 'divider',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1
+                          }}
+                        >
+                          <AttachFileIcon sx={{ color: 'primary.main' }} />
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {attachment.name}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                              {(attachment.size / 1024).toFixed(1)} KB • {attachment.contentType}
+                            </Typography>
+                          </Box>
+                          {attachment.name.match(/\.(exe|bat|cmd|scr|vbs|js)$/i) && (
+                            <Chip 
+                              label="DANGEROUS" 
+                              size="small" 
+                              sx={{ bgcolor: '#ef4444', color: 'white', fontWeight: 700 }}
+                            />
+                          )}
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                )}
+              </DialogContent>
+
+              <DialogActions sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+                <Button onClick={handleCloseDialog}>
+                  Close
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  color="error"
+                  disabled
                 >
                   Delete
-                </button>
-                <button
-                  onClick={() => handleBulkAction("release")}
-                  disabled={!selectedIds.size}
-                  className="text-xs bg-teal-500 hover:bg-teal-400 text-slate-950 rounded-md px-3 py-1.5 font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+                </Button>
+                <Button 
+                  variant="contained" 
+                  color="primary"
+                  disabled
                 >
-                  Release
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Error State */}
-          {error && (
-            <div className="px-4 py-2 text-xs text-red-400 bg-red-500/10 border-b border-red-500/40">
-              Error: {error.message}. <button onClick={() => mutate()} className="underline">Retry</button>
-            </div>
+                  Release (Coming Soon)
+                </Button>
+              </DialogActions>
+            </>
           )}
-
-          {/* Table */}
-          <div className="flex-1 flex overflow-hidden">
-            <div className="flex-1 overflow-auto">
-              {isLoading ? (
-                <div className="flex items-center justify-center h-64">
-                  <div className="text-slate-400">Loading messages...</div>
-                </div>
-              ) : (
-                <table className="min-w-full text-sm text-left border-separate border-spacing-0">
-                  <thead className="sticky top-0 z-10 bg-slate-950">
-                    <tr>
-                      <th className="w-10 border-b border-slate-800 px-4 py-2">
-                        <input
-                          type="checkbox"
-                          className="h-3 w-3 rounded border-slate-600 bg-slate-900 text-teal-500"
-                          checked={allSelected}
-                          onChange={toggleSelectAll}
-                        />
-                      </th>
-                      <th className="border-b border-slate-800 px-4 py-2 text-slate-400 font-medium text-xs">Risk</th>
-                      <th className="border-b border-slate-800 px-4 py-2 text-slate-400 font-medium text-xs">Subject</th>
-                      <th className="border-b border-slate-800 px-4 py-2 text-slate-400 font-medium text-xs">Sender</th>
-                      <th className="border-b border-slate-800 px-4 py-2 text-slate-400 font-medium text-xs">Recipient</th>
-                      <th className="border-b border-slate-800 px-4 py-2 text-slate-400 font-medium text-xs">Reason</th>
-                      <th className="border-b border-slate-800 px-4 py-2 text-slate-400 font-medium text-xs">Time</th>
-                      <th className="border-b border-slate-800 px-4 py-2 text-slate-400 font-medium text-xs">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {messages.map((m, idx) => {
-                      const selected = selectedIds.has(m.messageId);
-                      const rowBg = idx % 2 === 0 ? "bg-slate-950" : "bg-slate-950/60";
-                      const recipient = m.recipients[0] || 'Unknown';
-
-                      return (
-                        <tr
-                          key={m.messageId}
-                          className={`${rowBg} hover:bg-slate-900/80 cursor-pointer`}
-                          onClick={() => setSelectedMessage(m)}
-                        >
-                          <td className="px-4 py-2 border-b border-slate-900" onClick={(e) => e.stopPropagation()}>
-                            <input
-                              type="checkbox"
-                              className="h-3 w-3 rounded border-slate-600 bg-slate-900 text-teal-500"
-                              checked={selected}
-                              onChange={() => toggleSelect(m.messageId)}
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                          </td>
-                          <td className="px-4 py-2 border-b border-slate-900">
-                            <div className="flex items-center gap-2">
-                              <span className={`w-2 h-8 rounded-full ${severityColor[m.severity]}`} />
-                              <span className="text-xs text-slate-300">{severityLabel[m.severity]}</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2 border-b border-slate-900 max-w-xs">
-                            <div className="flex flex-col">
-                              <span className="text-slate-100 truncate">{m.subject}</span>
-                              <span className="text-xs text-slate-500 truncate">Risk: {m.riskScore}/100</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2 border-b border-slate-900 max-w-xs">
-                            <div className="flex flex-col">
-                              <span className="truncate text-slate-100">{m.sender}</span>
-                              <span className="text-xs text-slate-500 truncate">{getDomain(m.senderEmail)}</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2 border-b border-slate-900 max-w-xs">
-                            <div className="flex flex-col">
-                              <span className="truncate text-slate-100">{recipient}</span>
-                              <span className="text-xs text-slate-500 truncate">{getDomain(recipient)}</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2 border-b border-slate-900 max-w-md">
-                            <span className="text-xs text-slate-300 line-clamp-2">
-                              {m.detectionReasons.join(', ')}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2 border-b border-slate-900 whitespace-nowrap text-xs text-slate-400">
-                            {new Date(m.quarantineTimestamp).toLocaleString()}
-                          </td>
-                          <td className="px-4 py-2 border-b border-slate-900 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center gap-1">
-                              <button
-                                onClick={() => handleReleaseSingle(m)}
-                                className="text-[11px] rounded-md px-2 py-1 bg-teal-500/10 text-teal-300 border border-teal-500/50 hover:bg-teal-500/20"
-                              >
-                                Release
-                              </button>
-                              <button
-                                onClick={() => handleDeleteSingle(m)}
-                                className="text-[11px] rounded-md px-2 py-1 bg-red-500/10 text-red-300 border border-red-500/50 hover:bg-red-500/20"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-
-                    {!isLoading && messages.length === 0 && (
-                      <tr>
-                        <td colSpan={8} className="px-4 py-8 text-center text-sm text-slate-500">
-                          No messages found. Adjust filters or search to see quarantined emails.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              )}
-            </div>
-
-            {/* Details Panel */}
-            {selectedMessage && (
-              <div className="hidden xl:flex w-[380px] border-l border-slate-800 bg-slate-950/90 flex-col">
-                <div className="px-5 py-4 border-b border-slate-800 flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Message details</div>
-                    <div className="mt-1 text-sm font-medium text-slate-100 line-clamp-2">{selectedMessage.subject}</div>
-                  </div>
-                  <button onClick={() => setSelectedMessage(null)} className="text-xs text-slate-400 hover:text-slate-100">✕</button>
-                </div>
-                <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5 text-xs">
-                  <section className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-6 rounded-full ${severityColor[selectedMessage.severity]}`} />
-                      <span className="text-slate-200">{severityLabel[selectedMessage.severity]} risk</span>
-                      <span className="text-slate-500">• {selectedMessage.riskScore}/100</span>
-                    </div>
-                    <div className="grid grid-cols-1 gap-2">
-                      <div>
-                        <div className="text-slate-500">From</div>
-                        <div className="text-slate-100 break-all">{selectedMessage.senderEmail}</div>
-                      </div>
-                      <div>
-                        <div className="text-slate-500">To</div>
-                        <div className="text-slate-100 break-all">{selectedMessage.recipients.join(', ')}</div>
-                      </div>
-                      <div>
-                        <div className="text-slate-500">Time</div>
-                        <div className="text-slate-100">{new Date(selectedMessage.quarantineTimestamp).toLocaleString()}</div>
-                      </div>
-                    </div>
-                  </section>
-                  <section className="space-y-2">
-                    <div className="text-[11px] font-semibold text-slate-300">Detection Reasons</div>
-                    <div className="space-y-1">
-                      {selectedMessage.detectionReasons.map((reason, idx) => (
-                        <div key={idx} className="text-slate-200">{reason}</div>
-                      ))}
-                    </div>
-                  </section>
-                  {selectedMessage.bodyPreview && (
-                    <section className="space-y-2">
-                      <div className="text-[11px] font-semibold text-slate-300">Preview</div>
-                      <p className="text-slate-200 leading-relaxed text-xs">{selectedMessage.bodyPreview}</p>
-                    </section>
-                  )}
-                  <section className="space-y-2">
-                    <div className="text-[11px] font-semibold text-slate-300">Actions</div>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => handleReleaseSingle(selectedMessage)}
-                        className="inline-flex items-center gap-1 rounded-md bg-teal-500 text-slate-950 text-[11px] font-medium px-3 py-1.5 hover:bg-teal-400"
-                      >
-                        ✅ Release
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSingle(selectedMessage)}
-                        className="inline-flex items-center gap-1 rounded-md bg-red-500/10 border border-red-500/60 text-red-200 text-[11px] font-medium px-3 py-1.5 hover:bg-red-500/20"
-                      >
-                        🗑 Delete
-                      </button>
-                    </div>
-                  </section>
-                </div>
-              </div>
-            )}
-          </div>
-        </main>
-      </div>
-    </div>
-  );
+        </Dialog>
+      </Box>
+    </Box>
+  )
 }
 
