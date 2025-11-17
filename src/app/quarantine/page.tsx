@@ -76,8 +76,38 @@ function useCustomerId(): string | null {
     if (userDisplay) {
       try {
         const info = JSON.parse(userDisplay)
+        if (info.email) {
+          // Check if this is an admin email that should map to ilminate.com
+          const adminEmails = [
+            'cjfisher84@googlemail.com',
+            'cfisher@ilminate.com',
+            'admin@ilminate.com',
+          ]
+          
+          const emailLower = info.email.toLowerCase()
+          if (adminEmails.some(adminEmail => emailLower === adminEmail.toLowerCase())) {
+            console.log('✅ Admin email detected in cookie, mapping to ilminate.com:', emailLower)
+            setCustomerId('ilminate.com')
+            return
+          }
+        }
+        
         if (info.customerId) {
           console.log('✅ Found customer ID in apex_user_display cookie:', info.customerId)
+          // Still check if we should override based on email
+          if (info.email) {
+            const adminEmails = [
+              'cjfisher84@googlemail.com',
+              'cfisher@ilminate.com',
+              'admin@ilminate.com',
+            ]
+            const emailLower = info.email.toLowerCase()
+            if (adminEmails.some(adminEmail => emailLower === adminEmail.toLowerCase())) {
+              console.log('✅ Overriding cookie customer ID (googlemail.com) with ilminate.com for admin email')
+              setCustomerId('ilminate.com')
+              return
+            }
+          }
           setCustomerId(info.customerId)
           return
         }
