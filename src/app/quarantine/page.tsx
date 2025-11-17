@@ -58,6 +58,85 @@ import NavigationBar from '@/components/NavigationBar'
 import { useIsMobile, getResponsivePadding } from '@/lib/mobileUtils'
 import type { QuarantinedMessage } from '@/lib/mock'
 
+/**
+ * Get customer ID from cookies or Cognito token
+ */
+function useCustomerId(): string | null {
+  const [customerId, setCustomerId] = useState<string | null>(null)
+  
+  useEffect(() => {
+    // Method 1: Check apex_user_display cookie
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=')
+      acc[key] = decodeURIComponent(value)
+      return acc
+    }, {} as Record<string, string>)
+
+    const userDisplay = cookies['apex_user_display']
+    if (userDisplay) {
+      try {
+        const info = JSON.parse(userDisplay)
+        if (info.customerId) {
+          setCustomerId(info.customerId)
+          return
+        }
+      } catch (e) {
+        // Invalid cookie
+      }
+    }
+
+    // Method 2: Extract from Cognito token
+    const cognitoPrefix = 'CognitoIdentityServiceProvider.1uoiq3h1afgo6799gie48vmlcj'
+    const idTokenCookie = Object.keys(cookies).find(key => 
+      key.startsWith(cognitoPrefix) && key.endsWith('.idToken')
+    )
+    
+    if (idTokenCookie && cookies[idTokenCookie]) {
+      try {
+        const token = cookies[idTokenCookie]
+        const parts = token.split('.')
+        if (parts.length === 3) {
+          // Browser-compatible base64 decoding
+          const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split('')
+              .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join('')
+          )
+          const payload = JSON.parse(jsonPayload)
+          const email = payload.email || payload['cognito:username']
+          
+          if (email) {
+            // Map admin emails to ilminate.com
+            const adminEmails = [
+              'cjfisher84@googlemail.com',
+              'cfisher@ilminate.com',
+              'admin@ilminate.com',
+            ]
+            
+            const emailLower = email.toLowerCase()
+            if (adminEmails.some(adminEmail => emailLower === adminEmail.toLowerCase())) {
+              setCustomerId('ilminate.com')
+              return
+            }
+            
+            // Extract domain from email
+            const emailParts = email.split('@')
+            if (emailParts.length === 2) {
+              setCustomerId(emailParts[1].toLowerCase())
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Failed to parse Cognito token:', e)
+      }
+    }
+  }, [])
+  
+  return customerId
+}
+
 // Extended interface for enhanced features
 interface EnhancedQuarantinedMessage extends QuarantinedMessage {
   // Additional fields that may come from API
@@ -85,6 +164,7 @@ export default function QuarantinePage() {
   const theme = useTheme()
   const isMobile = useIsMobile()
   const containerPadding = getResponsivePadding(isMobile)
+  const customerId = useCustomerId()
 
   // State
   const [messages, setMessages] = useState<EnhancedQuarantinedMessage[]>([])
@@ -113,7 +193,14 @@ export default function QuarantinePage() {
       if (searchTerm) params.append('search', searchTerm)
       params.append('days', daysFilter)
       
-      const res = await fetch(`/api/quarantine/list?${params.toString()}`)
+      const headers: HeadersInit = {}
+      if (customerId) {
+        headers['x-customer-id'] = customerId
+      }
+      
+      const res = await fetch(`/api/quarantine/list?${params.toString()}`, {
+        headers
+      })
       const data = await res.json()
       
       if (data.success) {
@@ -202,18 +289,22 @@ export default function QuarantinePage() {
 
   // Initial load
   useEffect(() => {
-    fetchMessages()
-  }, [severityFilter, daysFilter])
+    if (customerId) {
+      fetchMessages()
+    }
+  }, [severityFilter, daysFilter, customerId])
 
   // Handle search with debounce
   useEffect(() => {
+    if (!customerId) return
+    
     const timer = setTimeout(() => {
       if (searchTerm !== undefined) {
         fetchMessages()
       }
     }, 300)
     return () => clearTimeout(timer)
-  }, [searchTerm])
+  }, [searchTerm, customerId])
 
   // Filter messages based on all filters
   const filteredMessages = useMemo(() => {
@@ -276,9 +367,14 @@ export default function QuarantinePage() {
     if (selectedIds.size === 0) return
     
     try {
+      const headers: HeadersInit = { 'Content-Type': 'application/json' }
+      if (customerId) {
+        headers['x-customer-id'] = customerId
+      }
+      
       const res = await fetch('/api/quarantine/release', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ messageIds: Array.from(selectedIds) }),
       })
       
@@ -298,9 +394,14 @@ export default function QuarantinePage() {
     if (!confirm(`Delete ${selectedIds.size} message(s)?`)) return
     
     try {
+      const headers: HeadersInit = { 'Content-Type': 'application/json' }
+      if (customerId) {
+        headers['x-customer-id'] = customerId
+      }
+      
       const res = await fetch('/api/quarantine/delete', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ messageIds: Array.from(selectedIds) }),
       })
       
@@ -318,9 +419,14 @@ export default function QuarantinePage() {
   // Single message actions
   const handleRelease = async (message: EnhancedQuarantinedMessage) => {
     try {
+      const headers: HeadersInit = { 'Content-Type': 'application/json' }
+      if (customerId) {
+        headers['x-customer-id'] = customerId
+      }
+      
       const res = await fetch('/api/quarantine/release', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ messageId: message.messageId }),
       })
       
@@ -339,9 +445,14 @@ export default function QuarantinePage() {
     if (!confirm(`Delete "${message.subject}"?`)) return
     
     try {
+      const headers: HeadersInit = { 'Content-Type': 'application/json' }
+      if (customerId) {
+        headers['x-customer-id'] = customerId
+      }
+      
       const res = await fetch('/api/quarantine/delete', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ messageId: message.messageId }),
       })
       
