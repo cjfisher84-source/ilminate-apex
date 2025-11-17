@@ -1,132 +1,148 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb'
+import { queryQuarantinedMessages } from '@/lib/dynamodb'
+import { getCustomerIdFromHeaders } from '@/lib/tenantUtils'
+import { isMockDataEnabled } from '@/lib/tenantUtils'
+import { mockQuarantinedMessages } from '@/lib/mock'
 
-// Initialize DynamoDB client
-// Note: Amplify doesn't allow env vars starting with "AWS", so we use custom names
-const dynamoClient = new DynamoDBClient({ 
-  region: process.env.DYNAMODB_REGION || process.env.REGION || 'us-east-2',
-  credentials: process.env.DYNAMODB_ACCESS_KEY_ID ? {
-    accessKeyId: process.env.DYNAMODB_ACCESS_KEY_ID,
-    secretAccessKey: process.env.DYNAMODB_SECRET_ACCESS_KEY || '',
-  } : undefined
-})
-
-const docClient = DynamoDBDocumentClient.from(dynamoClient)
-
-const TABLE_NAME = 'ilminate-apex-quarantine'
-const CUSTOMER_ID = '7159b266-2289-499e-807a-2cdd316f5122' // TODO: Get from auth context
-
+/**
+ * API Route: /api/quarantine/list
+ * 
+ * Fetches quarantined messages from DynamoDB or returns mock data
+ */
 export async function GET(request: NextRequest) {
   try {
+    const customerId = getCustomerIdFromHeaders(request.headers)
+    const showMockData = isMockDataEnabled(customerId)
+
+    // Get query parameters
     const searchParams = request.nextUrl.searchParams
     const severity = searchParams.get('severity') || 'ALL'
-    const search = searchParams.get('search') || ''
-    const days = parseInt(searchParams.get('days') || '30')
-    
-    // Calculate date threshold
-    const daysAgo = new Date()
-    daysAgo.setDate(daysAgo.getDate() - days)
-    const timestampThreshold = Math.floor(daysAgo.getTime() / 1000)
-    
-    // Query DynamoDB
-    const command = new QueryCommand({
-      TableName: TABLE_NAME,
-      KeyConditionExpression: 'customerId = :customerId',
-      ExpressionAttributeValues: {
-        ':customerId': CUSTOMER_ID,
-      },
-      ScanIndexForward: false, // Sort descending by date
-      Limit: 500
-    })
-    
-    const result = await docClient.send(command)
-    
-    // Transform DynamoDB items to frontend format
-    let messages = (result.Items || []).map((item: any) => {
-      // Parse DynamoDB format
-      const parseValue = (val: any): any => {
-        if (val.S) return val.S
-        if (val.N) return parseFloat(val.N)
-        if (val.BOOL !== undefined) return val.BOOL
-        if (val.L) return val.L.map((v: any) => parseValue(v))
-        if (val.M) {
-          const obj: any = {}
-          for (const [k, v] of Object.entries(val.M)) {
-            obj[k] = parseValue(v)
-          }
-          return obj
-        }
-        return val
+    const days = parseInt(searchParams.get('days') || '30', 10)
+    const searchTerm = searchParams.get('search') || undefined
+
+    // If mock data is enabled, return mock data
+    if (showMockData) {
+      const mockMessages = mockQuarantinedMessages()
+      
+      // Apply filters to mock data
+      let filtered = mockMessages
+      
+      if (severity !== 'ALL') {
+        filtered = filtered.filter(m => m.severity === severity)
       }
       
-      const parseItem = (item: any) => {
-        const parsed: any = {}
-        for (const [key, value] of Object.entries(item)) {
-          parsed[key] = parseValue(value)
-        }
-        return parsed
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase()
+        filtered = filtered.filter(m => 
+          m.subject.toLowerCase().includes(searchLower) ||
+          m.senderEmail.toLowerCase().includes(searchLower) ||
+          m.bodyPreview.toLowerCase().includes(searchLower)
+        )
       }
       
-      const parsed = parseItem(item)
+      // Filter by days
+      const cutoffDate = new Date()
+      cutoffDate.setDate(cutoffDate.getDate() - days)
+      filtered = filtered.filter(m => new Date(m.quarantineTimestamp) >= cutoffDate)
       
-      return {
-        id: parsed.messageId || parsed['quarantineDate#messageId']?.split('#')[1] || '',
-        messageId: parsed.messageId || '',
-        subject: parsed.subject || 'No Subject',
-        sender: parsed.sender || '',
-        recipients: Array.isArray(parsed.recipients) ? parsed.recipients : [parsed.recipients].filter(Boolean),
-        quarantineDate: parsed.quarantineDate ? new Date(parsed.quarantineDate * 1000) : new Date(),
-        riskScore: parsed.riskScore || 0,
-        severity: parsed.severity || 'LOW',
-        detectionReasons: Array.isArray(parsed.detectionReasons) ? parsed.detectionReasons : [],
-        bodyPreview: parsed.bodyPreview || '',
-        hasAttachments: parsed.hasAttachments || false,
-        status: parsed.status || 'quarantined',
-        mailboxType: parsed.mailboxType || 'microsoft365'
-      }
-    })
-    
-    // Filter by date
-    messages = messages.filter(msg => {
-      const msgTimestamp = Math.floor(msg.quarantineDate.getTime() / 1000)
-      return msgTimestamp >= timestampThreshold
-    })
-    
-    // Filter by severity
-    if (severity !== 'ALL') {
-      messages = messages.filter(msg => msg.severity === severity)
+      return NextResponse.json({
+        success: true,
+        data: filtered,
+        count: filtered.length,
+        source: 'mock'
+      })
     }
-    
-    // Filter by search term
-    if (search) {
-      const searchLower = search.toLowerCase()
-      messages = messages.filter(msg => 
-        msg.subject.toLowerCase().includes(searchLower) ||
-        msg.sender.toLowerCase().includes(searchLower) ||
-        msg.bodyPreview.toLowerCase().includes(searchLower)
-      )
+
+    // Try to fetch real data from DynamoDB
+    if (!customerId) {
+      return NextResponse.json({
+        success: false,
+        error: 'Customer ID required',
+        data: []
+      }, { status: 400 })
     }
-    
-    // Sort by date (newest first)
-    messages.sort((a, b) => b.quarantineDate.getTime() - a.quarantineDate.getTime())
-    
-    return NextResponse.json({
-      success: true,
-      data: messages,
-      count: messages.length
-    })
-    
+
+    try {
+      const messages = await queryQuarantinedMessages({
+        customerId,
+        severity: severity !== 'ALL' ? severity : undefined,
+        days,
+        searchTerm,
+        limit: 1000
+      })
+
+      // Transform DynamoDB items to match expected format
+      // Handle both old format (quarantineTimestamp) and new format (quarantineDate#messageId)
+      const transformed = messages.map((item: any) => {
+        // Extract messageId from sort key if needed (format: YYYY-MM-DD#messageId)
+        let messageId = item.messageId || item.message_id
+        if (!messageId && item['quarantineDate#messageId']) {
+          const parts = item['quarantineDate#messageId'].split('#')
+          messageId = parts.length > 1 ? parts[1] : parts[0]
+        }
+        
+        // Extract timestamp from date string
+        let quarantineTimestamp = item.quarantineTimestamp || item.quarantine_timestamp
+        if (!quarantineTimestamp && item['quarantineDate#messageId']) {
+          const dateStr = item['quarantineDate#messageId'].split('#')[0]
+          quarantineTimestamp = new Date(dateStr).getTime()
+        }
+        if (!quarantineTimestamp) {
+          quarantineTimestamp = Date.now()
+        }
+        
+        return {
+          messageId,
+          subject: item.subject || '',
+          sender: item.sender || '',
+          senderEmail: item.senderEmail || item.sender_email || '',
+          recipients: item.recipients || [],
+          quarantineTimestamp,
+          riskScore: item.riskScore || item.risk_score || 0,
+          severity: item.severity || 'MEDIUM',
+          detectionReasons: item.detectionReasons || item.detection_reasons || [],
+          bodyPreview: item.bodyPreview || item.body_preview || '',
+          s3Key: item.s3Key || item.s3_key,
+          hasAttachments: item.hasAttachments || item.has_attachments || false,
+          attachments: item.attachments || [],
+          status: item.status || 'quarantined',
+          mailboxType: item.mailboxType || item.mailbox_type || 'microsoft365',
+        }
+      })
+
+      return NextResponse.json({
+        success: true,
+        data: transformed,
+        count: transformed.length,
+        source: 'dynamodb'
+      })
+    } catch (dbError: any) {
+      // If table doesn't exist, return empty array
+      if (dbError.name === 'ResourceNotFoundException') {
+        console.log('Quarantine table does not exist yet, returning empty array')
+        return NextResponse.json({
+          success: true,
+          data: [],
+          count: 0,
+          source: 'dynamodb-empty'
+        })
+      }
+      
+      // For other errors, log and return error
+      console.error('Error fetching quarantine messages:', dbError)
+      return NextResponse.json({
+        success: false,
+        error: dbError.message || 'Failed to fetch quarantine messages',
+        data: []
+      }, { status: 500 })
+    }
   } catch (error: any) {
-    console.error('Error fetching quarantine messages:', error)
-    
-    // Fallback to empty array if DynamoDB fails
+    console.error('Quarantine list API error:', error)
     return NextResponse.json({
-      success: true,
-      data: [],
-      count: 0,
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    })
+      success: false,
+      error: error.message || 'Internal server error',
+      data: []
+    }, { status: 500 })
   }
 }
 
