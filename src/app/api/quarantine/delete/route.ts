@@ -37,31 +37,51 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const results = []
-    const errors = []
+    // Process messages concurrently for better performance
+    // Limit batch size to prevent overwhelming DynamoDB (max 50 concurrent operations)
+    const BATCH_SIZE = 50
+    const batches: string[][] = []
+    for (let i = 0; i < idsToDelete.length; i += BATCH_SIZE) {
+      batches.push(idsToDelete.slice(i, i + BATCH_SIZE))
+    }
 
-    // Process each message
-    for (const id of idsToDelete) {
-      try {
-        // Verify message exists and belongs to customer
-        const message = await getQuarantineMessage({ customerId, messageId: id })
-        
-        if (!message) {
-          errors.push({ messageId: id, error: 'Message not found' })
-          continue
-        }
+    const results: Array<{ messageId: string; success: boolean }> = []
+    const errors: Array<{ messageId: string; error: string }> = []
 
-        // Delete from DynamoDB
-        await deleteQuarantineMessage({
-          customerId,
-          messageId: id,
+    // Process each batch concurrently
+    for (const batch of batches) {
+      const batchResults = await Promise.allSettled(
+        batch.map(async (id) => {
+          // Verify message exists and belongs to customer
+          const message = await getQuarantineMessage({ customerId, messageId: id })
+          
+          if (!message) {
+            throw new Error('Message not found')
+          }
+
+          // Delete from DynamoDB
+          await deleteQuarantineMessage({
+            customerId,
+            messageId: id,
+          })
+
+          return { messageId: id, success: true }
         })
+      )
 
-        results.push({ messageId: id, success: true })
-      } catch (error: any) {
-        console.error(`Error deleting message ${id}:`, error)
-        errors.push({ messageId: id, error: error.message || 'Failed to delete message' })
-      }
+      // Process batch results
+      batchResults.forEach((result, index) => {
+        const id = batch[index]
+        if (result.status === 'fulfilled') {
+          results.push(result.value)
+        } else {
+          console.error(`Error deleting message ${id}:`, result.reason)
+          errors.push({
+            messageId: id,
+            error: result.reason?.message || 'Failed to delete message'
+          })
+        }
+      })
     }
 
     // TODO: Optionally delete from S3 if s3Key exists

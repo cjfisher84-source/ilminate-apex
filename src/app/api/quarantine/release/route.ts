@@ -37,35 +37,55 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const results = []
-    const errors = []
+    // Process messages concurrently for better performance
+    // Limit batch size to prevent overwhelming DynamoDB (max 50 concurrent operations)
+    const BATCH_SIZE = 50
+    const batches: string[][] = []
+    for (let i = 0; i < idsToRelease.length; i += BATCH_SIZE) {
+      batches.push(idsToRelease.slice(i, i + BATCH_SIZE))
+    }
 
-    // Process each message
-    for (const id of idsToRelease) {
-      try {
-        // Verify message exists and belongs to customer
-        const message = await getQuarantineMessage({ customerId, messageId: id })
-        
-        if (!message) {
-          errors.push({ messageId: id, error: 'Message not found' })
-          continue
-        }
+    const results: Array<{ messageId: string; success: boolean }> = []
+    const errors: Array<{ messageId: string; error: string }> = []
 
-        // Update status to released
-        await updateQuarantineMessageStatus({
-          customerId,
-          messageId: id,
-          status: 'released',
-          releasedAt: Date.now(),
-          // TODO: Get user ID from session/auth
-          releasedBy: 'user', // Placeholder - should come from auth context
+    // Process each batch concurrently
+    for (const batch of batches) {
+      const batchResults = await Promise.allSettled(
+        batch.map(async (id) => {
+          // Verify message exists and belongs to customer
+          const message = await getQuarantineMessage({ customerId, messageId: id })
+          
+          if (!message) {
+            throw new Error('Message not found')
+          }
+
+          // Update status to released
+          await updateQuarantineMessageStatus({
+            customerId,
+            messageId: id,
+            status: 'released',
+            releasedAt: Date.now(),
+            // TODO: Get user ID from session/auth
+            releasedBy: 'user', // Placeholder - should come from auth context
+          })
+
+          return { messageId: id, success: true }
         })
+      )
 
-        results.push({ messageId: id, success: true })
-      } catch (error: any) {
-        console.error(`Error releasing message ${id}:`, error)
-        errors.push({ messageId: id, error: error.message || 'Failed to release message' })
-      }
+      // Process batch results
+      batchResults.forEach((result, index) => {
+        const id = batch[index]
+        if (result.status === 'fulfilled') {
+          results.push(result.value)
+        } else {
+          console.error(`Error releasing message ${id}:`, result.reason)
+          errors.push({
+            messageId: id,
+            error: result.reason?.message || 'Failed to release message'
+          })
+        }
+      })
     }
 
     // TODO: Integrate with Microsoft Graph API to actually release the email
