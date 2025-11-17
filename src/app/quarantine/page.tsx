@@ -77,11 +77,12 @@ function useCustomerId(): string | null {
       try {
         const info = JSON.parse(userDisplay)
         if (info.customerId) {
+          console.log('✅ Found customer ID in apex_user_display cookie:', info.customerId)
           setCustomerId(info.customerId)
           return
         }
       } catch (e) {
-        // Invalid cookie
+        console.error('❌ Failed to parse apex_user_display cookie:', e)
       }
     }
 
@@ -116,7 +117,9 @@ function useCustomerId(): string | null {
             ]
             
             const emailLower = email.toLowerCase()
+            console.log('📧 Extracted email from Cognito token:', emailLower)
             if (adminEmails.some(adminEmail => emailLower === adminEmail.toLowerCase())) {
+              console.log('✅ Mapping admin email to ilminate.com')
               setCustomerId('ilminate.com')
               return
             }
@@ -124,7 +127,9 @@ function useCustomerId(): string | null {
             // Extract domain from email
             const emailParts = email.split('@')
             if (emailParts.length === 2) {
-              setCustomerId(emailParts[1].toLowerCase())
+              const domain = emailParts[1].toLowerCase()
+              console.log('📧 Extracted domain from email:', domain)
+              setCustomerId(domain)
             }
           }
         }
