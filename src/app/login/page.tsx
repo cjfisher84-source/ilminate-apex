@@ -15,9 +15,20 @@ function LoginContent() {
   // Check for any login errors
   useEffect(() => {
     const errorParam = searchParams.get('error')
+    const errorDetails = searchParams.get('details')
     
     if (errorParam === 'auth_failed') {
-      setError('Authentication failed. Please try again.')
+      const message = errorDetails 
+        ? `Authentication failed: ${decodeURIComponent(errorDetails)}`
+        : 'Authentication failed. Please try again.'
+      setError(message)
+      console.error('Login error:', { errorParam, errorDetails })
+    } else if (errorParam === 'no_code') {
+      setError('No authorization code received. Please try again.')
+    } else if (errorParam === 'token_exchange_failed') {
+      setError('Token exchange failed. Please try again.')
+    } else if (errorParam) {
+      setError(`Login error: ${errorParam}`)
     }
   }, [searchParams])
 
