@@ -41,9 +41,23 @@ function parseJWTPayload(token: string): any {
 /**
  * Extract customer/tenant ID from email domain
  * e.g., "admin@acme.com" → "acme.com"
+ * Special case: Admin emails map to ilminate.com
  */
 function getCustomerIdFromEmail(email: string): string | null {
   if (!email) return null
+  
+  // Special admin emails that should map to ilminate.com
+  const adminEmails = [
+    'cjfisher84@googlemail.com',
+    'cfisher@ilminate.com',
+    'admin@ilminate.com',
+    // Add more admin emails as needed
+  ]
+  
+  const emailLower = email.toLowerCase()
+  if (adminEmails.some(adminEmail => emailLower === adminEmail.toLowerCase())) {
+    return 'ilminate.com'
+  }
   
   const parts = email.split('@')
   if (parts.length !== 2) return null
