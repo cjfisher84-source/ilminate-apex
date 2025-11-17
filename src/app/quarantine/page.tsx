@@ -196,12 +196,22 @@ export default function QuarantinePage() {
       const headers: HeadersInit = {}
       if (customerId) {
         headers['x-customer-id'] = customerId
+        console.log('🔍 Fetching quarantine messages with customer ID:', customerId)
+      } else {
+        console.warn('⚠️ No customer ID found - API may return mock data')
       }
       
       const res = await fetch(`/api/quarantine/list?${params.toString()}`, {
         headers
       })
       const data = await res.json()
+      
+      console.log('📊 API Response:', {
+        success: data.success,
+        source: data.source,
+        count: data.count,
+        customerId,
+      })
       
       if (data.success) {
         // Enhance messages with computed fields

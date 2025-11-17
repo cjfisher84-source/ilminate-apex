@@ -14,6 +14,12 @@ export async function GET(request: NextRequest) {
     const customerId = getCustomerIdFromHeaders(request.headers)
     const showMockData = isMockDataEnabled(customerId)
 
+    // Log for debugging
+    console.log('Quarantine API - Customer ID:', customerId, 'Show Mock Data:', showMockData, 'Headers:', {
+      'x-customer-id': request.headers.get('x-customer-id'),
+      'x-user-email': request.headers.get('x-user-email'),
+    })
+
     // Get query parameters
     const searchParams = request.nextUrl.searchParams
     const severity = searchParams.get('severity') || 'ALL'
@@ -22,6 +28,7 @@ export async function GET(request: NextRequest) {
 
     // If mock data is enabled, return mock data
     if (showMockData) {
+      console.log('⚠️ Returning MOCK DATA because mockData is enabled for customer:', customerId)
       const mockMessages = mockQuarantinedMessages()
       
       // Apply filters to mock data
@@ -63,6 +70,7 @@ export async function GET(request: NextRequest) {
     }
 
     try {
+      console.log('✅ Fetching REAL DATA from DynamoDB for customer:', customerId)
       const messages = await queryQuarantinedMessages({
         customerId,
         severity: severity !== 'ALL' ? severity : undefined,
@@ -70,6 +78,7 @@ export async function GET(request: NextRequest) {
         searchTerm,
         limit: 1000
       })
+      console.log(`✅ Found ${messages.length} real messages from DynamoDB`)
 
       // Transform DynamoDB items to match expected format
       // Handle both old format (quarantineTimestamp) and new format (quarantineDate#messageId)
