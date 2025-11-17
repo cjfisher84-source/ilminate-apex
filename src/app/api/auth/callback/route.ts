@@ -7,6 +7,8 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const code = searchParams.get('code')
   const error = searchParams.get('error')
+  const errorDescription = searchParams.get('error_description')
+  const errorUri = searchParams.get('error_uri')
   
   // Get the origin - prefer headers over request.nextUrl.origin for Amplify compatibility
   const host = request.headers.get('host') || request.headers.get('x-forwarded-host')
@@ -19,13 +21,27 @@ export async function GET(request: NextRequest) {
     'x-forwarded-host': request.headers.get('x-forwarded-host'),
     'x-forwarded-proto': request.headers.get('x-forwarded-proto'),
     'nextUrl.origin': request.nextUrl.origin,
-    'nextUrl.href': request.nextUrl.href
+    'nextUrl.href': request.nextUrl.href,
+    hasCode: !!code,
+    hasError: !!error,
+    error,
+    errorDescription
   })
 
   // Handle OAuth errors
   if (error) {
-    console.error('OAuth error:', error)
-    return NextResponse.redirect(new URL(`${origin}/login?error=auth_failed`))
+    console.error('OAuth error received:', {
+      error,
+      errorDescription,
+      errorUri,
+      fullUrl: request.nextUrl.href,
+      allParams: Object.fromEntries(searchParams.entries())
+    })
+    // Include error details in redirect for debugging
+    const errorParam = errorDescription 
+      ? `auth_failed&details=${encodeURIComponent(errorDescription.substring(0, 200))}`
+      : `auth_failed&error_code=${error}`
+    return NextResponse.redirect(new URL(`${origin}/login?error=${errorParam}`))
   }
 
   // No code provided
