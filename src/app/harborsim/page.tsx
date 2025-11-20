@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Box, Typography, Card, CardContent, Button, CircularProgress, Alert } from '@mui/material'
+import { Box, Typography, Card, CardContent, Button, CircularProgress, Alert, Paper } from '@mui/material'
 import NavigationBar from '@/components/NavigationBar'
 
 interface Template {
