@@ -29,6 +29,18 @@ export default function SecurityAssistant() {
   const [lastMsgCount, setLastMsgCount] = React.useState(0);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [modalContent, setModalContent] = React.useState<Msg | null>(null);
+  
+  // Function to start a new conversation
+  const startNewConversation = () => {
+    setMsgs([
+      { role: 'assistant', text: 'Hi! I can investigate threats, suggest posture improvements, and summarize trends. Pick a quick action or ask anything.' }
+    ]);
+    setInput('');
+    setModalOpen(false);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
 
   // Auto-open modal for long assistant responses
   React.useEffect(() => {
@@ -90,11 +102,21 @@ export default function SecurityAssistant() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       
       const data = await res.json();
-      setMsgs((m) => [...m, { role: 'assistant', text: data.reply ?? 'No response.' }]);
+      const assistantReply = { role: 'assistant' as const, text: data.reply ?? 'No response.' };
+      setMsgs((m) => [...m, assistantReply]);
+      
+      // Auto-scroll to bottom after new message
+      setTimeout(() => {
+        messagesBoxRef.current?.scrollTo({
+          top: messagesBoxRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
       
       log.ui('SecurityAssistant response received', { 
         responseLength: data.reply?.length || 0,
-        conversationLength: conversationHistory.length + 1
+        conversationLength: conversationHistory.length + 1,
+        totalMessages: msgs.length + 1
       });
     } catch (e: any) {
       log.ui('SecurityAssistant error', { error: e?.message });
@@ -350,7 +372,7 @@ export default function SecurityAssistant() {
         <Button
           onClick={() => {
             setModalOpen(false);
-            setInput('');
+            // Don't clear input - allow user to continue conversation
             // Focus input field after modal closes
             setTimeout(() => {
               inputRef.current?.focus();
@@ -362,7 +384,21 @@ export default function SecurityAssistant() {
             '&:hover': { bgcolor: '#007070' }
           }}
         >
-          Ask Another Question
+          Continue Conversation
+        </Button>
+        <Button
+          onClick={startNewConversation}
+          variant="outlined"
+          sx={{
+            borderColor: '#334155',
+            color: '#f1f5f9',
+            '&:hover': {
+              borderColor: '#00a8a8',
+              bgcolor: 'rgba(0, 168, 168, 0.1)'
+            }
+          }}
+        >
+          New Conversation
         </Button>
       </DialogActions>
     </Dialog>
