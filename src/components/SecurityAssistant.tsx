@@ -29,6 +29,7 @@ export default function SecurityAssistant() {
   const [lastMsgCount, setLastMsgCount] = React.useState(0);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [modalContent, setModalContent] = React.useState<Msg | null>(null);
+  const [hasShownModal, setHasShownModal] = React.useState(false); // Track if modal was already shown
   
   // Function to start a new conversation
   const startNewConversation = () => {
@@ -37,27 +38,31 @@ export default function SecurityAssistant() {
     ]);
     setInput('');
     setModalOpen(false);
+    setHasShownModal(false); // Reset modal tracking
     setTimeout(() => {
       inputRef.current?.focus();
     }, 100);
   };
 
-  // Auto-open modal for long assistant responses
+  // Auto-open modal ONLY for the FIRST long assistant response in a conversation
+  // This keeps the chat open for follow-up questions
   React.useEffect(() => {
     // Check if we got a new assistant message
     if (msgs.length > lastMsgCount && msgs[msgs.length - 1].role === 'assistant' && !busy) {
       setLastMsgCount(msgs.length);
       const lastMsg = msgs[msgs.length - 1];
       
-      // Auto-open modal for responses longer than 200 characters
-      if (lastMsg.text.length > 200) {
+      // Only auto-open modal for FIRST long response (not follow-ups)
+      // This keeps chat accessible for continuous conversation
+      if (lastMsg.text.length > 200 && !hasShownModal) {
         setTimeout(() => {
           setModalContent(lastMsg);
           setModalOpen(true);
+          setHasShownModal(true); // Mark that we've shown the modal
         }, 150);
       }
     }
-  }, [msgs, busy, lastMsgCount]);
+  }, [msgs, busy, lastMsgCount, hasShownModal]);
 
   // Component mount logging
   React.useEffect(() => {
@@ -291,12 +296,14 @@ export default function SecurityAssistant() {
       </CardContent>
     </Card>
 
-    {/* Full Response Modal */}
+    {/* Full Response Modal - Non-blocking for continuous conversation */}
     <Dialog
       open={modalOpen}
       onClose={() => setModalOpen(false)}
       maxWidth="md"
       fullWidth
+      disableEnforceFocus={true} // Allow interaction with chat below
+      disableAutoFocus={true} // Don't steal focus from input
       PaperProps={{
         sx: {
           bgcolor: '#1e293b',
@@ -384,7 +391,7 @@ export default function SecurityAssistant() {
             '&:hover': { bgcolor: '#007070' }
           }}
         >
-          Continue Conversation
+          Continue Chat (Chat Stays Open)
         </Button>
         <Button
           onClick={startNewConversation}
