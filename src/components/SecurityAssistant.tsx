@@ -302,8 +302,10 @@ export default function SecurityAssistant() {
       onClose={() => setModalOpen(false)}
       maxWidth="md"
       fullWidth
+      hideBackdrop
       disableEnforceFocus={true} // Allow interaction with chat below
       disableAutoFocus={true} // Don't steal focus from input
+      disableScrollLock
       PaperProps={{
         sx: {
           bgcolor: '#1e293b',
