@@ -49,16 +49,25 @@ export default function HarborSimList() {
       console.log('API Response data:', data)
       
       // Handle different response formats
-      if (data.templates) {
+      if (data.templates && Array.isArray(data.templates) && data.templates.length > 0) {
         setTemplates(data.templates)
-      } else if (Array.isArray(data)) {
-        setTemplates(data)
+      } else if (Array.isArray(data) && data.length > 0) {
+        // Check if API data has required fields, otherwise use mock
+        const hasRequiredFields = data.some((item: any) => item.name || item.subject || item.html_content)
+        if (hasRequiredFields) {
+          setTemplates(data)
+        } else {
+          console.warn('API data missing required fields, using mock data')
+          setTemplates(getMockTemplates())
+        }
       } else if (data.error) {
         // API error - use mock data
         console.warn('API returned error, using mock data:', data.error)
         setTemplates(getMockTemplates())
       } else {
-        setTemplates([])
+        // Empty or invalid response - use mock data
+        console.warn('API returned empty/invalid data, using mock data')
+        setTemplates(getMockTemplates())
       }
     } catch (err) {
       console.warn('API fetch failed, using mock data:', err)

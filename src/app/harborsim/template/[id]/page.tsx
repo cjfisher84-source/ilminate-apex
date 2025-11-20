@@ -225,42 +225,39 @@ Payments Processing Services | 123 Business Park Drive | Suite 400`,
   const fetchTemplate = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/harborsim/v1/templates/${id}`)
-      
-      if (!response.ok) {
-        console.warn('API unavailable, using mock data')
-        const mockTemplate = getMockTemplate(id)
-        if (mockTemplate) {
-          setTemplate(mockTemplate)
-          setError(null)
-          return
-        }
-        throw new Error('Failed to fetch template')
-      }
-      
-      const data = await response.json()
-      if (data.error) {
-        // API returned error, fall back to mock
-        const mockTemplate = getMockTemplate(id)
-        if (mockTemplate) {
-          setTemplate(mockTemplate)
-          setError(null)
-          return
-        }
-      }
-      
-      setTemplate(data.template || data)
       setError(null)
-    } catch (err) {
-      // Try mock data as last resort
+      
+      // Always use mock data for now since API doesn't return full template content
+      // In production, API will return full templates with all fields
       const mockTemplate = getMockTemplate(id)
       if (mockTemplate) {
+        // Try to fetch API data to merge status/approval info
+        try {
+          const response = await fetch(`/api/harborsim/v1/templates/${id}`)
+          if (response.ok) {
+            const apiData = await response.json()
+            // Merge API status with mock template data
+            if (apiData.Status) {
+              mockTemplate.status = apiData.Status.toLowerCase()
+              mockTemplate.approved = apiData.Status === 'Approved'
+            }
+            if (apiData.ApprovedAt) {
+              mockTemplate.approved = true
+            }
+          }
+        } catch (apiErr) {
+          // Ignore API errors, just use mock data
+          console.log('Using mock data only')
+        }
+        
         setTemplate(mockTemplate)
-        setError(null)
-      } else {
-        setError(err instanceof Error ? err.message : 'Failed to load template')
-        console.error('Error fetching template:', err)
+        return
       }
+      
+      throw new Error('Template not found')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load template')
+      console.error('Error fetching template:', err)
     } finally {
       setLoading(false)
     }
