@@ -22,8 +22,13 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 /**
  * Query AI models (Claude or OpenAI) for sophisticated threat analysis
+ * Supports conversation history for follow-up questions
  */
-async function queryAIModel(userQuery: string, context: any): Promise<string> {
+async function queryAIModel(
+  userQuery: string, 
+  context: any, 
+  conversationHistory: Array<{role: 'user' | 'assistant', content: string}> = []
+): Promise<string> {
   const systemPrompt = `You are a cybersecurity analyst assistant for Ilminate APEX, a threat intelligence platform. 
   
 Your role is to analyze security data and provide clear, actionable insights about threats, campaigns, and security posture.
@@ -45,7 +50,21 @@ ${context.mcpThreats.slice(0, 5).map((t: any) => `- ${t.threat_type || 'Unknown'
 ` : ''}
 
 Be concise, use bullet points, and provide actionable recommendations. Format responses for easy reading.
-${context.mcpEnabled ? 'Note: This analysis has been enhanced with real threat data from DynamoDB via MCP.' : ''}`;
+${context.mcpEnabled ? 'Note: This analysis has been enhanced with real threat data from DynamoDB via MCP.' : ''}
+
+When answering follow-up questions, reference information from previous messages in the conversation to maintain context.`;
+
+  // Build messages array with conversation history
+  const messages = [
+    ...conversationHistory.map(msg => ({
+      role: msg.role === 'assistant' ? 'assistant' : 'user',
+      content: msg.content
+    })),
+    {
+      role: 'user' as const,
+      content: userQuery
+    }
+  ];
 
   // Try Claude (Anthropic) first
   if (ANTHROPIC_API_KEY) {
@@ -59,14 +78,9 @@ ${context.mcpEnabled ? 'Note: This analysis has been enhanced with real threat d
         },
         body: JSON.stringify({
           model: 'claude-3-5-sonnet-20241022',
-          max_tokens: 1024,
+          max_tokens: 2048,
           system: systemPrompt,
-          messages: [
-            {
-              role: 'user',
-              content: userQuery
-            }
-          ]
+          messages: messages
         })
       });
 
@@ -90,16 +104,13 @@ ${context.mcpEnabled ? 'Note: This analysis has been enhanced with real threat d
         },
         body: JSON.stringify({
           model: 'gpt-4-turbo-preview',
-          max_tokens: 1024,
+          max_tokens: 2048,
           messages: [
             {
               role: 'system',
               content: systemPrompt
             },
-            {
-              role: 'user',
-              content: userQuery
-            }
+            ...messages
           ]
         })
       });
@@ -119,7 +130,7 @@ ${context.mcpEnabled ? 'Note: This analysis has been enhanced with real threat d
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt } = await req.json();
+    const { prompt, messages: conversationHistory = [] } = await req.json();
 
     // Get customer ID from headers
     const customerId = getCustomerIdFromHeaders(req.headers);
@@ -190,6 +201,10 @@ export async function POST(req: NextRequest) {
 
     let reply = '';
     
+    // If conversation history exists, always use AI models for context-aware responses
+    // Skip pattern matching for follow-up questions
+    const isFollowUp = conversationHistory.length > 0;
+    
     // Handle case where customer has no data yet (production customer awaiting integration)
     if (scoreValue === null || aiThreats.length === 0) {
       reply = `Welcome to APEX Security Assistant!
@@ -224,7 +239,8 @@ Need help? Contact support@ilminate.com or check the APEX Command Guide (click y
     }
     
     // Campaign-specific queries (e.g., ClickFix, specific threat campaigns)
-    if (lower.includes('clickfix') || lower.includes('click fix')) {
+    // Skip pattern matching for follow-up questions - use AI instead
+    if (!isFollowUp && (lower.includes('clickfix') || lower.includes('click fix'))) {
       const clickFixCampaign = campaigns.find(c => 
         c.name.toLowerCase().includes('credential') || 
         c.threatType === 'Phish'
@@ -268,7 +284,8 @@ Last 30 days threat activity:
     }
     
     // General campaign queries
-    else if (lower.includes('campaign') || lower.includes('active') || lower.includes('ongoing')) {
+    // Skip pattern matching for follow-up questions
+    else if (!isFollowUp && (lower.includes('campaign') || lower.includes('active') || lower.includes('ongoing'))) {
       const activeCamps = context.activeCampaigns;
       const resolvedRecent = campaigns.filter(c => c.status === 'resolved').slice(0, 2);
       
@@ -294,7 +311,8 @@ ${activeCamps.length > 0 ? activeCamps.map(c => `• Block ${c.source.domain} an
     }
     
     // Specific threat type queries
-    else if (lower.includes('phishing') || lower.includes('phish')) {
+    // Skip pattern matching for follow-up questions
+    else if (!isFollowUp && (lower.includes('phishing') || lower.includes('phish'))) {
       const phishCampaigns = campaigns.filter(c => c.threatType === 'Phish');
       const totalPhishTargets = phishCampaigns.reduce((sum, c) => sum + c.targets, 0);
       
@@ -323,7 +341,8 @@ ${phishCampaigns.slice(0, 3).map(c => `
     }
     
     // Threat investigation queries
-    else if (lower.includes('investigate') || lower.includes('threat')) {
+    // Skip pattern matching for follow-up questions
+    else if (!isFollowUp && (lower.includes('investigate') || lower.includes('threat'))) {
       // Use real AI threats data
       const topThreat = aiThreats[0];
       const totalThreats = aiThreats.reduce((sum, t) => sum + t.count, 0);
@@ -343,7 +362,7 @@ Recommended actions:
 Response Time: ${score.responseTime}
 False Positive Rate: ${score.falsePositiveRate}`;
       
-    } else if (lower.includes('posture') || lower.includes('improve')) {
+    } else if (!isFollowUp && (lower.includes('posture') || lower.includes('improve'))) {
       // Use real security score data
       const protectionGap = 100 - score.protectionRate;
       
@@ -367,7 +386,7 @@ Quick wins:
 • Update endpoint protection policies
 • Review and tune detection rules`;
       
-    } else if (lower.includes('trend') || lower.includes('summary') || lower.includes('risk')) {
+    } else if (!isFollowUp && (lower.includes('trend') || lower.includes('summary') || lower.includes('risk'))) {
       // Use real threat family data
       const totalIncidents = threatFamilies.reduce((sum, t) => sum + t.count, 0);
       const highestThreat = threatFamilies[0];
@@ -397,7 +416,7 @@ Outlook:
 • DKIM/DMARC hardening recommended
 • Consider additional AI threat detection rules`;
       
-    } else if (lower.includes('score') || lower.includes('status')) {
+    } else if (!isFollowUp && (lower.includes('score') || lower.includes('status'))) {
       reply = `Current Security Status:
 
 📊 Cyber Security Score: ${score.score}/100
@@ -412,13 +431,37 @@ Overall Health: ${score.score > 85 ? '🟢 Excellent' : score.score > 70 ? '🟡
       
     } 
     
-    // If no simple pattern match, try AI models for natural language understanding
-    if (!reply && (ANTHROPIC_API_KEY || OPENAI_API_KEY)) {
+    // If no simple pattern match OR if this is a follow-up question, use AI models
+    // Always use AI models for follow-up questions to maintain context
+    if ((!reply || isFollowUp) && (ANTHROPIC_API_KEY || OPENAI_API_KEY)) {
       try {
-        reply = await queryAIModel(prompt, context);
+        // Convert conversation history to format expected by AI models
+        const history = conversationHistory
+          .filter((msg: any) => msg.role === 'user' || msg.role === 'assistant')
+          .map((msg: any) => ({
+            role: msg.role === 'assistant' ? 'assistant' : 'user',
+            content: msg.text || msg.content || msg.message || ''
+          }))
+          .filter((msg: any) => msg.content.trim().length > 0);
+        
+        console.log('[Assistant] Using AI model', {
+          isFollowUp,
+          historyLength: history.length,
+          prompt: prompt.substring(0, 50),
+          hasHistory: history.length > 0
+        });
+        
+        reply = await queryAIModel(prompt, context, history);
       } catch (aiError) {
-        console.error('AI model error, falling back:', aiError);
-        // Fall through to default response
+        console.error('AI model error:', aiError);
+        // For follow-up questions, always return an error message
+        if (isFollowUp) {
+          reply = `I encountered an error processing your follow-up question. Please try rephrasing or ask a new question. Error: ${aiError instanceof Error ? aiError.message : 'Unknown error'}`;
+        } else if (conversationHistory.length === 0) {
+          // Fall through to default response for first question without AI
+        } else {
+          reply = `I encountered an error. Please try rephrasing your question.`;
+        }
       }
     }
     

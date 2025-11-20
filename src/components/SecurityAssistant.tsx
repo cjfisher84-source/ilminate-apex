@@ -25,6 +25,7 @@ export default function SecurityAssistant() {
   ]);
   const messagesBoxRef = React.useRef<HTMLDivElement>(null);
   const cardRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const [lastMsgCount, setLastMsgCount] = React.useState(0);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [modalContent, setModalContent] = React.useState<Msg | null>(null);
@@ -54,7 +55,7 @@ export default function SecurityAssistant() {
   async function send(promptText: string) {
     if (!promptText.trim()) return;
     
-    log.ui('SecurityAssistant query', { prompt: promptText.substring(0, 50) });
+    log.ui('SecurityAssistant query', { prompt: promptText.substring(0, 50), messageCount: msgs.length });
     
     const next: Msg = { role: 'user', text: promptText.trim() };
     setMsgs((m) => [...m, next]);
@@ -62,10 +63,28 @@ export default function SecurityAssistant() {
     setBusy(true);
     
     try {
+      // Send conversation history (excluding the initial greeting) for context
+      // Include all previous messages for proper context
+      const conversationHistory = msgs
+        .filter((m, i) => i > 0) // Skip initial greeting
+        .map(m => ({ 
+          role: m.role, 
+          text: m.text,
+          content: m.text  // Also include 'content' for compatibility
+        }));
+      
+      log.ui('SecurityAssistant sending conversation', { 
+        historyLength: conversationHistory.length,
+        lastMessage: conversationHistory[conversationHistory.length - 1]?.text?.substring(0, 50)
+      });
+      
       const res = await fetch('/api/assistant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptText }),
+        body: JSON.stringify({ 
+          prompt: promptText,
+          messages: conversationHistory
+        }),
       });
       
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -73,7 +92,10 @@ export default function SecurityAssistant() {
       const data = await res.json();
       setMsgs((m) => [...m, { role: 'assistant', text: data.reply ?? 'No response.' }]);
       
-      log.ui('SecurityAssistant response received', { responseLength: data.reply?.length || 0 });
+      log.ui('SecurityAssistant response received', { 
+        responseLength: data.reply?.length || 0,
+        conversationLength: conversationHistory.length + 1
+      });
     } catch (e: any) {
       log.ui('SecurityAssistant error', { error: e?.message });
       setMsgs((m) => [...m, { role: 'assistant', text: `Sorry—something went wrong (${e?.message || 'error'}).` }]);
@@ -168,7 +190,11 @@ export default function SecurityAssistant() {
                   } : {}
                 }}
               >
-                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                <Typography 
+                  variant="body2" 
+                  component="div"
+                  sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}
+                >
                   {m.text}
                 </Typography>
                 {m.role === 'assistant' && m.text.length > 200 && (
@@ -190,6 +216,7 @@ export default function SecurityAssistant() {
         {/* Input */}
         <Stack direction="row" spacing={1}>
           <TextField
+            inputRef={inputRef}
             fullWidth 
             size="small" 
             placeholder="Ask about threats, posture, or trends…"
@@ -288,6 +315,7 @@ export default function SecurityAssistant() {
         {modalContent && (
           <Typography 
             variant="body1" 
+            component="div"
             sx={{ 
               whiteSpace: 'pre-wrap', 
               lineHeight: 1.8,
@@ -323,6 +351,10 @@ export default function SecurityAssistant() {
           onClick={() => {
             setModalOpen(false);
             setInput('');
+            // Focus input field after modal closes
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 100);
           }}
           variant="contained"
           sx={{
