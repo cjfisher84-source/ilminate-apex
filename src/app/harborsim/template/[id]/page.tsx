@@ -7,6 +7,9 @@ import Link from 'next/link'
 import { Box, Typography, Paper, Button, CircularProgress, Alert, Chip, Divider } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import SendIcon from '@mui/icons-material/Send'
+import SecurityIcon from '@mui/icons-material/Security'
+import WarningIcon from '@mui/icons-material/Warning'
+import LinkOffIcon from '@mui/icons-material/LinkOff'
 
 interface Template {
   id: string
@@ -20,6 +23,8 @@ interface Template {
   status: string
   created_at: string
   approved: boolean
+  threats_detected?: string[]
+  deweaponized_items?: string[]
 }
 
 export default function HarborSimDetail() {
@@ -39,42 +44,179 @@ export default function HarborSimDetail() {
     const mockTemplates: Record<string, Template> = {
       '1': {
         id: '1',
-        name: 'Phishing Email Template',
-        sender_name: 'Security Team',
-        sender_email: 'security@company.com',
-        subject: 'Urgent: Verify Your Account',
-        html_content: '<p>Dear User,</p><p>We have detected suspicious activity on your account. Please <a href="http://evil.com/login">click here</a> to verify your identity immediately.</p><p>Failure to verify within 24 hours will result in account suspension.</p>',
-        text_content: 'Dear User,\n\nWe have detected suspicious activity on your account. Please click here to verify your identity immediately.\n\nFailure to verify within 24 hours will result in account suspension.',
-        preview: 'This is a training email to help you identify phishing attempts.',
+        name: 'Account Verification Phishing Attack',
+        sender_name: 'Microsoft Security',
+        sender_email: 'security@microsoft-verify.com',
+        subject: 'URGENT: Suspicious Activity Detected - Verify Your Account Now',
+        html_content: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <p>Dear Microsoft User,</p>
+            <p>We have detected unusual sign-in activity on your Microsoft account from a new device in <strong>Moscow, Russia</strong> on November 19, 2025 at 3:47 AM.</p>
+            <p>If this was you, no action is needed. However, if you did not authorize this activity, please verify your account immediately to prevent unauthorized access.</p>
+            <p style="background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0;">
+              <strong>⚠️ ACTION REQUIRED:</strong> Your account will be suspended within 24 hours if you do not verify your identity.
+            </p>
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="#" style="background-color: #0078d4; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">VERIFY YOUR ACCOUNT NOW</a>
+            </p>
+            <p>This is an automated security message. Do not reply to this email.</p>
+            <p style="color: #666; font-size: 12px; margin-top: 30px;">
+              Microsoft Corporation | One Microsoft Way | Redmond, WA 98052
+            </p>
+          </div>
+        `,
+        text_content: `Dear Microsoft User,
+
+We have detected unusual sign-in activity on your Microsoft account from a new device in Moscow, Russia on November 19, 2025 at 3:47 AM.
+
+If this was you, no action is needed. However, if you did not authorize this activity, please verify your account immediately to prevent unauthorized access.
+
+⚠️ ACTION REQUIRED: Your account will be suspended within 24 hours if you do not verify your identity.
+
+VERIFY YOUR ACCOUNT NOW: http://microsoft-verify-security.com/login
+
+This is an automated security message. Do not reply to this email.
+
+Microsoft Corporation | One Microsoft Way | Redmond, WA 98052`,
+        preview: 'Phishing email impersonating Microsoft security with urgent account verification request.',
         status: 'draft',
         created_at: new Date().toISOString(),
-        approved: false
+        approved: false,
+        threats_detected: [
+          'Malicious link to phishing site (microsoft-verify-security.com)',
+          'Spoofed sender domain (microsoft-verify.com instead of microsoft.com)',
+          'Urgent language designed to create panic',
+          'False sense of urgency with 24-hour deadline',
+          'Geographic location spoofing (Moscow, Russia)'
+        ],
+        deweaponized_items: [
+          'All clickable links have been removed and replaced with safe placeholders',
+          'Malicious URL replaced with training-safe redirect endpoint',
+          'Personal information and account details have been redacted',
+          'Email addresses have been sanitized',
+          'All tracking pixels and external resources have been removed'
+        ]
       },
       '2': {
         id: '2',
-        name: 'CEO Impersonation',
-        sender_name: 'CEO Name',
-        sender_email: 'ceo@company.com',
-        subject: 'Urgent Request for Wire Transfer',
-        html_content: '<p>Hi,</p><p>I need you to process an urgent wire transfer of $50,000 to our new vendor account. This is confidential and time-sensitive.</p><p>Send to: Bank Account #123456789</p><p>Reply to this email ASAP with confirmation.</p>',
-        text_content: 'Hi,\n\nI need you to process an urgent wire transfer of $50,000 to our new vendor account. This is confidential and time-sensitive.\n\nSend to: Bank Account #123456789\n\nReply to this email ASAP with confirmation.',
-        preview: 'Train users to recognize executive impersonation attacks.',
+        name: 'CEO Impersonation Wire Transfer Scam',
+        sender_name: 'Sarah Johnson',
+        sender_email: 'sarah.johnson@company-exec.com',
+        subject: 'URGENT: Confidential Wire Transfer Request',
+        html_content: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <p>Hi,</p>
+            <p>I need you to process a wire transfer immediately. This is confidential and time-sensitive.</p>
+            <p>I'm currently in a meeting and cannot take calls, but I need this completed today before 5 PM EST.</p>
+            <p><strong>Transfer Details:</strong></p>
+            <ul>
+              <li>Amount: $87,500.00 USD</li>
+              <li>Recipient: Global Services LLC</li>
+              <li>Account Number: 9876543210</li>
+              <li>Routing Number: 021000021</li>
+              <li>Bank: First National Bank</li>
+              <li>SWIFT Code: FNBNUS33</li>
+            </ul>
+            <p>This is for an acquisition we're finalizing. Please process this ASAP and reply with confirmation.</p>
+            <p>Thanks,<br>Sarah</p>
+            <p style="color: #666; font-size: 11px; margin-top: 20px;">
+              Sent from my iPhone
+            </p>
+          </div>
+        `,
+        text_content: `Hi,
+
+I need you to process a wire transfer immediately. This is confidential and time-sensitive.
+
+I'm currently in a meeting and cannot take calls, but I need this completed today before 5 PM EST.
+
+Transfer Details:
+- Amount: $87,500.00 USD
+- Recipient: Global Services LLC
+- Account Number: 9876543210
+- Routing Number: 021000021
+- Bank: First National Bank
+- SWIFT Code: FNBNUS33
+
+This is for an acquisition we're finalizing. Please process this ASAP and reply with confirmation.
+
+Thanks,
+Sarah
+
+Sent from my iPhone`,
+        preview: 'CEO impersonation attack requesting urgent wire transfer with fake bank details.',
         status: 'approved',
         created_at: new Date().toISOString(),
-        approved: true
+        approved: true,
+        threats_detected: [
+          'Spoofed CEO email address (company-exec.com instead of company.com)',
+          'Urgent request to bypass normal approval processes',
+          'Request for large wire transfer to unknown recipient',
+          'Attempt to create false urgency with meeting excuse',
+          'Banking information designed to look legitimate'
+        ],
+        deweaponized_items: [
+          'All bank account numbers have been redacted',
+          'Wire transfer amounts have been sanitized',
+          'Recipient information has been removed',
+          'Email addresses have been de-identified',
+          'All financial details are now safe for training purposes'
+        ]
       },
       '3': {
         id: '3',
-        name: 'Invoice Scam',
-        sender_name: 'Accounting',
-        sender_email: 'billing@vendor.com',
-        subject: 'Invoice #12345 - Payment Due',
-        html_content: '<p>Please find attached invoice #12345 for your review and payment.</p><p>Payment is due within 7 days. Click here to view: <a href="http://invoice-scam.com/pay">Pay Now</a></p>',
-        text_content: 'Please find attached invoice #12345 for your review and payment.\n\nPayment is due within 7 days. Click here to view: http://invoice-scam.com/pay',
-        preview: 'Teaching users to verify invoices before payment.',
+        name: 'Invoice Payment Phishing Scam',
+        sender_name: 'Accounts Payable',
+        sender_email: 'invoices@payments-processing.net',
+        subject: 'Invoice #INV-2025-8472 - Payment Overdue',
+        html_content: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <p>Dear Valued Customer,</p>
+            <p>We hope this email finds you well. We are writing to inform you that invoice <strong>#INV-2025-8472</strong> in the amount of <strong>$3,247.89</strong> is now overdue.</p>
+            <p>According to our records, this invoice was due on November 15, 2025. To avoid service interruption, please remit payment immediately.</p>
+            <p style="background-color: #f8d7da; padding: 15px; border-left: 4px solid #dc3545; margin: 20px 0;">
+              <strong>⚠️ WARNING:</strong> Failure to pay within 48 hours will result in immediate service suspension.
+            </p>
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="#" style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">PAY INVOICE NOW</a>
+            </p>
+            <p>If you have already made this payment, please disregard this notice. For questions, contact us at billing@payments-processing.net</p>
+            <p style="color: #666; font-size: 12px; margin-top: 30px;">
+              Payments Processing Services | 123 Business Park Drive | Suite 400
+            </p>
+          </div>
+        `,
+        text_content: `Dear Valued Customer,
+
+We hope this email finds you well. We are writing to inform you that invoice #INV-2025-8472 in the amount of $3,247.89 is now overdue.
+
+According to our records, this invoice was due on November 15, 2025. To avoid service interruption, please remit payment immediately.
+
+⚠️ WARNING: Failure to pay within 48 hours will result in immediate service suspension.
+
+PAY INVOICE NOW: http://payments-processing.net/invoice/INV-2025-8472
+
+If you have already made this payment, please disregard this notice. For questions, contact us at billing@payments-processing.net
+
+Payments Processing Services | 123 Business Park Drive | Suite 400`,
+        preview: 'Fake invoice scam with urgent payment request and malicious payment link.',
         status: 'draft',
         created_at: new Date().toISOString(),
-        approved: false
+        approved: false,
+        threats_detected: [
+          'Fake invoice with fabricated invoice number',
+          'Malicious payment link to phishing site',
+          'False urgency with service suspension threat',
+          'Spoofed sender domain (payments-processing.net)',
+          'Fake company address and contact information'
+        ],
+        deweaponized_items: [
+          'Payment links have been disabled and replaced with safe placeholders',
+          'Invoice numbers and amounts have been sanitized',
+          'All financial information has been redacted',
+          'Company addresses and contact details have been removed',
+          'Tracking and analytics code has been eliminated'
+        ]
       }
     }
     return mockTemplates[templateId] || null
@@ -247,6 +389,74 @@ export default function HarborSimDetail() {
                 )}
               </Box>
             </Paper>
+
+            {/* Security Analysis Section */}
+            {(template.threats_detected || template.deweaponized_items) && (
+              <Paper sx={{ bgcolor: '#111827', border: '1px solid #374151', p: 4, mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 1 }}>
+                  <SecurityIcon sx={{ color: '#14b8a6', fontSize: 28 }} />
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: '#f3f4f6' }}>
+                    Security Analysis
+                  </Typography>
+                </Box>
+
+                {template.threats_detected && template.threats_detected.length > 0 && (
+                  <Box sx={{ mb: 4 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+                      <WarningIcon sx={{ color: '#f59e0b', fontSize: 20 }} />
+                      <Typography variant="h6" sx={{ fontWeight: 600, color: '#f3f4f6' }}>
+                        Threats Detected in Original Email
+                      </Typography>
+                    </Box>
+                    <Box sx={{ bgcolor: '#1f2937', p: 2, borderRadius: 2, border: '1px solid #7c2d12' }}>
+                      <Box component="ul" sx={{ color: '#fca5a5', pl: 3, mb: 0, '& li': { mb: 1 } }}>
+                        {template.threats_detected.map((threat, index) => (
+                          <li key={index}>{threat}</li>
+                        ))}
+                      </Box>
+                    </Box>
+                  </Box>
+                )}
+
+                {template.deweaponized_items && template.deweaponized_items.length > 0 && (
+                  <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+                      <LinkOffIcon sx={{ color: '#10b981', fontSize: 20 }} />
+                      <Typography variant="h6" sx={{ fontWeight: 600, color: '#f3f4f6' }}>
+                        How This Email Was Made Safe
+                      </Typography>
+                    </Box>
+                    <Box sx={{ bgcolor: '#1f2937', p: 2, borderRadius: 2, border: '1px solid #065f46' }}>
+                      <Box component="ul" sx={{ color: '#86efac', pl: 3, mb: 0, '& li': { mb: 1 } }}>
+                        {template.deweaponized_items.map((item, index) => (
+                          <li key={index}>{item}</li>
+                        ))}
+                      </Box>
+                    </Box>
+                  </Box>
+                )}
+
+                <Alert 
+                  severity="info" 
+                  sx={{ 
+                    mt: 3, 
+                    bgcolor: '#1e3a5f', 
+                    color: '#93c5fd', 
+                    border: '1px solid #1e40af',
+                    '& .MuiAlert-icon': { color: '#60a5fa' }
+                  }}
+                >
+                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                    Training Safe
+                  </Typography>
+                  <Typography variant="body2">
+                    This template has been processed by HarborSim to remove all dangerous elements. 
+                    It maintains the appearance and structure of the original phishing email so employees 
+                    can learn to recognize threats, but all malicious content has been neutralized.
+                  </Typography>
+                </Alert>
+              </Paper>
+            )}
 
             {/* Actions */}
             <Box sx={{ display: 'flex', gap: 2 }}>

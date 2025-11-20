@@ -71,31 +71,31 @@ export default function HarborSimList() {
   const getMockTemplates = (): Template[] => [
     {
       id: '1',
-      name: 'Phishing Email Template',
-      sender_name: 'Security Team',
-      sender_email: 'security@company.com',
-      subject: 'Urgent: Verify Your Account',
-      preview: 'This is a training email to help you identify phishing attempts.',
+      name: 'Account Verification Phishing Attack',
+      sender_name: 'Microsoft Security',
+      sender_email: 'security@microsoft-verify.com',
+      subject: 'URGENT: Suspicious Activity Detected - Verify Your Account Now',
+      preview: 'Phishing email impersonating Microsoft security with urgent account verification request. Contains malicious links and spoofed sender domain.',
       status: 'draft',
       created_at: new Date().toISOString()
     },
     {
       id: '2',
-      name: 'CEO Impersonation',
-      sender_name: 'CEO Name',
-      sender_email: 'ceo@company.com',
-      subject: 'Urgent Request for Wire Transfer',
-      preview: 'Train users to recognize executive impersonation attacks.',
+      name: 'CEO Impersonation Wire Transfer Scam',
+      sender_name: 'Sarah Johnson',
+      sender_email: 'sarah.johnson@company-exec.com',
+      subject: 'URGENT: Confidential Wire Transfer Request',
+      preview: 'CEO impersonation attack requesting urgent wire transfer with fake bank details. Attempts to bypass normal approval processes.',
       status: 'approved',
       created_at: new Date().toISOString()
     },
     {
       id: '3',
-      name: 'Invoice Scam',
-      sender_name: 'Accounting',
-      sender_email: 'billing@vendor.com',
-      subject: 'Invoice #12345 - Payment Due',
-      preview: 'Teaching users to verify invoices before payment.',
+      name: 'Invoice Payment Phishing Scam',
+      sender_name: 'Accounts Payable',
+      sender_email: 'invoices@payments-processing.net',
+      subject: 'Invoice #INV-2025-8472 - Payment Overdue',
+      preview: 'Fake invoice scam with urgent payment request and malicious payment link. Uses false urgency and service suspension threats.',
       status: 'draft',
       created_at: new Date().toISOString()
     }
