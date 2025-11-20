@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getMCPClient } from '@/lib/mcpClient'
 
 // BEC/Phishing Detection Keywords
 const EXECUTIVE_TITLES = ['ceo', 'cfo', 'coo', 'cto', 'president', 'director', 'vp', 'vice president', 'executive', 'chief']
@@ -93,8 +94,65 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}))
     const { kind, subject, sender, details } = body || {}
     
-    // Perform intelligent threat analysis
-    const analysis = analyzeThreat(kind, subject, sender, details)
+    // Get MCP client
+    const mcpClient = getMCPClient();
+    let mcpAnalysis = null;
+    
+    // Try to get enhanced analysis from MCP server
+    if (mcpClient.isEnabled() && subject && sender && details) {
+      try {
+        mcpAnalysis = await mcpClient.analyzeEmailThreat({
+          subject,
+          sender,
+          body: details,
+        });
+        
+        console.log('[Triage] MCP analysis received:', {
+          threat_score: mcpAnalysis?.threat_score,
+          threat_type: mcpAnalysis?.threat_type,
+        });
+      } catch (error) {
+        console.error('[Triage] MCP analysis failed, using local analysis:', error);
+        // Continue with local analysis if MCP fails
+      }
+    }
+    
+    // Perform intelligent threat analysis (local fallback)
+    const localAnalysis = analyzeThreat(kind, subject, sender, details)
+    
+    // Merge MCP analysis with local analysis if available
+    let analysis: any = { ...localAnalysis };
+    let mcpEnhanced = false;
+    let mcpThreatType: string | undefined;
+    let mcpRecommendation: string | undefined;
+    
+    if (mcpAnalysis) {
+      mcpEnhanced = true;
+      mcpThreatType = mcpAnalysis.threat_type;
+      mcpRecommendation = mcpAnalysis.recommendation;
+      
+      // Use MCP threat score if higher, otherwise use local
+      const combinedRiskScore = Math.max(
+        localAnalysis.riskScore,
+        (mcpAnalysis.threat_score || 0) * 100 // Convert 0-1 to 0-100 scale
+      );
+      
+      // Add MCP indicators to local indicators
+      if (mcpAnalysis.indicators && Array.isArray(mcpAnalysis.indicators) && mcpAnalysis.indicators.length > 0) {
+        mcpAnalysis.indicators.forEach((indicator: any, idx: number) => {
+          const indicatorText = typeof indicator === 'string' ? indicator : String(indicator);
+          analysis.indicators[`mcp_indicator_${idx}`] = {
+            detected: true,
+            severity: mcpAnalysis.severity === 'critical' ? 'CRITICAL' : 
+                     mcpAnalysis.severity === 'high' ? 'HIGH' : 
+                     mcpAnalysis.severity === 'medium' ? 'MEDIUM' : 'LOW',
+            description: indicatorText,
+          };
+        });
+      }
+      
+      analysis.riskScore = combinedRiskScore;
+    }
     
     const checks = [
       'SPF/DKIM/DMARC auth results',
@@ -111,7 +169,7 @@ Sender: ${sender || 'N/A'}
 `
     
     // Add threat indicators if detected
-    const detectedIndicators = Object.values(analysis.indicators).filter(i => i.detected)
+    const detectedIndicators = (Object.values(analysis.indicators) as ThreatIndicator[]).filter(i => i.detected)
     if (detectedIndicators.length > 0) {
       summary += `🚨 THREAT INDICATORS DETECTED:\n\n`
       detectedIndicators.forEach((indicator, idx) => {
@@ -120,9 +178,20 @@ Sender: ${sender || 'N/A'}
       summary += `\n`
     }
     
-    summary += `Risk Score: ${analysis.riskScore}/100 ${analysis.riskScore >= 70 ? '(CRITICAL)' : analysis.riskScore >= 50 ? '(HIGH)' : analysis.riskScore >= 30 ? '(MEDIUM)' : '(LOW)'}\n\n`
+    summary += `Risk Score: ${analysis.riskScore}/100 ${analysis.riskScore >= 70 ? '(CRITICAL)' : analysis.riskScore >= 50 ? '(HIGH)' : analysis.riskScore >= 30 ? '(MEDIUM)' : '(LOW)'}\n`
     
-    summary += `Primary findings:
+    // Add MCP enhancement note if available
+    if (mcpEnhanced) {
+      summary += `\n🔍 Enhanced Analysis: This analysis has been enriched with real threat intelligence from DynamoDB.\n`
+      if (mcpThreatType) {
+        summary += `Threat Type: ${mcpThreatType}\n`
+      }
+      if (mcpRecommendation) {
+        summary += `Recommendation: ${mcpRecommendation}\n`
+      }
+    }
+    
+    summary += `\nPrimary findings:
 - ${checks.join('\n- ')}
 
 Notes:

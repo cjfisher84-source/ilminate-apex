@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mockCyberScore, mockAIThreats, mockThreatFamilies, mockCampaigns, mockGeoThreatMap, mockTimeline30d } from '@/lib/mock';
+import { getMCPClient } from '@/lib/mcpClient';
+import { getCustomerIdFromHeaders } from '@/lib/tenantUtils';
 
 /**
  * Security Assistant API - Enhanced with Multi-Model AI
@@ -37,7 +39,13 @@ Current environment data:
 Active campaigns:
 ${context.campaigns.map((c: any) => `- ${c.name} (${c.threatType}, ${c.status}): ${c.targets} targets, ${c.interactions.compromised} compromised`).join('\n')}
 
-Be concise, use bullet points, and provide actionable recommendations. Format responses for easy reading.`;
+${context.mcpThreats && context.mcpThreats.length > 0 ? `
+Recent Real Threats (from DynamoDB):
+${context.mcpThreats.slice(0, 5).map((t: any) => `- ${t.threat_type || 'Unknown'} (${t.severity || 'medium'}): ${t.summary || t.description || 'No description'}`).join('\n')}
+` : ''}
+
+Be concise, use bullet points, and provide actionable recommendations. Format responses for easy reading.
+${context.mcpEnabled ? 'Note: This analysis has been enhanced with real threat data from DynamoDB via MCP.' : ''}`;
 
   // Try Claude (Anthropic) first
   if (ANTHROPIC_API_KEY) {
@@ -113,6 +121,39 @@ export async function POST(req: NextRequest) {
   try {
     const { prompt } = await req.json();
 
+    // Get customer ID from headers
+    const customerId = getCustomerIdFromHeaders(req.headers);
+
+    // Get MCP client
+    const mcpClient = getMCPClient();
+    let mcpThreats: any[] = [];
+
+    // Try to enrich context with real DynamoDB data (same as MCP tools do)
+    if (mcpClient.isEnabled() && customerId) {
+      try {
+        // Query DynamoDB directly (same approach as MCP tools)
+        const { queryApexEvents } = await import('@/lib/dynamodb');
+        const events = await queryApexEvents({
+          customerId,
+          days: 7,
+          limit: 10,
+        });
+        
+        // Transform to threat format
+        mcpThreats = events.map((event: any) => ({
+          threat_type: event.threat_category || event.category || 'unknown',
+          severity: event.threat_level || event.severity || 'medium',
+          summary: event.description || event.summary || '',
+          detected_at: event.timestamp ? new Date(event.timestamp * 1000).toISOString() : new Date().toISOString(),
+        }));
+        
+        console.log('[Assistant] MCP enriched with', mcpThreats.length, 'threats from DynamoDB');
+      } catch (error) {
+        console.error('[Assistant] MCP enrichment failed, continuing without:', error);
+        // Continue without MCP data if it fails
+      }
+    }
+
     // Get real data from mock functions (deterministic)
     // Note: Returns null for customers with mock data disabled
     const scoreValue = mockCyberScore();
@@ -138,7 +179,10 @@ export async function POST(req: NextRequest) {
       timeline,
       totalThreats: geoThreats.reduce((sum, t) => sum + t.threatCount, 0),
       activeCampaigns: campaigns.filter(c => c.status === 'active'),
-      criticalCampaigns: campaigns.filter(c => c.threatType === 'BEC' || c.threatType === 'Malware')
+      criticalCampaigns: campaigns.filter(c => c.threatType === 'BEC' || c.threatType === 'Malware'),
+      // Add MCP-enriched data
+      mcpThreats: mcpThreats.length > 0 ? mcpThreats : undefined,
+      mcpEnabled: mcpClient.isEnabled(),
     };
     
     // Analyze prompt intent
