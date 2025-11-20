@@ -139,6 +139,46 @@ export default function HarborSimList() {
         {/* Navigation Bar */}
         <NavigationBar />
 
+        {/* What is HarborSim Section */}
+        <Paper sx={{ bgcolor: '#111827', border: '1px solid #374151', p: 4, mb: 4 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#f3f4f6', mb: 3 }}>
+            What is HarborSim?
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#d1d5db', mb: 3, lineHeight: 1.8 }}>
+            HarborSim transforms real phishing emails into safe training templates for your security awareness program. 
+            When your organization receives actual phishing attacks, HarborSim automatically processes these emails to remove 
+            all dangerous elements, personal information, and malicious links. The result is a clean, educational template 
+            that looks like the original threat but is completely safe to use for training your team.
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#d1d5db', mb: 3, lineHeight: 1.8 }}>
+            These sanitized templates help employees learn to recognize phishing attempts by showing them real world examples 
+            without the risk. When someone clicks a link in a training email, they are redirected to a coaching page that 
+            explains what they should have noticed and how to stay safe in the future.
+          </Typography>
+          <Box sx={{ bgcolor: '#1f2937', p: 3, borderRadius: 2, border: '1px solid #374151', mt: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#14b8a6', mb: 2 }}>
+              How it works:
+            </Typography>
+            <Box component="ul" sx={{ color: '#d1d5db', pl: 3, mb: 0 }}>
+              <li style={{ marginBottom: '8px' }}>
+                Real phishing emails are automatically captured and processed
+              </li>
+              <li style={{ marginBottom: '8px' }}>
+                All dangerous links, personal information, and malicious content are removed
+              </li>
+              <li style={{ marginBottom: '8px' }}>
+                Safe training templates are created and stored for review
+              </li>
+              <li style={{ marginBottom: '8px' }}>
+                Approved templates can be sent to employees as training exercises
+              </li>
+              <li style={{ marginBottom: '8px' }}>
+                Click tracking provides immediate coaching when links are clicked
+              </li>
+            </Box>
+          </Box>
+        </Paper>
+
         {/* Content */}
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
