@@ -49,18 +49,18 @@ export default function HarborSimDetail() {
         sender_email: 'security@microsoft-verify.com',
         subject: 'URGENT: Suspicious Activity Detected - Verify Your Account Now',
         html_content: `
-          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <p>Dear Microsoft User,</p>
-            <p>We have detected unusual sign-in activity on your Microsoft account from a new device in <strong>Moscow, Russia</strong> on November 19, 2025 at 3:47 AM.</p>
-            <p>If this was you, no action is needed. However, if you did not authorize this activity, please verify your account immediately to prevent unauthorized access.</p>
-            <p style="background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0;">
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #e5e7eb;">
+            <p style="color: #e5e7eb;">Dear Microsoft User,</p>
+            <p style="color: #e5e7eb;">We have detected unusual sign-in activity on your Microsoft account from a new device in <strong style="color: #f3f4f6;">Moscow, Russia</strong> on November 19, 2025 at 3:47 AM.</p>
+            <p style="color: #e5e7eb;">If this was you, no action is needed. However, if you did not authorize this activity, please verify your account immediately to prevent unauthorized access.</p>
+            <p style="background-color: #78350f; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0; color: #fef3c7;">
               <strong>⚠️ ACTION REQUIRED:</strong> Your account will be suspended within 24 hours if you do not verify your identity.
             </p>
             <p style="text-align: center; margin: 30px 0;">
               <a href="#" style="background-color: #0078d4; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">VERIFY YOUR ACCOUNT NOW</a>
             </p>
-            <p>This is an automated security message. Do not reply to this email.</p>
-            <p style="color: #666; font-size: 12px; margin-top: 30px;">
+            <p style="color: #e5e7eb;">This is an automated security message. Do not reply to this email.</p>
+            <p style="color: #9ca3af; font-size: 12px; margin-top: 30px;">
               Microsoft Corporation | One Microsoft Way | Redmond, WA 98052
             </p>
           </div>
@@ -104,22 +104,22 @@ Microsoft Corporation | One Microsoft Way | Redmond, WA 98052`,
         sender_email: 'sarah.johnson@company-exec.com',
         subject: 'URGENT: Confidential Wire Transfer Request',
         html_content: `
-          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <p>Hi,</p>
-            <p>I need you to process a wire transfer immediately. This is confidential and time-sensitive.</p>
-            <p>I'm currently in a meeting and cannot take calls, but I need this completed today before 5 PM EST.</p>
-            <p><strong>Transfer Details:</strong></p>
-            <ul>
-              <li>Amount: $87,500.00 USD</li>
-              <li>Recipient: Global Services LLC</li>
-              <li>Account Number: 9876543210</li>
-              <li>Routing Number: 021000021</li>
-              <li>Bank: First National Bank</li>
-              <li>SWIFT Code: FNBNUS33</li>
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #e5e7eb;">
+            <p style="color: #e5e7eb;">Hi,</p>
+            <p style="color: #e5e7eb;">I need you to process a wire transfer immediately. This is confidential and time-sensitive.</p>
+            <p style="color: #e5e7eb;">I'm currently in a meeting and cannot take calls, but I need this completed today before 5 PM EST.</p>
+            <p style="color: #e5e7eb;"><strong style="color: #f3f4f6;">Transfer Details:</strong></p>
+            <ul style="color: #e5e7eb;">
+              <li style="color: #e5e7eb;">Amount: $87,500.00 USD</li>
+              <li style="color: #e5e7eb;">Recipient: Global Services LLC</li>
+              <li style="color: #e5e7eb;">Account Number: 9876543210</li>
+              <li style="color: #e5e7eb;">Routing Number: 021000021</li>
+              <li style="color: #e5e7eb;">Bank: First National Bank</li>
+              <li style="color: #e5e7eb;">SWIFT Code: FNBNUS33</li>
             </ul>
-            <p>This is for an acquisition we're finalizing. Please process this ASAP and reply with confirmation.</p>
-            <p>Thanks,<br>Sarah</p>
-            <p style="color: #666; font-size: 11px; margin-top: 20px;">
+            <p style="color: #e5e7eb;">This is for an acquisition we're finalizing. Please process this ASAP and reply with confirmation.</p>
+            <p style="color: #e5e7eb;">Thanks,<br>Sarah</p>
+            <p style="color: #9ca3af; font-size: 11px; margin-top: 20px;">
               Sent from my iPhone
             </p>
           </div>
@@ -170,18 +170,18 @@ Sent from my iPhone`,
         sender_email: 'invoices@payments-processing.net',
         subject: 'Invoice #INV-2025-8472 - Payment Overdue',
         html_content: `
-          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <p>Dear Valued Customer,</p>
-            <p>We hope this email finds you well. We are writing to inform you that invoice <strong>#INV-2025-8472</strong> in the amount of <strong>$3,247.89</strong> is now overdue.</p>
-            <p>According to our records, this invoice was due on November 15, 2025. To avoid service interruption, please remit payment immediately.</p>
-            <p style="background-color: #f8d7da; padding: 15px; border-left: 4px solid #dc3545; margin: 20px 0;">
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #e5e7eb;">
+            <p style="color: #e5e7eb;">Dear Valued Customer,</p>
+            <p style="color: #e5e7eb;">We hope this email finds you well. We are writing to inform you that invoice <strong style="color: #f3f4f6;">#INV-2025-8472</strong> in the amount of <strong style="color: #f3f4f6;">$3,247.89</strong> is now overdue.</p>
+            <p style="color: #e5e7eb;">According to our records, this invoice was due on November 15, 2025. To avoid service interruption, please remit payment immediately.</p>
+            <p style="background-color: #7f1d1d; padding: 15px; border-left: 4px solid #ef4444; margin: 20px 0; color: #fecaca;">
               <strong>⚠️ WARNING:</strong> Failure to pay within 48 hours will result in immediate service suspension.
             </p>
             <p style="text-align: center; margin: 30px 0;">
               <a href="#" style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">PAY INVOICE NOW</a>
             </p>
-            <p>If you have already made this payment, please disregard this notice. For questions, contact us at billing@payments-processing.net</p>
-            <p style="color: #666; font-size: 12px; margin-top: 30px;">
+            <p style="color: #e5e7eb;">If you have already made this payment, please disregard this notice. For questions, contact us at billing@payments-processing.net</p>
+            <p style="color: #9ca3af; font-size: 12px; margin-top: 30px;">
               Payments Processing Services | 123 Business Park Drive | Suite 400
             </p>
           </div>
