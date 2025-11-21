@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Box, Typography, TextField, Button, Chip, Card, CardContent, InputAdornment, IconButton, Alert, CircularProgress } from '@mui/material'
-import { Search, FilterList, Timeline, Security, Email, Language, Computer } from '@mui/icons-material'
+import { Box, Typography, TextField, Button, Chip, Card, CardContent, InputAdornment, IconButton, Alert, CircularProgress, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, Select } from '@mui/material'
+import { Search, FilterList, Timeline, Security, Email, Language, Computer, Download, VpnKey } from '@mui/icons-material'
 import { useIsMobile } from '@/lib/mobileUtils'
 
 const UNCW_TEAL = '#007070'
@@ -51,6 +51,13 @@ export function ApexTrace() {
     date_from: '',
     date_to: ''
   })
+  const [pullMessageMode, setPullMessageMode] = useState<'none' | 'microsoft365' | 'google_workspace'>('none')
+  const [pullMessageRecipient, setPullMessageRecipient] = useState('')
+  const [pullingMessage, setPullingMessage] = useState(false)
+  const [pullMessageDialogOpen, setPullMessageDialogOpen] = useState(false)
+  const [selectedMessageForPull, setSelectedMessageForPull] = useState<SearchResult | null>(null)
+  const [pullMessageSuccess, setPullMessageSuccess] = useState<string | null>(null)
+  const [pullMessageError, setPullMessageError] = useState<string | null>(null)
   
   const isMobile = useIsMobile()
 
@@ -414,6 +421,53 @@ export function ApexTrace() {
         </Alert>
       )}
 
+      {/* Pull Message Mode Selection */}
+      {searchResults && searchResults.messages.length > 0 && (
+        <Box sx={{ mb: 3, p: 2, bgcolor: '#1e293b', border: '1px solid #334155', borderRadius: 1 }}>
+          <FormControl component="fieldset">
+            <FormLabel sx={{ color: '#f1f5f9', mb: 1 }}>Pull Message Option</FormLabel>
+            <RadioGroup
+              row
+              value={pullMessageMode}
+              onChange={(e) => setPullMessageMode(e.target.value as any)}
+              sx={{ gap: 2 }}
+            >
+              <FormControlLabel
+                value="none"
+                control={<Radio sx={{ color: UNCW_TEAL, '&.Mui-checked': { color: UNCW_TEAL } }} />}
+                label={<Typography sx={{ color: '#f1f5f9' }}>View Only</Typography>}
+              />
+              <FormControlLabel
+                value="microsoft365"
+                control={<Radio sx={{ color: UNCW_TEAL, '&.Mui-checked': { color: UNCW_TEAL } }} />}
+                label={<Typography sx={{ color: '#f1f5f9' }}>Pull from Microsoft 365</Typography>}
+              />
+              <FormControlLabel
+                value="google_workspace"
+                control={<Radio sx={{ color: UNCW_TEAL, '&.Mui-checked': { color: UNCW_TEAL } }} />}
+                label={<Typography sx={{ color: '#f1f5f9' }}>Pull from Google Workspace</Typography>}
+              />
+            </RadioGroup>
+            {pullMessageMode !== 'none' && (
+              <TextField
+                fullWidth
+                label="Recipient Email"
+                placeholder="user@domain.com"
+                value={pullMessageRecipient}
+                onChange={(e) => setPullMessageRecipient(e.target.value)}
+                size="small"
+                sx={{
+                  mt: 2,
+                  '& .MuiInputBase-root': { color: '#f1f5f9', bgcolor: '#0f172a' },
+                  '& .MuiInputLabel-root': { color: '#94a3b8' },
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#334155' }
+                }}
+              />
+            )}
+          </FormControl>
+        </Box>
+      )}
+
       {/* Search Results */}
       {searchResults && (
         <Box>
@@ -527,6 +581,36 @@ export function ApexTrace() {
                       </Typography>
                     </Box>
                   </Box>
+
+                  {/* Pull Message Button */}
+                  {pullMessageMode !== 'none' && (
+                    <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid #334155' }}>
+                      <Button
+                        variant="outlined"
+                        startIcon={<VpnKey />}
+                        onClick={() => {
+                          setSelectedMessageForPull(message)
+                          setPullMessageDialogOpen(true)
+                        }}
+                        disabled={!pullMessageRecipient || pullingMessage}
+                        sx={{
+                          borderColor: UNCW_TEAL,
+                          color: UNCW_TEAL,
+                          fontWeight: 600,
+                          '&:hover': {
+                            borderColor: '#005555',
+                            bgcolor: 'rgba(0, 112, 112, 0.05)'
+                          },
+                          '&.Mui-disabled': {
+                            borderColor: '#334155',
+                            color: '#64748b'
+                          }
+                        }}
+                      >
+                        Pull Message from {pullMessageMode === 'microsoft365' ? 'Microsoft 365' : 'Google Workspace'}
+                      </Button>
+                    </Box>
+                  )}
                 </Box>
             ))}
           </Box>
@@ -636,6 +720,137 @@ export function ApexTrace() {
           </Typography>
         </Box>
       )}
+
+      {/* Pull Message Dialog */}
+      <Dialog
+        open={pullMessageDialogOpen}
+        onClose={() => {
+          setPullMessageDialogOpen(false)
+          setPullMessageError(null)
+          setPullMessageSuccess(null)
+        }}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: '#1e293b',
+            border: '1px solid #334155'
+          }
+        }}
+      >
+        <DialogTitle sx={{ color: UNCW_TEAL, borderBottom: '1px solid #334155' }}>
+          Pull Message from Mailbox
+        </DialogTitle>
+        <DialogContent sx={{ color: '#f1f5f9', pt: 2 }}>
+          {selectedMessageForPull && (
+            <Box>
+              <Typography variant="body2" sx={{ color: '#94a3b8', mb: 2 }}>
+                Pull this message from the user's mailbox:
+              </Typography>
+              <Box sx={{ mb: 2, p: 2, bgcolor: '#0f172a', borderRadius: 1 }}>
+                <Typography variant="body2" sx={{ color: '#f1f5f9', mb: 1 }}>
+                  <strong>Subject:</strong> {selectedMessageForPull.subject}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#f1f5f9', mb: 1 }}>
+                  <strong>From:</strong> {selectedMessageForPull.sender_email}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#f1f5f9' }}>
+                  <strong>To:</strong> {selectedMessageForPull.recipient_email}
+                </Typography>
+              </Box>
+              <TextField
+                fullWidth
+                label="Recipient Email"
+                value={pullMessageRecipient}
+                onChange={(e) => setPullMessageRecipient(e.target.value)}
+                placeholder="user@domain.com"
+                sx={{
+                  mb: 2,
+                  '& .MuiInputBase-root': { color: '#f1f5f9', bgcolor: '#0f172a' },
+                  '& .MuiInputLabel-root': { color: '#94a3b8' },
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#334155' }
+                }}
+              />
+              {pullMessageError && (
+                <Alert severity="error" sx={{ mb: 2 }}>{pullMessageError}</Alert>
+              )}
+              {pullMessageSuccess && (
+                <Alert severity="success" sx={{ mb: 2 }}>{pullMessageSuccess}</Alert>
+              )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ borderTop: '1px solid #334155' }}>
+          <Button
+            onClick={() => {
+              setPullMessageDialogOpen(false)
+              setPullMessageError(null)
+              setPullMessageSuccess(null)
+            }}
+            sx={{ color: '#94a3b8' }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={async () => {
+              if (!selectedMessageForPull || !pullMessageRecipient) {
+                setPullMessageError('Recipient email is required')
+                return
+              }
+
+              setPullingMessage(true)
+              setPullMessageError(null)
+              setPullMessageSuccess(null)
+
+              try {
+                // Try to find message ID - APEX Trace might have different format
+                const messageId = selectedMessageForPull.message_id || selectedMessageForPull.recipient_email
+
+                const response = await fetch('/api/admin/messages/retrieve', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'x-customer-id': 'ilminate.com',
+                    'x-user-email': 'admin@ilminate.com'
+                  },
+                  body: JSON.stringify({
+                    messageIds: [messageId],
+                    mailboxType: pullMessageMode,
+                    storeInS3: true,
+                    recipientEmail: pullMessageRecipient
+                  })
+                })
+
+                const data = await response.json()
+
+                if (data.success) {
+                  setPullMessageSuccess(`Message pulled successfully! ${data.data[0]?.s3Key ? `Stored in S3: ${data.data[0].s3Key}` : ''}`)
+                  setTimeout(() => {
+                    setPullMessageDialogOpen(false)
+                    setPullMessageSuccess(null)
+                  }, 3000)
+                } else {
+                  setPullMessageError(data.error || 'Failed to pull message')
+                }
+              } catch (err: any) {
+                setPullMessageError(err.message || 'Failed to pull message')
+              } finally {
+                setPullingMessage(false)
+              }
+            }}
+            disabled={pullingMessage || !pullMessageRecipient}
+            startIcon={pullingMessage ? <CircularProgress size={16} /> : <Download />}
+            sx={{
+              bgcolor: UNCW_TEAL,
+              '&:hover': { bgcolor: '#005555' },
+              '&.Mui-disabled': { bgcolor: '#334155' }
+            }}
+          >
+            {pullingMessage ? 'Pulling...' : 'Pull Message'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

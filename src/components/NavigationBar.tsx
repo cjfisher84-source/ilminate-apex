@@ -55,6 +55,11 @@ export default function NavigationBar() {
       title: 'Review and manage messages held for security review'
     },
     {
+      href: '/mailvault',
+      label: '🔐 MailVault',
+      title: 'Search and retrieve delivered messages from user mailboxes'
+    },
+    {
       href: '/harborsim',
       label: '📧 HarborSim',
       title: 'Email security training platform with phishing simulation templates'
@@ -63,13 +68,7 @@ export default function NavigationBar() {
       href: '/reports/attack',
       label: '🎯 MITRE ATT&CK',
       title: 'View security events mapped to ATT&CK techniques for threat intelligence'
-    },
-    // Admin-only items
-    ...(isAdmin ? [{
-      href: '/admin/messages',
-      label: '🔐 MailVault',
-      title: 'APEX MailVault - Search and retrieve delivered messages from user mailboxes (Admin only)'
-    }] : [])
+    }
   ]
 
   const isActive = (href: string) => {
