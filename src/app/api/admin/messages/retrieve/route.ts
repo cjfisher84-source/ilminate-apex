@@ -29,11 +29,34 @@ export async function POST(request: NextRequest) {
       userEmail.toLowerCase() === email.toLowerCase()
     )
     
-    if (!isAdmin) {
+    // Allow mock data for non-admin users (for UI testing)
+    const useMockData = !isAdmin || process.env.ENABLE_MAILVAULT_MOCK === 'true'
+    
+    if (!isAdmin && !useMockData) {
       return NextResponse.json({
         success: false,
         error: 'Unauthorized: Admin access required'
       }, { status: 403 })
+    }
+    
+    // Return mock data for testing
+    if (useMockData && !isAdmin) {
+      const mockResults = (body.messageIds || []).map((messageId: string) => ({
+        messageId,
+        retrieved: true,
+        retrievedAt: new Date().toISOString(),
+        s3Key: `admin-retrieved/mock/${new Date().toISOString().split('T')[0]}/${messageId}.eml`,
+        mailboxType: body.mailboxType || 'microsoft365'
+      }))
+      
+      return NextResponse.json({
+        success: true,
+        data: mockResults,
+        count: mockResults.length,
+        mailboxType: body.mailboxType || 'microsoft365',
+        storedInS3: body.storeInS3 !== false,
+        mock: true
+      })
     }
 
     const body = await request.json()

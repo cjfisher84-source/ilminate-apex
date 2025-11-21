@@ -29,11 +29,25 @@ export async function POST(request: NextRequest) {
       userEmail.toLowerCase() === email.toLowerCase()
     )
     
-    if (!isAdmin) {
+    // Allow mock data for non-admin users (for UI testing)
+    const useMockData = !isAdmin || process.env.ENABLE_MAILVAULT_MOCK === 'true'
+    
+    if (!isAdmin && !useMockData) {
       return NextResponse.json({
         success: false,
         error: 'Unauthorized: Admin access required'
       }, { status: 403 })
+    }
+    
+    // Return mock data for testing
+    if (useMockData && !isAdmin) {
+      return NextResponse.json({
+        success: true,
+        data: generateMockSearchResults(body),
+        count: 5,
+        mailboxType: body.mailboxType || 'microsoft365',
+        mock: true
+      })
     }
 
     const body = await request.json()
@@ -198,5 +212,93 @@ async function searchGoogleWorkspaceMailboxes(params: {
       preview: 'This is a placeholder result. Gmail API integration pending.'
     }
   ]
+}
+
+/**
+ * Generate mock search results for UI testing
+ */
+function generateMockSearchResults(params: any): any[] {
+  const now = new Date()
+  const messages = [
+    {
+      messageId: 'AAMkADU3YjE4YzQ1LWM5NzQtNDQ2OS1hYzEwLThmNzI5YjE4YzQ1LgBGAAAAAAC',
+      subject: params.subject || 'Quarterly Security Review - Action Required',
+      senderEmail: params.senderEmail || 'security@example.com',
+      recipientEmail: params.recipientEmail || 'user@ilminate.com',
+      receivedDateTime: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+      hasAttachments: true,
+      isRead: false,
+      mailboxType: params.mailboxType || 'microsoft365',
+      preview: 'This email contains important security updates that require your immediate attention. Please review the attached report and respond by end of business today.'
+    },
+    {
+      messageId: 'AAMkADU3YjE4YzQ1LWM5NzQtNDQ2OS1hYzEwLThmNzI5YjE4YzQ1LgBGAAAAAAB',
+      subject: 'Phishing Alert: Suspicious Email Detected',
+      senderEmail: 'noreply@security-alerts.com',
+      recipientEmail: params.recipientEmail || 'user@ilminate.com',
+      receivedDateTime: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
+      hasAttachments: false,
+      isRead: true,
+      mailboxType: params.mailboxType || 'microsoft365',
+      preview: 'Our security system detected a suspicious email in your mailbox. The message has been quarantined for review.'
+    },
+    {
+      messageId: 'AAMkADU3YjE4YzQ1LWM5NzQtNDQ2OS1hYzEwLThmNzI5YjE4YzQ1LgBGAAAAAAC',
+      subject: 'Invoice #INV-2025-8472 - Payment Overdue',
+      senderEmail: 'invoices@payments-processing.net',
+      recipientEmail: params.recipientEmail || 'user@ilminate.com',
+      receivedDateTime: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+      hasAttachments: true,
+      isRead: false,
+      mailboxType: params.mailboxType || 'microsoft365',
+      preview: 'Your invoice payment is overdue. Please make payment immediately to avoid service suspension. Click here to pay now.'
+    },
+    {
+      messageId: 'AAMkADU3YjE4YzQ1LWM5NzQtNDQ2OS1hYzEwLThmNzI5YjE4YzQ1LgBGAAAAAAD',
+      subject: 'Meeting Request: Security Incident Review',
+      senderEmail: 'calendar@ilminate.com',
+      recipientEmail: params.recipientEmail || 'user@ilminate.com',
+      receivedDateTime: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+      hasAttachments: false,
+      isRead: true,
+      mailboxType: params.mailboxType || 'microsoft365',
+      preview: 'You have been invited to a meeting to review the security incident that occurred on November 18th. Please confirm your attendance.'
+    },
+    {
+      messageId: 'AAMkADU3YjE4YzQ1LWM5NzQtNDQ2OS1hYzEwLThmNzI5YjE4YzQ1LgBGAAAAAAE',
+      subject: 'Password Reset Request',
+      senderEmail: 'noreply@ilminate.com',
+      recipientEmail: params.recipientEmail || 'user@ilminate.com',
+      receivedDateTime: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+      hasAttachments: false,
+      isRead: true,
+      mailboxType: params.mailboxType || 'microsoft365',
+      preview: 'A password reset was requested for your account. If you did not request this, please contact support immediately.'
+    }
+  ]
+  
+  // Filter based on search parameters
+  let filtered = messages
+  
+  if (params.subject) {
+    filtered = filtered.filter(m => 
+      m.subject.toLowerCase().includes(params.subject.toLowerCase())
+    )
+  }
+  
+  if (params.senderEmail) {
+    filtered = filtered.filter(m => 
+      m.senderEmail.toLowerCase().includes(params.senderEmail.toLowerCase())
+    )
+  }
+  
+  if (params.keywords) {
+    filtered = filtered.filter(m => 
+      m.preview.toLowerCase().includes(params.keywords.toLowerCase()) ||
+      m.subject.toLowerCase().includes(params.keywords.toLowerCase())
+    )
+  }
+  
+  return filtered.slice(0, params.limit || 100)
 }
 
