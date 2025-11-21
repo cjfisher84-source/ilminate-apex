@@ -4,10 +4,34 @@ import { Box, Button } from '@mui/material'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useIsMobile } from '@/lib/mobileUtils'
+import { useEffect, useState } from 'react'
 
 export default function NavigationBar() {
   const isMobile = useIsMobile()
   const pathname = usePathname()
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    // Check if user is admin
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=')
+      acc[key] = decodeURIComponent(value)
+      return acc
+    }, {} as Record<string, string>)
+
+    const userDisplay = cookies['apex_user_display']
+    if (userDisplay) {
+      try {
+        const info = JSON.parse(userDisplay)
+        const adminEmails = ['cfisher@ilminate.com', 'admin@ilminate.com']
+        setIsAdmin(adminEmails.some(email => 
+          info.email?.toLowerCase() === email.toLowerCase()
+        ))
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+  }, [])
 
   const navItems = [
     {
@@ -39,7 +63,13 @@ export default function NavigationBar() {
       href: '/reports/attack',
       label: '🎯 MITRE ATT&CK',
       title: 'View security events mapped to ATT&CK techniques for threat intelligence'
-    }
+    },
+    // Admin-only items
+    ...(isAdmin ? [{
+      href: '/admin/messages',
+      label: '📥 Admin Messages',
+      title: 'Search and retrieve delivered messages from user mailboxes (Admin only)'
+    }] : [])
   ]
 
   const isActive = (href: string) => {
