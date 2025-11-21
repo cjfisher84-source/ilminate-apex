@@ -208,10 +208,10 @@ export default function AdminMessagesPage() {
       <Box sx={{ minHeight: '100vh', bgcolor: '#0f172a', color: '#f1f5f9', pt: 2, pb: 4 }}>
         <Box sx={{ maxWidth: 1400, mx: 'auto', px: padding }}>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#00a8a8', mb: 1 }}>
-            Admin Message Search & Retrieval
+            🔐 APEX MailVault
           </Typography>
           <Typography variant="body2" sx={{ color: '#94a3b8', mb: 3 }}>
-            Search for delivered messages in user mailboxes and retrieve them for analysis
+            Advanced admin tool to search and retrieve delivered messages from user mailboxes for security analysis and investigation
           </Typography>
 
           {/* Search Form */}
@@ -508,7 +508,7 @@ export default function AdminMessagesPage() {
         }}
       >
         <DialogTitle sx={{ color: '#00a8a8', borderBottom: '1px solid #334155' }}>
-          Message Details
+          🔐 APEX MailVault - Message Details
         </DialogTitle>
         <DialogContent sx={{ color: '#f1f5f9', pt: 2 }}>
           {selectedMessage && (

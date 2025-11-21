@@ -1,8 +1,11 @@
-# Admin Message Search & Retrieval Service
+# 🔐 APEX MailVault
 
 ## Overview
 
-This service allows administrators to search for delivered messages in user mailboxes and retrieve them for analysis, investigation, or archival purposes. Messages can be searched by various attributes (subject, message ID, sender, recipient, keywords) and retrieved either individually or in bulk.
+**APEX MailVault** is an advanced admin-only service that allows administrators to search for delivered messages in user mailboxes and retrieve them for security analysis, investigation, or archival purposes. Messages can be searched by various attributes (subject, message ID, sender, recipient, keywords) and retrieved either individually or in bulk.
+
+**Product Name:** APEX MailVault  
+**Tagline:** "Secure Message Retrieval for Security Operations"
 
 ---
 

@@ -67,8 +67,8 @@ export default function NavigationBar() {
     // Admin-only items
     ...(isAdmin ? [{
       href: '/admin/messages',
-      label: '📥 Admin Messages',
-      title: 'Search and retrieve delivered messages from user mailboxes (Admin only)'
+      label: '🔐 MailVault',
+      title: 'APEX MailVault - Search and retrieve delivered messages from user mailboxes (Admin only)'
     }] : [])
   ]
 
