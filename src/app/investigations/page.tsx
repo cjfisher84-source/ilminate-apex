@@ -1,5 +1,5 @@
 'use client'
-import { Box, Typography, Card, CardContent, Button, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
+import { Box, Typography, Card, CardContent, Button, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
 import UserProfile from '@/components/UserProfile'
@@ -196,7 +196,7 @@ export default function InvestigationsPage() {
               </Box>
             </Box>
             <CardContent sx={{ p: 4 }}>
-              {/* Source Analysis */}
+              {/* Source Analysis - Interactive */}
               <Box sx={{ mb: 4 }}>
                 <Typography 
                   variant="h6" 
@@ -210,97 +210,380 @@ export default function InvestigationsPage() {
                   📍 Source Analysis
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 2 }}>
-                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mb: 0.5 }}>
-                      IP ADDRESS
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 700, fontFamily: 'monospace', color: 'text.primary' }}>
-                      {activeCampaign.source.ip}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mb: 0.5 }}>
-                      GEOLOCATION
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                      {activeCampaign.source.geo}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mb: 0.5 }}>
-                      DOMAIN
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 700, fontSize: '0.9rem', color: 'text.primary' }}>
-                      {activeCampaign.source.domain}
-                    </Typography>
-                  </Box>
+                  <Tooltip 
+                    title={`Click to search APEX Trace for all messages from IP ${activeCampaign.source.ip}. This IP has been flagged in ${activeCampaign.targets} incidents.`}
+                    arrow
+                    placement="top"
+                  >
+                    <Link href={`/apex-trace?ip=${activeCampaign.source.ip}`} style={{ textDecoration: 'none' }}>
+                      <Paper sx={{ 
+                        p: 2.5, 
+                        bgcolor: 'background.default', 
+                        borderRadius: 3,
+                        border: '2px solid',
+                        borderColor: 'divider',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        '&:hover': {
+                          borderColor: UNCW_TEAL,
+                          bgcolor: 'rgba(0, 112, 112, 0.05)',
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 8px 24px rgba(0, 112, 112, 0.2)',
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '3px',
+                            bgcolor: UNCW_TEAL
+                          }
+                        }
+                      }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            IP ADDRESS
+                          </Typography>
+                          <Box sx={{ fontSize: '0.8rem', opacity: 0.7 }}>🔍</Box>
+                        </Box>
+                        <Typography variant="body1" sx={{ fontWeight: 700, fontFamily: 'monospace', color: 'text.primary', fontSize: '1.1rem' }}>
+                          {activeCampaign.source.ip}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mt: 0.5, display: 'block' }}>
+                          Click to investigate →
+                        </Typography>
+                      </Paper>
+                    </Link>
+                  </Tooltip>
+
+                  <Tooltip 
+                    title={`Geolocation: ${activeCampaign.source.geo}. This region has been associated with ${activeCampaign.threatType.toLowerCase()} attacks. Click to view threat intelligence.`}
+                    arrow
+                    placement="top"
+                  >
+                    <Link href={`/apex-trace?domain=${encodeURIComponent(activeCampaign.source.geo)}`} style={{ textDecoration: 'none' }}>
+                      <Paper sx={{ 
+                        p: 2.5, 
+                        bgcolor: 'background.default', 
+                        borderRadius: 3,
+                        border: '2px solid',
+                        borderColor: 'divider',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          borderColor: UNCW_TEAL,
+                          bgcolor: 'rgba(0, 112, 112, 0.05)',
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 8px 24px rgba(0, 112, 112, 0.2)',
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '3px',
+                            bgcolor: UNCW_TEAL
+                          }
+                        }
+                      }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            GEOLOCATION
+                          </Typography>
+                          <Box sx={{ fontSize: '0.8rem', opacity: 0.7 }}>🌍</Box>
+                        </Box>
+                        <Typography variant="body1" sx={{ fontWeight: 700, color: 'text.primary', fontSize: '1.1rem' }}>
+                          {activeCampaign.source.geo}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mt: 0.5, display: 'block' }}>
+                          View threat intel →
+                        </Typography>
+                      </Paper>
+                    </Link>
+                  </Tooltip>
+
+                  <Tooltip 
+                    title={`Domain: ${activeCampaign.source.domain}. This domain is impersonating Microsoft and has been flagged as malicious. Click to search all messages from this domain.`}
+                    arrow
+                    placement="top"
+                  >
+                    <Link href={`/apex-trace?domain=${encodeURIComponent(activeCampaign.source.domain)}`} style={{ textDecoration: 'none' }}>
+                      <Paper sx={{ 
+                        p: 2.5, 
+                        bgcolor: 'background.default', 
+                        borderRadius: 3,
+                        border: '2px solid',
+                        borderColor: 'divider',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          borderColor: '#ef4444',
+                          bgcolor: 'rgba(239, 68, 68, 0.05)',
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 8px 24px rgba(239, 68, 68, 0.2)',
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '3px',
+                            bgcolor: '#ef4444'
+                          }
+                        }
+                      }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            DOMAIN
+                          </Typography>
+                          <Box sx={{ fontSize: '0.8rem', opacity: 0.7 }}>⚠️</Box>
+                        </Box>
+                        <Typography variant="body1" sx={{ fontWeight: 700, fontSize: '0.95rem', color: '#ef4444', wordBreak: 'break-word' }}>
+                          {activeCampaign.source.domain}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mt: 0.5, display: 'block' }}>
+                          Search messages →
+                        </Typography>
+                      </Paper>
+                    </Link>
+                  </Tooltip>
                 </Box>
               </Box>
 
-              {/* Path Visualization */}
+              {/* Path Visualization - Interactive */}
               <Box sx={{ mb: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 2 }}>
                   🛤️ Threat Path
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, overflowX: 'auto', pb: 2 }}>
-                  {pathData.path.map((step, idx) => (
-                    <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box sx={{ 
-                        p: 2, 
-                        bgcolor: step.status === 'quarantined' ? '#ef4444' : step.status === 'suspicious' ? UNCW_GOLD : UNCW_TEAL,
-                        color: 'white',
-                        borderRadius: 2,
-                        minWidth: 150,
-                        textAlign: 'center'
-                      }}>
-                        <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, opacity: 0.8 }}>
-                          {step.timestamp}
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                          {step.step}
-                        </Typography>
-                        <Typography variant="caption" sx={{ display: 'block', fontSize: '0.7rem' }}>
-                          {step.action}
-                        </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflowX: 'auto', pb: 2, scrollbarWidth: 'thin' }}>
+                  {pathData.path.map((step, idx) => {
+                    const stepDescriptions: Record<string, string> = {
+                      'Email Gateway': `Message received at ${step.timestamp}. Initial scanning performed by email gateway security filters.`,
+                      'Content Filter': `Content analysis completed. Message content scanned for malicious patterns and suspicious keywords.`,
+                      'AI Analysis': `AI-powered threat detection analyzed the message. Risk score calculated based on multiple indicators.`,
+                      'Policy Check': `Security policies evaluated. Message matched quarantine rules based on threat indicators.`,
+                      'User Mailbox': `Message delivered to quarantine folder. User notified of potential threat. Safe from user interaction.`
+                    }
+                    
+                    return (
+                      <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Tooltip 
+                          title={stepDescriptions[step.step] || `Security checkpoint: ${step.step}. ${step.action} at ${step.timestamp}.`}
+                          arrow
+                          placement="top"
+                        >
+                          <Link href={`/triage?step=${encodeURIComponent(step.step)}`} style={{ textDecoration: 'none' }}>
+                            <Paper sx={{ 
+                              p: 2.5, 
+                              bgcolor: step.status === 'quarantined' ? '#ef4444' : step.status === 'suspicious' ? UNCW_GOLD : UNCW_TEAL,
+                              color: 'white',
+                              borderRadius: 3,
+                              minWidth: 160,
+                              textAlign: 'center',
+                              cursor: 'pointer',
+                              transition: 'all 0.3s ease',
+                              border: '2px solid transparent',
+                              position: 'relative',
+                              overflow: 'hidden',
+                              '&:hover': {
+                                transform: 'scale(1.05) translateY(-4px)',
+                                boxShadow: '0 12px 32px rgba(0, 0, 0, 0.3)',
+                                borderColor: 'rgba(255, 255, 255, 0.3)',
+                                '&::after': {
+                                  content: '""',
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: '-100%',
+                                  width: '100%',
+                                  height: '100%',
+                                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+                                  animation: 'shimmer 1.5s ease-in-out',
+                                  '@keyframes shimmer': {
+                                    '0%': { left: '-100%' },
+                                    '100%': { left: '100%' }
+                                  }
+                                }
+                              }
+                            }}>
+                              <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, opacity: 0.9, fontSize: '0.7rem', mb: 0.5 }}>
+                                {step.timestamp}
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 800, fontSize: '0.95rem', mb: 0.5 }}>
+                                {step.step}
+                              </Typography>
+                              <Typography variant="caption" sx={{ display: 'block', fontSize: '0.7rem', opacity: 0.9 }}>
+                                {step.action}
+                              </Typography>
+                              <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255, 255, 255, 0.2)' }}>
+                                <Typography variant="caption" sx={{ fontSize: '0.65rem', opacity: 0.8 }}>
+                                  Click for details →
+                                </Typography>
+                              </Box>
+                            </Paper>
+                          </Link>
+                        </Tooltip>
+                        {idx < pathData.path.length - 1 && (
+                          <Box sx={{ 
+                            fontSize: '2rem', 
+                            color: '#64748b',
+                            animation: idx === pathData.path.length - 2 ? 'pulse 2s ease-in-out infinite' : 'none',
+                            '@keyframes pulse': {
+                              '0%, 100%': { opacity: 0.5 },
+                              '50%': { opacity: 1 }
+                            }
+                          }}>
+                            →
+                          </Box>
+                        )}
                       </Box>
-                      {idx < pathData.path.length - 1 && (
-                        <Box sx={{ fontSize: '1.5rem', color: '#999' }}>→</Box>
-                      )}
-                    </Box>
-                  ))}
+                    )
+                  })}
                 </Box>
               </Box>
 
-              {/* Exposure Metrics */}
+              {/* Exposure Metrics - Interactive */}
               <Box sx={{ mb: 4 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: UNCW_TEAL, mb: 2 }}>
                   💥 Exposure Analysis
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 2 }}>
-                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h3" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                      {pathData.exposure.usersTargeted}
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                      Users Targeted
-                    </Typography>
-                  </Box>
-                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h3" sx={{ fontWeight: 700, color: UNCW_GOLD }}>
-                      {pathData.exposure.usersOpened}
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                      Users Opened
-                    </Typography>
-                  </Box>
-                  <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h3" sx={{ fontWeight: 700, color: '#ef4444' }}>
-                      {pathData.exposure.credentialsCompromised}
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                      Credentials Compromised
-                    </Typography>
-                  </Box>
+                  <Tooltip 
+                    title={`${pathData.exposure.usersTargeted} users received this malicious message. Click to view the complete list of targeted users and their risk assessment.`}
+                    arrow
+                    placement="top"
+                  >
+                    <Link href={`/investigations/${activeCampaign.id}/users-targeted`} style={{ textDecoration: 'none' }}>
+                      <Paper sx={{ 
+                        p: 3, 
+                        bgcolor: 'background.default', 
+                        borderRadius: 3,
+                        textAlign: 'center',
+                        border: '2px solid',
+                        borderColor: 'divider',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        position: 'relative',
+                        '&:hover': {
+                          borderColor: UNCW_TEAL,
+                          bgcolor: 'rgba(0, 112, 112, 0.05)',
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 8px 24px rgba(0, 112, 112, 0.2)',
+                          '& .exposure-value': {
+                            transform: 'scale(1.1)',
+                            color: UNCW_TEAL
+                          }
+                        }
+                      }}>
+                        <Box sx={{ fontSize: '2rem', mb: 1 }}>👥</Box>
+                        <Typography className="exposure-value" variant="h3" sx={{ fontWeight: 800, color: 'text.primary', mb: 1, transition: 'all 0.3s ease' }}>
+                          {pathData.exposure.usersTargeted}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          Users Targeted
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mt: 1, display: 'block' }}>
+                          View list →
+                        </Typography>
+                      </Paper>
+                    </Link>
+                  </Tooltip>
+
+                  <Tooltip 
+                    title={`${pathData.exposure.usersOpened} users opened this message. Immediate security awareness training recommended. Click to view user details and send security notifications.`}
+                    arrow
+                    placement="top"
+                  >
+                    <Link href={`/investigations/${activeCampaign.id}/users-opened`} style={{ textDecoration: 'none' }}>
+                      <Paper sx={{ 
+                        p: 3, 
+                        bgcolor: 'background.default', 
+                        borderRadius: 3,
+                        textAlign: 'center',
+                        border: '2px solid',
+                        borderColor: 'divider',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          borderColor: UNCW_GOLD,
+                          bgcolor: 'rgba(255, 215, 0, 0.05)',
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 8px 24px rgba(255, 215, 0, 0.2)',
+                          '& .exposure-value': {
+                            transform: 'scale(1.1)',
+                            color: UNCW_GOLD
+                          }
+                        }
+                      }}>
+                        <Box sx={{ fontSize: '2rem', mb: 1 }}>📧</Box>
+                        <Typography className="exposure-value" variant="h3" sx={{ fontWeight: 800, color: UNCW_GOLD, mb: 1, transition: 'all 0.3s ease' }}>
+                          {pathData.exposure.usersOpened}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          Users Opened
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mt: 1, display: 'block' }}>
+                          Take action →
+                        </Typography>
+                      </Paper>
+                    </Link>
+                  </Tooltip>
+
+                  <Tooltip 
+                    title={`${pathData.exposure.credentialsCompromised} credential(s) potentially compromised. CRITICAL: Immediate password reset required. Click to view compromised accounts and initiate remediation.`}
+                    arrow
+                    placement="top"
+                  >
+                    <Link href={`/investigations/${activeCampaign.id}/credentials-compromised`} style={{ textDecoration: 'none' }}>
+                      <Paper sx={{ 
+                        p: 3, 
+                        bgcolor: 'background.default', 
+                        borderRadius: 3,
+                        textAlign: 'center',
+                        border: '2px solid',
+                        borderColor: 'divider',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        position: 'relative',
+                        '&:hover': {
+                          borderColor: '#ef4444',
+                          bgcolor: 'rgba(239, 68, 68, 0.05)',
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 8px 24px rgba(239, 68, 68, 0.3)',
+                          '& .exposure-value': {
+                            transform: 'scale(1.1)',
+                            color: '#ef4444'
+                          },
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '3px',
+                            bgcolor: '#ef4444',
+                            animation: 'pulse 1s ease-in-out infinite',
+                            '@keyframes pulse': {
+                              '0%, 100%': { opacity: 1 },
+                              '50%': { opacity: 0.5 }
+                            }
+                          }
+                        }
+                      }}>
+                        <Box sx={{ fontSize: '2rem', mb: 1 }}>🔐</Box>
+                        <Typography className="exposure-value" variant="h3" sx={{ fontWeight: 800, color: '#ef4444', mb: 1, transition: 'all 0.3s ease' }}>
+                          {pathData.exposure.credentialsCompromised}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          Credentials Compromised
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#ef4444', fontSize: '0.7rem', mt: 1, display: 'block', fontWeight: 700 }}>
+                          URGENT: Remediate →
+                        </Typography>
+                      </Paper>
+                    </Link>
+                  </Tooltip>
                 </Box>
               </Box>
             </CardContent>
