@@ -109,7 +109,7 @@ export default function InvestigationsPage() {
         <NavigationBar />
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 2.5 : 3 }}>
-          {/* Active Campaigns Overview */}
+          {/* Active Campaigns Overview - Interactive */}
           <Box className={isMobile ? 'mobile-table-wrapper' : ''}>
             <Card sx={{ bgcolor: 'background.paper', border: '2px solid', borderColor: 'divider', boxShadow: 2 }}>
               <Box sx={{ p: isMobile ? 2 : 3, borderBottom: '2px solid', borderColor: 'primary.main', bgcolor: 'background.default' }}>
@@ -138,41 +138,155 @@ export default function InvestigationsPage() {
                 </TableHead>
                 <TableBody>
                   {campaigns.map((campaign) => (
-                    <TableRow key={campaign.id} sx={{ '&:hover': { bgcolor: 'action.hover' } }}>
-                      <TableCell sx={{ color: 'text.primary', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>{campaign.name}</TableCell>
+                    <TableRow 
+                      key={campaign.id} 
+                      component={Link}
+                      href={`/investigations/${campaign.id}`}
+                      sx={{ 
+                        textDecoration: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        '&:hover': { 
+                          bgcolor: 'rgba(0, 112, 112, 0.08)',
+                          transform: 'scale(1.01)',
+                          '& td': {
+                            borderColor: UNCW_TEAL
+                          }
+                        },
+                        '& td': {
+                          borderBottom: '1px solid',
+                          borderColor: 'divider',
+                          transition: 'border-color 0.2s ease'
+                        }
+                      }}
+                    >
+                      <TableCell sx={{ color: 'text.primary', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>
+                        <Tooltip title={`Click to view detailed investigation for ${campaign.name}. ${campaign.targets} users targeted, ${campaign.interactions.compromised} compromised.`} arrow>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Box sx={{ fontSize: '1.2rem' }}>🔍</Box>
+                            <Box>
+                              {campaign.name}
+                              <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', fontSize: '0.7rem', mt: 0.25 }}>
+                                View details →
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Tooltip>
+                      </TableCell>
                       <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
-                        <Chip 
-                          label={campaign.threatType}
-                          size="small"
-                          sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600, fontSize: isMobile ? '0.7rem' : '0.8rem' }}
-                        />
+                        <Tooltip title={`Threat Type: ${campaign.threatType}. Click to filter all campaigns by this threat type.`} arrow>
+                          <Link href={`/investigations?type=${encodeURIComponent(campaign.threatType)}`} onClick={(e) => e.stopPropagation()} style={{ textDecoration: 'none' }}>
+                            <Chip 
+                              label={campaign.threatType}
+                              size="small"
+                              sx={{ 
+                                bgcolor: UNCW_TEAL, 
+                                color: 'white', 
+                                fontWeight: 600, 
+                                fontSize: isMobile ? '0.7rem' : '0.8rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                '&:hover': {
+                                  bgcolor: '#005555',
+                                  transform: 'scale(1.05)'
+                                }
+                              }}
+                            />
+                          </Link>
+                        </Tooltip>
                       </TableCell>
                       <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
                         <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                           {campaign.channels.map(ch => (
-                            <Chip key={ch} label={ch} size="small" variant="outlined" sx={{ fontSize: '0.7rem' }} />
+                            <Tooltip key={ch} title={`Attack channel: ${ch}. Click to view all campaigns using this channel.`} arrow>
+                              <Link href={`/investigations?channel=${encodeURIComponent(ch)}`} onClick={(e) => e.stopPropagation()} style={{ textDecoration: 'none' }}>
+                                <Chip 
+                                  label={ch} 
+                                  size="small" 
+                                  variant="outlined" 
+                                  sx={{ 
+                                    fontSize: '0.7rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease',
+                                    borderColor: 'divider',
+                                    '&:hover': {
+                                      borderColor: UNCW_TEAL,
+                                      bgcolor: 'rgba(0, 112, 112, 0.05)',
+                                      transform: 'scale(1.05)'
+                                    }
+                                  }} 
+                                />
+                              </Link>
+                            </Tooltip>
                           ))}
                         </Box>
                       </TableCell>
-                      <TableCell sx={{ color: 'text.primary', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>{campaign.targets}</TableCell>
-                      <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
-                        <Chip 
-                          label={campaign.interactions.compromised}
-                          size="small"
-                          sx={{ 
-                            bgcolor: campaign.interactions.compromised > 0 ? '#ef4444' : '#10b981',
-                            color: 'white',
-                            fontWeight: 700,
-                            fontSize: isMobile ? '0.7rem' : '0.8rem'
-                          }}
-                        />
+                      <TableCell sx={{ color: 'text.primary', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem', padding: isMobile ? '8px' : '16px' }}>
+                        <Tooltip title={`${campaign.targets} users were targeted by this campaign. Click to view the complete list of targeted users.`} arrow>
+                          <Link href={`/investigations/${campaign.id}/users-targeted`} onClick={(e) => e.stopPropagation()} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <Box sx={{ 
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 0.5,
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              '&:hover': {
+                                color: UNCW_TEAL,
+                                transform: 'scale(1.05)'
+                              }
+                            }}>
+                              <Box sx={{ fontSize: '0.9rem' }}>👥</Box>
+                              {campaign.targets}
+                            </Box>
+                          </Link>
+                        </Tooltip>
                       </TableCell>
                       <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
-                        <Chip 
-                          label={campaign.status}
-                          size="small"
-                          sx={{ bgcolor: getStatusColor(campaign.status), color: 'white', fontWeight: 600, fontSize: isMobile ? '0.7rem' : '0.8rem' }}
-                        />
+                        <Tooltip 
+                          title={campaign.interactions.compromised > 0 
+                            ? `CRITICAL: ${campaign.interactions.compromised} credential(s) compromised. Click for immediate remediation actions.`
+                            : `No credentials compromised. Excellent protection rate.`} 
+                          arrow
+                        >
+                          <Link href={`/investigations/${campaign.id}/credentials-compromised`} onClick={(e) => e.stopPropagation()} style={{ textDecoration: 'none' }}>
+                            <Chip 
+                              label={campaign.interactions.compromised}
+                              size="small"
+                              sx={{ 
+                                bgcolor: campaign.interactions.compromised > 0 ? '#ef4444' : '#10b981',
+                                color: 'white',
+                                fontWeight: 700,
+                                fontSize: isMobile ? '0.7rem' : '0.8rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                '&:hover': {
+                                  transform: 'scale(1.1)',
+                                  boxShadow: campaign.interactions.compromised > 0 
+                                    ? '0 4px 12px rgba(239, 68, 68, 0.4)'
+                                    : '0 4px 12px rgba(16, 185, 129, 0.4)'
+                                }
+                              }}
+                            />
+                          </Link>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell sx={{ padding: isMobile ? '8px' : '16px' }}>
+                        <Tooltip 
+                          title={`Status: ${campaign.status.toUpperCase()}. ${campaign.status === 'active' ? 'Ongoing threat requiring immediate attention.' : campaign.status === 'contained' ? 'Threat has been contained but monitoring continues.' : 'Threat has been resolved and no longer active.'}`} 
+                          arrow
+                        >
+                          <Chip 
+                            label={campaign.status}
+                            size="small"
+                            sx={{ 
+                              bgcolor: getStatusColor(campaign.status), 
+                              color: 'white', 
+                              fontWeight: 600, 
+                              fontSize: isMobile ? '0.7rem' : '0.8rem',
+                              cursor: 'default'
+                            }}
+                          />
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   ))}
