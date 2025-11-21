@@ -19,6 +19,9 @@ export async function POST(request: NextRequest) {
     const customerId = getCustomerIdFromHeaders(request.headers)
     const userEmail = request.headers.get('x-user-email')
     
+    // Parse request body first
+    const body = await request.json()
+    
     // Check if user is admin
     const adminEmails = [
       'cfisher@ilminate.com',
@@ -58,8 +61,6 @@ export async function POST(request: NextRequest) {
         mock: true
       })
     }
-
-    const body = await request.json()
     const {
       messageIds, // Array of message IDs to retrieve
       searchCriteria, // Search criteria to find messages
