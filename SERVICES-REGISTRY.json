@@ -1,0 +1,383 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-14T00:00:00Z",
+  "ecosystem": "ilminate",
+  "services": [
+    {
+      "id": "ilminate",
+      "name": "Ilminate Marketing Website",
+      "type": "marketing",
+      "status": "production",
+      "location": "ilminate/",
+      "repository": "https://github.com/cjfisher84-source/ilminate.git",
+      "deployment": "AWS Amplify",
+      "domain": "ilminate.com",
+      "stack": ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+      "purpose": "Public-facing marketing and company information",
+      "features": [
+        "Company information and services",
+        "Blog/news feeds (cybersecurity RSS)",
+        "Newsletter system (AWS SES integration)",
+        "Contact forms",
+        "Technical documentation (private section)"
+      ],
+      "dependencies": ["AWS Amplify", "AWS SES", "Inoreader"],
+      "monthlyCost": 5,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": ["ilminate-new", "ilminate-portal"]
+      }
+    },
+    {
+      "id": "ilminate-infrastructure",
+      "name": "Lambda Email Pipeline",
+      "type": "email-security",
+      "status": "active",
+      "location": "ilminate-infrastructure/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-infrastructure.git",
+      "deployment": "AWS Terraform (us-east-1)",
+      "stack": ["Terraform", "AWS Lambda", "AWS ECS", "API Gateway", "SQS", "S3", "DynamoDB"],
+      "purpose": "Email webhook processing and threat analysis (Gmail)",
+      "features": [
+        "VPC with public/private subnets",
+        "API Gateway webhooks (Graph + Gmail)",
+        "Lambda functions for email processing",
+        "SQS queues (mail-events + DLQ)",
+        "S3 artifacts storage",
+        "DynamoDB incident tracking",
+        "ECS services (sublime-core + mail-pipeline)"
+      ],
+      "monthlyCost": 100,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": ["ilminate-new", "ilminate-siem"],
+        "sendsTo": ["ilminate-siem"]
+      }
+    },
+    {
+      "id": "ilminate-email",
+      "name": "M365 Email Security Platform",
+      "type": "email-security",
+      "status": "production-ready",
+      "location": "ilminate-email/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-email.git",
+      "deployment": "AWS CloudFormation",
+      "stack": ["AWS Lambda", "API Gateway", "SQS", "DynamoDB", "CloudFormation", "EventBridge"],
+      "purpose": "Microsoft 365 email security with multi-signal risk analysis",
+      "features": [
+        "Microsoft Graph API integration",
+        "Webhook receiver for Graph subscriptions",
+        "Multi-stage processing pipeline",
+        "Risk fusion system (URLhaus, OTX, Spamhaus, AbuseIPDB, Rspamd)",
+        "DMARC monitoring with parsedmarc",
+        "Customer portal (React + Vite)"
+      ],
+      "monthlyCost": 12,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": ["ilminate-new", "ilminate-siem"],
+        "sendsTo": ["ilminate-siem"]
+      }
+    },
+    {
+      "id": "ilminate-new",
+      "name": "Customer Portal + Infrastructure",
+      "type": "portal",
+      "status": "mvp-complete",
+      "location": "ilminate-new/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-agent.git",
+      "deployment": "AWS Amplify + Lambda",
+      "domain": "portal.ilminate.com",
+      "stack": ["Next.js", "AWS CDK", "AWS Cognito", "Material UI", "Athena", "Glue"],
+      "purpose": "Multi-tenant customer portal with threat analysis",
+      "features": [
+        "Multi-tenant authentication (Cognito)",
+        "Google + Microsoft SSO",
+        "Tenant isolation",
+        "Dark theme (Material UI + UNCW colors)",
+        "Dashboard for threat events",
+        "User management",
+        "EML analyzer Lambda",
+        "Ingest webhook Lambda",
+        "API Gateway (authenticated)",
+        "S3 + DynamoDB",
+        "Athena + Glue (analytics)"
+      ],
+      "monthlyCost": 7,
+      "integrations": {
+        "dependsOn": ["ilminate-infrastructure", "ilminate-email", "ilminate-sandbox"],
+        "usedBy": [],
+        "consumesFrom": ["ilminate-infrastructure", "ilminate-email", "ilminate-sandbox"]
+      }
+    },
+    {
+      "id": "ilminate-portal",
+      "name": "Customer Portal (Alternative)",
+      "type": "portal",
+      "status": "active",
+      "location": "ilminate-portal/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-portal.git",
+      "deployment": "Next.js",
+      "stack": ["Next.js", "React"],
+      "purpose": "Customer portal interface",
+      "features": [
+        "Next.js application",
+        "Customer dashboard"
+      ],
+      "monthlyCost": 5,
+      "integrations": {
+        "dependsOn": ["ilminate"],
+        "usedBy": []
+      }
+    },
+    {
+      "id": "ilminate-sandbox",
+      "name": "Enterprise Email Threat Analysis",
+      "type": "threat-intelligence",
+      "status": "production-ready",
+      "location": "ilminate-sandbox/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-agent.git",
+      "deployment": "AWS CDK (Dark VPC)",
+      "stack": ["AWS CDK", "Dark VPC", "Lambda", "EC2", "Emerging Threats IOC", "Athena", "KMS"],
+      "purpose": "Secure email analysis with threat intelligence enrichment",
+      "features": [
+        "Dark VPC (no internet access)",
+        "Sanitization pipeline",
+        "EC2 worker for analysis",
+        "ET IOC database + automatic IOC extraction",
+        "Data lake (Glue + Athena)",
+        "QuickSight dashboard (optional)",
+        "KMS encryption (all data at rest)"
+      ],
+      "monthlyCost": 55,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": ["ilminate-new", "ilminate-siem"],
+        "sendsTo": ["ilminate-siem"]
+      }
+    },
+    {
+      "id": "ilminate-siem",
+      "name": "Wazuh SIEM",
+      "type": "siem",
+      "status": "deployed",
+      "location": "ilminate-siem/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-agent.git",
+      "deployment": "AWS EC2 (t3.large)",
+      "stack": ["Wazuh", "OpenSearch", "NGINX", "Terraform", "AWS Client VPN"],
+      "purpose": "Centralized SIEM for log aggregation and security alerting",
+      "features": [
+        "Wazuh Manager (alert processing)",
+        "Wazuh Indexer (OpenSearch)",
+        "Wazuh Dashboard (web UI)",
+        "Syslog listener (TCP/UDP 514)",
+        "Custom decoders for ilminate alerts",
+        "MITRE ATT&CK mappings",
+        "Optional AWS Client VPN for secure access"
+      ],
+      "monthlyCost": 60,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": ["ilminate-new"],
+        "receivesFrom": ["ilminate-infrastructure", "ilminate-email", "ilminate-sandbox", "ilminate-agent", "ilminate-apex"]
+      }
+    },
+    {
+      "id": "ilminate-agent",
+      "name": "Endpoint Detection and Response (EDR)",
+      "type": "edr",
+      "status": "ready-to-deploy",
+      "location": "ilminate-agent/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-agent.git",
+      "deployment": "Ansible",
+      "stack": ["Python", "YARA", "Ansible", "Syslog"],
+      "purpose": "Endpoint security monitoring and threat detection",
+      "features": [
+        "EDR Agent for Windows/Linux/macOS",
+        "Multi-tenant deployment automation",
+        "Real-time monitoring of files, processes, network",
+        "YARA-based malware detection",
+        "Behavioral analysis for threat detection",
+        "Automated SIEM integration via syslog"
+      ],
+      "monthlyCost": 10,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": ["ilminate-siem"],
+        "sendsTo": ["ilminate-siem"]
+      }
+    },
+    {
+      "id": "ilminate-apex",
+      "name": "APEX AI-Powered Cybersecurity Analysis",
+      "type": "ai-analysis",
+      "status": "active",
+      "location": "ilminate-apex/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-apex.git",
+      "deployment": "Python",
+      "stack": ["Python", "AI/ML", "Deep Learning"],
+      "purpose": "AI-driven platform for cybersecurity threat analysis, email security assessment, and automated triage",
+      "features": [
+        "AI-powered threat analysis",
+        "Email security assessment",
+        "Automated triage workflows",
+        "Real-time monitoring and alerts",
+        "Multi-tenant architecture support",
+        "6-layer detection engine",
+        "99.5% accuracy",
+        "0.08% false positive rate"
+      ],
+      "monthlyCost": 30,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": ["ilminate-mcp", "ilminate-infrastructure", "ilminate-email"],
+        "sendsTo": ["ilminate-siem"]
+      }
+    },
+    {
+      "id": "ilminate-mcp",
+      "name": "MCP Server for Detection Engines",
+      "type": "integration",
+      "status": "active",
+      "location": "ilminate-mcp/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-agent.git",
+      "deployment": "Node.js",
+      "stack": ["Node.js", "MCP Protocol", "Python Bridge"],
+      "purpose": "Model Context Protocol server exposing ilminate's threat detection capabilities",
+      "features": [
+        "Email Threat Analysis (BEC/phishing detection)",
+        "MITRE ATT&CK Mapping",
+        "Domain Reputation",
+        "Campaign Analysis",
+        "Image Scanning (QR code detection, logo impersonation, hidden links)",
+        "APEX Bridge Service integration"
+      ],
+      "monthlyCost": 0,
+      "integrations": {
+        "dependsOn": ["ilminate-apex"],
+        "usedBy": ["External AI Assistants"],
+        "consumesFrom": ["ilminate-apex"]
+      }
+    },
+    {
+      "id": "ilminate-harborsim",
+      "name": "HarborSim - Phishing Training Templates",
+      "type": "training",
+      "status": "active",
+      "location": "ilminate-harborsim/",
+      "repository": "https://github.com/cjfisher84-source/harborsim.git",
+      "deployment": "AWS Step Functions",
+      "stack": ["AWS Step Functions", "Lambda", "S3", "DynamoDB", "KMS", "Presidio"],
+      "purpose": "Transform live phishing emails into PII-free, deweaponized training templates",
+      "features": [
+        "Normalize EML files",
+        "Deweaponize (remove dangerous elements)",
+        "Attachment scanning",
+        "PII redaction using Presidio",
+        "Template generation (MJML)",
+        "S3 quarantine + sanitized buckets",
+        "DynamoDB template metadata"
+      ],
+      "monthlyCost": 15,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": [],
+        "consumesFrom": ["ilminate-infrastructure", "ilminate-email"]
+      }
+    },
+    {
+      "id": "ilminate-landseaair",
+      "name": "LandSeaAir (Placeholder)",
+      "type": "placeholder",
+      "status": "inactive",
+      "location": "ilminate-landseaair/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-agent.git",
+      "purpose": "Placeholder directory",
+      "features": [],
+      "monthlyCost": 0,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": []
+      }
+    },
+    {
+      "id": "ilminate-sso-aws",
+      "name": "SSO AWS (Placeholder)",
+      "type": "placeholder",
+      "status": "inactive",
+      "location": "ilminate-sso-aws/",
+      "repository": "https://github.com/cjfisher84-source/ilminate-agent.git",
+      "purpose": "Placeholder for future SSO consolidation",
+      "features": [],
+      "monthlyCost": 0,
+      "integrations": {
+        "dependsOn": [],
+        "usedBy": []
+      }
+    }
+  ],
+  "integrationMap": {
+    "emailSecurity": ["ilminate-infrastructure", "ilminate-email"],
+    "portals": ["ilminate-new", "ilminate-portal"],
+    "threatIntelligence": ["ilminate-sandbox", "ilminate-apex"],
+    "siem": ["ilminate-siem"],
+    "edr": ["ilminate-agent"],
+    "integrations": ["ilminate-mcp"],
+    "training": ["ilminate-harborsim"]
+  },
+  "dataFlow": {
+    "emailProviders": {
+      "gmail": "ilminate-infrastructure",
+      "m365": "ilminate-email"
+    },
+    "threatAnalysis": {
+      "fast": "ilminate-email",
+      "deep": "ilminate-sandbox",
+      "ai": "ilminate-apex"
+    },
+    "logAggregation": {
+      "destination": "ilminate-siem",
+      "sources": ["ilminate-infrastructure", "ilminate-email", "ilminate-sandbox", "ilminate-agent", "ilminate-apex"]
+    },
+    "customerFacing": {
+      "portal": "ilminate-new",
+      "marketing": "ilminate"
+    }
+  },
+  "apiEndpoints": {
+    "ilminate-infrastructure": {
+      "webhook": "/webhook/graph",
+      "gmail": "/webhook/gmail"
+    },
+    "ilminate-email": {
+      "webhook": "/webhook/graph",
+      "api": "/api/v1"
+    },
+    "ilminate-new": {
+      "portal": "https://core.d1t272u16ex6hi.amplifyapp.com",
+      "api": "/api/threats"
+    },
+    "ilminate-siem": {
+      "syslog": "tcp://[PRIVATE_IP]:514",
+      "dashboard": "https://[PRIVATE_IP]:443"
+    }
+  },
+  "sharedResources": {
+    "dynamoDB": {
+      "incidents": "ilminate-prod-incidents",
+      "mailboxState": "ilminate-mailbox-state",
+      "events": "ilminate-dev-events"
+    },
+    "s3": {
+      "artifacts": "ilminate-prod-artifacts",
+      "raw": "ilminate-harborsim-raw",
+      "sanitized": "ilminate-harborsim-sanitized"
+    },
+    "kms": {
+      "encryption": "ilminate-kms-key"
+    }
+  }
+}
+
+

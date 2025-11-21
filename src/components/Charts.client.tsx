@@ -46,8 +46,43 @@ export function TimelineArea() {
   const isMobile = useIsMobile()
   const theme = useTheme()
   const customerId = useCustomerId()
-  const data = mockTimeline30d(customerId)
+  const [data, setData] = useState(mockTimeline30d(customerId))
   const chartHeight = getResponsiveChartHeight(isMobile, 520)
+  
+  // Fetch real data from API
+  useEffect(() => {
+    const fetchTimeline = async () => {
+      try {
+        // If mock data is enabled, use mock data
+        if (customerId && document.cookie.includes('mockData=true')) {
+          return
+        }
+
+        const response = await fetch('/api/reports/stats', {
+          headers: customerId ? { 'x-customer-id': customerId } : {}
+        })
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data?.timeline) {
+            // Convert API timeline format to chart format
+            const timelineData = result.data.timeline.map((item: any) => ({
+              date: item.date,
+              quarantined: item.quarantined || 0,
+              delivered: item.delivered || 0,
+              total: (item.quarantined || 0) + (item.delivered || 0)
+            }))
+            setData(timelineData)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching timeline data:', error)
+        // Keep using mock data on error
+      }
+    }
+
+    fetchTimeline()
+  }, [customerId])
   
   useEffect(() => {
     log.chart('TimelineArea mounted', { isMobile, theme: theme.palette.mode })
@@ -114,7 +149,35 @@ export function TimelineArea() {
 }
 
 export function QuarantineDeliveredBars() {
-  const data = mockTimeline30d().map(d=>({date:d.date, quarantined:d.quarantined, delivered:d.delivered}))
+  const customerId = useCustomerId()
+  const [data, setData] = useState(mockTimeline30d(customerId).map(d=>({date:d.date, quarantined:d.quarantined, delivered:d.delivered})))
+  
+  // Fetch real data from API
+  useEffect(() => {
+    const fetchTimeline = async () => {
+      try {
+        const response = await fetch('/api/reports/stats', {
+          headers: customerId ? { 'x-customer-id': customerId } : {}
+        })
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data?.timeline) {
+            const timelineData = result.data.timeline.map((item: any) => ({
+              date: item.date,
+              quarantined: item.quarantined || 0,
+              delivered: item.delivered || 0
+            }))
+            setData(timelineData)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching timeline data:', error)
+      }
+    }
+
+    fetchTimeline()
+  }, [customerId])
   return (
     <div style={{ 
       backgroundColor: '#FFFFFF', 

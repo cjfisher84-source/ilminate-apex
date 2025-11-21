@@ -342,3 +342,8 @@ export default function TriageResults({ structured }: TriageResultsProps) {
 
 
 
+
+
+
+
+

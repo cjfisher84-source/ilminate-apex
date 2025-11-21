@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCustomerIdFromHeaders } from '@/lib/tenantUtils'
+import { searchMicrosoft365Messages } from '@/lib/microsoftGraph'
 
 /**
  * API Route: /api/admin/messages/search
@@ -120,34 +121,39 @@ async function searchMicrosoft365Mailboxes(params: {
   keywords?: string
   limit: number
 }): Promise<any[]> {
-  // TODO: Implement Microsoft Graph API integration
-  // This requires:
-  // 1. Azure AD app registration
-  // 2. OAuth token with Mail.Read permissions
-  // 3. Graph API calls to search user mailboxes
+  if (!params.recipientEmail) {
+    throw new Error('recipientEmail is required for Microsoft 365 search')
+  }
   
   console.log('🔍 Searching M365 mailboxes:', params)
   
-  // Placeholder implementation
-  // In production, this would:
-  // 1. Get access token from Azure AD
-  // 2. Query Graph API: GET /users/{userId}/messages?$filter=...
-  // 3. Format and return results
-  
-  return [
-    {
-      messageId: 'AAMkADU3...',
-      subject: params.subject || 'Sample Message',
-      senderEmail: params.senderEmail || 'sender@example.com',
-      recipientEmail: params.recipientEmail || 'user@example.com',
-      receivedDateTime: new Date().toISOString(),
-      hasAttachments: false,
-      isRead: true,
-      importance: 'normal',
+  try {
+    const messages = await searchMicrosoft365Messages({
+      userEmail: params.recipientEmail,
+      subject: params.subject,
+      senderEmail: params.senderEmail,
+      keywords: params.keywords,
+      dateFrom: params.dateFrom,
+      dateTo: params.dateTo,
+      limit: params.limit
+    })
+    
+    // Transform Graph API response to our format
+    return messages.map(msg => ({
+      messageId: msg.id,
+      subject: msg.subject || '',
+      senderEmail: msg.sender?.emailAddress?.address || '',
+      recipientEmail: params.recipientEmail,
+      receivedDateTime: msg.receivedDateTime,
+      hasAttachments: msg.hasAttachments || false,
+      isRead: msg.isRead || false,
       mailboxType: 'microsoft365',
-      preview: 'This is a placeholder result. Microsoft Graph API integration pending.'
-    }
-  ]
+      preview: msg.bodyPreview || ''
+    }))
+  } catch (error: any) {
+    console.error('Microsoft Graph API search error:', error)
+    throw error
+  }
 }
 
 /**

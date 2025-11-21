@@ -21,9 +21,40 @@ export default function Home() {
   const [customerId, setCustomerId] = useState<string | null>(null)
   const [branding, setBranding] = useState(getCustomerBranding(null))
   
-  // Get customer-specific data
-  const cats = mockCategoryCounts(customerId)
-  const abuse = mockDomainAbuse(customerId)
+  // State for real data
+  const [cats, setCats] = useState(mockCategoryCounts(customerId))
+  const [abuse, setAbuse] = useState(mockDomainAbuse(customerId))
+  
+  // Fetch real data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch stats
+        const statsResponse = await fetch('/api/reports/stats', {
+          headers: customerId ? { 'x-customer-id': customerId } : {}
+        })
+        
+        if (statsResponse.ok) {
+          const statsResult = await statsResponse.json()
+          if (statsResult.success && statsResult.data?.categoryCounts) {
+            // Convert category counts array back to object format
+            const categoryCountsObj: Record<string, number> = {}
+            statsResult.data.categoryCounts.forEach((item: any) => {
+              categoryCountsObj[item.category] = item.count
+            })
+            setCats(categoryCountsObj as any)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+        // Keep using mock data on error
+      }
+    }
+
+    if (customerId) {
+      fetchData()
+    }
+  }, [customerId])
   
   const containerPadding = getResponsivePadding(isMobile)
   const headerGap = getResponsiveSpacing(isMobile, 2, 3)

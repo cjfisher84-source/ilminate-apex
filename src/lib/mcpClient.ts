@@ -5,7 +5,7 @@
  * threat analysis and detection capabilities.
  */
 
-const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'http://54.237.174.195:8888';
+const MCP_SERVER_URL = process.env.MCP_SERVER_URL || 'http://54.237.174.195:8889';
 const MCP_API_KEY = process.env.MCP_API_KEY || '';
 const MCP_ENABLED = process.env.MCP_ENABLED === 'true';
 
@@ -67,7 +67,49 @@ export class IlminateMCPClient {
   }
 
   /**
-   * Call APEX Bridge directly (MCP tools use this internally)
+   * Call MCP tool via HTTP API
+   */
+  private async callMCPTool(toolName: string, args: any): Promise<MCPToolResponse> {
+    if (!this.enabled) {
+      return { success: false, error: 'MCP client not enabled' };
+    }
+
+    try {
+      const response = await fetch(`${this.serverUrl}/api/mcp/tools/${toolName}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': this.apiKey,
+        },
+        body: JSON.stringify({ args }),
+        // Timeout after 30 seconds (some tools may take longer)
+        signal: AbortSignal.timeout(30000),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => response.statusText);
+        return {
+          success: false,
+          error: `MCP tool error: ${response.status} ${errorText}`,
+        };
+      }
+
+      const data = await response.json();
+      if (data.success && data.result) {
+        return { success: true, data: data.result };
+      }
+      return { success: false, error: data.error || 'Unknown error' };
+    } catch (error: any) {
+      console.error(`[MCP] Error calling tool ${toolName}:`, error);
+      return {
+        success: false,
+        error: error.message || 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Call APEX Bridge directly (fallback for tools not yet in MCP)
    */
   private async callAPEXBridge(endpoint: string, args: any): Promise<MCPToolResponse> {
     if (!this.enabled) {
@@ -75,7 +117,9 @@ export class IlminateMCPClient {
     }
 
     try {
-      const response = await fetch(`${this.serverUrl}${endpoint}`, {
+      // Try APEX Bridge on port 8888
+      const bridgeUrl = this.serverUrl.replace(':8889', ':8888');
+      const response = await fetch(`${bridgeUrl}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,13 +150,12 @@ export class IlminateMCPClient {
   }
 
   /**
-   * Analyze email threat via APEX Bridge (used by MCP tools)
+   * Analyze email threat via MCP tool
    */
   async analyzeEmailThreat(
     input: AnalyzeEmailThreatInput
   ): Promise<AnalyzeEmailThreatOutput | null> {
-    const response = await this.callAPEXBridge('/api/analyze-email', {
-      message_id: `apex-${Date.now()}`,
+    const response = await this.callMCPTool('analyze_email_threat', {
       subject: input.subject,
       sender: input.sender,
       body: input.body,
@@ -123,20 +166,7 @@ export class IlminateMCPClient {
       return null;
     }
 
-    // Transform APEX Bridge response to MCP format
-    const verdict = response.data.verdict || response.data;
-    if (!verdict) {
-      return null;
-    }
-
-    return {
-      threat_score: (verdict.risk_score || 0) / 100, // Convert 0-100 to 0-1
-      threat_type: (verdict.threat_categories?.[0] || 'Safe') as any,
-      indicators: verdict.indicators || [],
-      recommendation: (verdict.action === 'QUARANTINE' || verdict.action === 'BLOCK' ? 'quarantine' : 
-                       verdict.threat_level === 'HIGH' || verdict.threat_level === 'CRITICAL' ? 'review' : 'allow') as any,
-      severity: (verdict.threat_level?.toLowerCase() || 'medium') as any,
-    };
+    return response.data as AnalyzeEmailThreatOutput;
   }
 
   /**
@@ -152,42 +182,62 @@ export class IlminateMCPClient {
   }
 
   /**
-   * Investigate suspicious indicator via APEX Bridge
+   * Investigate suspicious indicator via MCP tool
    */
   async investigateSuspiciousIndicator(
     indicator: string,
-    indicatorType: 'domain' | 'ip' | 'email' | 'hash'
+    indicatorType: 'domain' | 'ip' | 'email' | 'hash' | 'url' | 'attachment'
   ): Promise<any> {
-    if (indicatorType === 'domain') {
-      const response = await this.callAPEXBridge('/api/check-domain', {
-        domain: indicator,
-      });
-      return response.success ? response.data : null;
-    }
-    // Other indicator types can be added as needed
-    return null;
+    const response = await this.callMCPTool('investigate_suspicious_indicator', {
+      indicator_type: indicatorType,
+      indicator_value: indicator,
+    });
+    
+    return response.success ? response.data : null;
   }
 
   /**
-   * Get detection breakdown via APEX Bridge
-   * Note: This would require additional endpoint on APEX Bridge
+   * Get detection breakdown via MCP tool
    */
   async getDetectionBreakdown(
-    detectionId: string
+    input: {
+      subject: string;
+      sender: string;
+      body: string;
+      message_id?: string;
+    }
   ): Promise<any> {
-    // TODO: Implement when APEX Bridge exposes this endpoint
-    return null;
+    const response = await this.callMCPTool('get_detection_breakdown', {
+      subject: input.subject,
+      sender: input.sender,
+      body: input.body,
+      message_id: input.message_id,
+    });
+    
+    return response.success ? response.data : null;
   }
 
   /**
-   * Explain detection result via APEX Bridge
-   * Note: This would require additional endpoint on APEX Bridge
+   * Explain detection result via MCP tool
    */
   async explainDetectionResult(
-    detectionId: string
+    input: {
+      subject: string;
+      sender: string;
+      body: string;
+      message_id?: string;
+      verdict_data?: any;
+    }
   ): Promise<any> {
-    // TODO: Implement when APEX Bridge exposes this endpoint
-    return null;
+    const response = await this.callMCPTool('explain_detection_result', {
+      subject: input.subject,
+      sender: input.sender,
+      body: input.body,
+      message_id: input.message_id,
+      verdict_data: input.verdict_data,
+    });
+    
+    return response.success ? response.data : null;
   }
 }
 

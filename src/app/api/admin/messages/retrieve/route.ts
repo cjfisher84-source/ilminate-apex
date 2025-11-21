@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCustomerIdFromHeaders } from '@/lib/tenantUtils'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { getMicrosoft365MessageEml, searchMicrosoft365Messages } from '@/lib/microsoftGraph'
 
 /**
  * API Route: /api/admin/messages/retrieve
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
       searchCriteria, // Search criteria to find messages
       mailboxType = 'microsoft365',
       storeInS3 = true, // Whether to store retrieved messages in S3
-      recipientEmail // Specific user mailbox to search
+      recipientEmail // Specific user mailbox to search (required for M365)
     } = body
 
     // Validate parameters
@@ -63,11 +64,19 @@ export async function POST(request: NextRequest) {
     
     if (messageIds && Array.isArray(messageIds)) {
       // Retrieve specific messages by ID
+      if (mailboxType === 'microsoft365' && !recipientEmail) {
+        return NextResponse.json({
+          success: false,
+          error: 'recipientEmail is required for Microsoft 365 message retrieval'
+        }, { status: 400 })
+      }
+      
       retrievedMessages = await retrieveMessagesByIds({
         customerId: customerId || '',
         messageIds,
         mailboxType,
-        storeInS3
+        storeInS3,
+        recipientEmail
       })
     } else if (searchCriteria) {
       // Retrieve messages matching criteria
@@ -105,6 +114,7 @@ async function retrieveMessagesByIds(params: {
   messageIds: string[]
   mailboxType: string
   storeInS3: boolean
+  recipientEmail?: string
 }): Promise<any[]> {
   console.log('📥 Retrieving messages by IDs:', params.messageIds)
   
@@ -115,9 +125,15 @@ async function retrieveMessagesByIds(params: {
       let message: any
       
       if (params.mailboxType === 'microsoft365') {
-        message = await retrieveMicrosoft365Message(messageId)
+        if (!params.recipientEmail) {
+          throw new Error('recipientEmail is required for Microsoft 365')
+        }
+        message = await retrieveMicrosoft365Message(params.recipientEmail, messageId)
       } else if (params.mailboxType === 'google_workspace') {
-        message = await retrieveGoogleWorkspaceMessage(messageId)
+        if (!params.recipientEmail) {
+          throw new Error('recipientEmail is required for Google Workspace')
+        }
+        message = await retrieveGoogleWorkspaceMessage(params.recipientEmail, messageId)
       } else {
         throw new Error(`Unsupported mailbox type: ${params.mailboxType}`)
       }
@@ -163,9 +179,8 @@ async function retrieveMessagesByCriteria(params: {
   let matchingMessages: any[] = []
   
   if (params.mailboxType === 'microsoft365') {
-    matchingMessages = await searchMicrosoft365Mailboxes({
-      customerId: params.customerId,
-      recipientEmail: params.recipientEmail,
+    matchingMessages = await searchMicrosoft365Messages({
+      userEmail: params.recipientEmail,
       ...params.searchCriteria,
       limit: 1000
     })
@@ -179,52 +194,56 @@ async function retrieveMessagesByCriteria(params: {
   }
   
   // Then retrieve full message details
-  const messageIds = matchingMessages.map(m => m.messageId)
+  const messageIds = matchingMessages.map(m => m.id || m.messageId)
   return await retrieveMessagesByIds({
     customerId: params.customerId,
     messageIds,
     mailboxType: params.mailboxType,
-    storeInS3: params.storeInS3
+    storeInS3: params.storeInS3,
+    recipientEmail: params.recipientEmail
   })
 }
 
 /**
  * Retrieve a single Microsoft 365 message
  */
-async function retrieveMicrosoft365Message(messageId: string): Promise<any> {
-  // TODO: Implement Microsoft Graph API call
-  // GET /users/{userId}/messages/{messageId}
-  // GET /users/{userId}/messages/{messageId}/$value (for .eml format)
+async function retrieveMicrosoft365Message(userEmail: string, messageId: string): Promise<any> {
+  console.log('📧 Retrieving M365 message:', messageId, 'for user:', userEmail)
   
-  console.log('📧 Retrieving M365 message:', messageId)
-  
-  return {
-    messageId,
-    mailboxType: 'microsoft365',
-    retrieved: true,
-    retrievedAt: new Date().toISOString(),
-    // Placeholder - would contain full message data
-    rawMessage: 'Placeholder: Full message content would be here'
+  try {
+    const eml = await getMicrosoft365MessageEml(userEmail, messageId)
+    
+    return {
+      messageId,
+      mailboxType: 'microsoft365',
+      retrieved: true,
+      retrievedAt: new Date().toISOString(),
+      rawMessage: eml
+    }
+  } catch (error: any) {
+    console.error('Failed to retrieve M365 message:', error)
+    throw error
   }
 }
 
 /**
  * Retrieve a single Google Workspace message
  */
-async function retrieveGoogleWorkspaceMessage(messageId: string): Promise<any> {
-  // TODO: Implement Gmail API call
+async function retrieveGoogleWorkspaceMessage(userEmail: string, messageId: string): Promise<any> {
+  // TODO: Implement Gmail API call when Gmail integration is added
   // GET /gmail/v1/users/{userId}/messages/{messageId}
   // GET /gmail/v1/users/{userId}/messages/{messageId}?format=raw (for .eml format)
   
-  console.log('📧 Retrieving Gmail message:', messageId)
+  console.log('📧 Retrieving Gmail message:', messageId, 'for user:', userEmail)
   
+  // Placeholder until Gmail API is implemented
   return {
     messageId,
     mailboxType: 'google_workspace',
-    retrieved: true,
+    retrieved: false,
+    error: 'Gmail API integration pending',
     retrievedAt: new Date().toISOString(),
-    // Placeholder - would contain full message data
-    rawMessage: 'Placeholder: Full message content would be here'
+    rawMessage: 'Placeholder: Gmail API integration pending'
   }
 }
 
