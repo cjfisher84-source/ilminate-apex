@@ -57,7 +57,7 @@ export default function NavigationBar() {
     {
       href: '/mailvault',
       label: '🔐 MailVault',
-      title: 'Search and retrieve delivered messages from Microsoft 365 and Google Workspace mailboxes for security operations'
+      title: 'Search and retrieve delivered messages from user mailboxes'
     },
     {
       href: '/harborsim',

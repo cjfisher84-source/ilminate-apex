@@ -317,7 +317,7 @@ export default function MailVaultPage() {
                   fontSize: isMobile ? '0.9rem' : '1rem',
                   color: '#94a3b8'
                 }}>
-                  Search and retrieve delivered messages from Microsoft 365 and Google Workspace mailboxes
+                  Secure Message Retrieval for Security Operations
                 </Typography>
               </Box>
             </Box>
@@ -346,7 +346,7 @@ export default function MailVaultPage() {
             🔐 APEX MailVault
           </Typography>
           <Typography variant="body2" sx={{ color: '#94a3b8', mb: 3 }}>
-            Search and retrieve delivered messages from user mailboxes in Microsoft 365 and Google Workspace for security operations, incident response, and compliance investigations.
+            Advanced admin tool to search and retrieve delivered messages from user mailboxes for security analysis and investigation
           </Typography>
 
           {/* Search Form */}
