@@ -330,7 +330,7 @@ export default function Home() {
             </Paper>
           </Link>
 
-          {/* Cyber Score Section */}
+          {/* Security Performance Section - Redesigned */}
           <Box>
             <Box sx={{ mb: isMobile ? 2 : 3 }}>
               <Typography 
@@ -351,119 +351,305 @@ export default function Home() {
                   fontSize: getResponsiveFontSize(isMobile, 'body1')
                 }}
               >
-                Overall cyber security score and key performance metrics
+                Real-time security metrics and AI-powered insights
               </Typography>
             </Box>
+
+            {/* Main Performance Grid */}
             <Box sx={{ 
               display: 'grid', 
-              gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
-              gap: 3 
+              gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' },
+              gap: 3,
+              mb: 3
             }}>
-              <CyberScoreDonut />
-              <Box 
-                className="security-posture-card"
-                sx={{ 
-                  backgroundColor: 'background.paper', 
-                  border: 2,
+              {/* Left: Score & Key Metrics */}
+              <Box sx={{ 
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+                gap: 3
+              }}>
+                {/* Cyber Security Score - Enhanced */}
+                <Paper sx={{ 
+                  p: 3,
+                  bgcolor: 'background.paper',
+                  border: '2px solid',
                   borderColor: 'divider',
-                  height: 320,
-                  boxShadow: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  textAlign: 'center'
-                }}
-              >
-                <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', mb: 1.5 }}>
-                  Security Posture
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2, lineHeight: 1.5, fontSize: '0.85rem' }}>
-                  Your organization's security posture is being continuously monitored and improved through advanced threat detection and response capabilities.
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
+                  borderRadius: 3,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(90deg, #007070 0%, #00a8a8 50%, #007070 100%)',
+                    backgroundSize: '200% 100%',
+                    animation: 'shimmer 3s ease-in-out infinite',
+                    '@keyframes shimmer': {
+                      '0%': { backgroundPosition: '200% 0' },
+                      '100%': { backgroundPosition: '-200% 0' }
+                    }
+                  }
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                      Security Score
+                    </Typography>
+                    <Chip 
+                      label="Live" 
+                      size="small" 
+                      sx={{ 
+                        bgcolor: '#22c55e',
+                        color: 'white',
+                        fontWeight: 700,
+                        fontSize: '0.7rem',
+                        animation: 'pulse 2s ease-in-out infinite',
+                        '@keyframes pulse': {
+                          '0%, 100%': { opacity: 1 },
+                          '50%': { opacity: 0.7 }
+                        }
+                      }} 
+                    />
+                  </Box>
+                  <CyberScoreDonut />
+                </Paper>
+
+                {/* Real-Time Metrics Grid */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <Link href="/metrics/threats-blocked" style={{ textDecoration: 'none' }}>
-                    <Box 
-                      sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        alignItems: 'center', 
-                        p: 1.5, 
-                        bgcolor: 'background.default', 
-                        borderRadius: 2,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        border: '1px solid transparent',
-                        '&:hover': {
-                          bgcolor: 'action.hover',
-                          borderColor: 'success.main',
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+                    <Paper sx={{ 
+                      p: 2.5,
+                      bgcolor: 'background.paper',
+                      border: '2px solid',
+                      borderColor: 'divider',
+                      borderRadius: 3,
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      '&:hover': {
+                        borderColor: '#22c55e',
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 8px 24px rgba(34, 197, 94, 0.2)',
+                        '& .threat-icon': {
+                          transform: 'scale(1.1) rotate(5deg)'
                         }
-                      }}
-                      title="Total number of dangerous emails blocked today"
-                    >
-                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Threats Blocked Today</Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main', fontSize: '1.1rem' }}>
-                        {cats.Phish + cats.Malware + cats.Spam + cats.BEC + cats.ATO}
-                      </Typography>
-                    </Box>
-                  </Link>
-                  <Link href="/metrics/active-monitoring" style={{ textDecoration: 'none' }}>
-                    <Box 
-                      sx={{ 
+                      }
+                    }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                        <Box className="threat-icon" sx={{ 
+                          fontSize: '2rem',
+                          transition: 'transform 0.3s ease'
+                        }}>
+                          🛡️
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.75rem', mb: 0.5 }}>
+                            Threats Blocked Today
+                          </Typography>
+                          <Typography variant="h4" sx={{ fontWeight: 800, color: '#22c55e', lineHeight: 1 }}>
+                            {cats.Phish + cats.Malware + cats.Spam + cats.BEC + cats.ATO}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ 
                         display: 'flex', 
-                        justifyContent: 'space-between', 
                         alignItems: 'center', 
-                        p: 1.5, 
-                        bgcolor: 'background.default', 
-                        borderRadius: 2,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        border: '1px solid transparent',
-                        '&:hover': {
-                          bgcolor: 'action.hover',
-                          borderColor: 'primary.main',
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-                        }
-                      }}
-                      title="Continuous around-the-clock security monitoring"
-                    >
-                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Active Monitoring</Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', fontSize: '1.1rem' }}>24/7</Typography>
-                    </Box>
+                        gap: 1,
+                        mt: 1.5,
+                        pt: 1.5,
+                        borderTop: '1px solid',
+                        borderColor: 'divider'
+                      }}>
+                        <Box sx={{ 
+                          width: 8, 
+                          height: 8, 
+                          borderRadius: '50%', 
+                          bgcolor: '#22c55e',
+                          animation: 'pulse 2s ease-in-out infinite'
+                        }} />
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                          Active protection enabled
+                        </Typography>
+                      </Box>
+                    </Paper>
                   </Link>
+
                   <Link href="/metrics/last-incident" style={{ textDecoration: 'none' }}>
-                    <Box 
-                      sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        alignItems: 'center', 
-                        p: 1.5, 
-                        bgcolor: 'background.default', 
-                        borderRadius: 2,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        border: '1px solid transparent',
-                        '&:hover': {
-                          bgcolor: 'action.hover',
-                          borderColor: 'secondary.main',
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-                        }
-                      }}
-                      title="Time since the most recent security incident"
-                    >
-                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }}>Last Incident</Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.secondary', fontSize: '1.1rem' }}>
-                        {(cats.Phish + cats.Malware + cats.Spam + cats.BEC + cats.ATO) > 0 ? '2h ago' : 'No incidents'}
-                      </Typography>
-                    </Box>
+                    <Paper sx={{ 
+                      p: 2.5,
+                      bgcolor: 'background.paper',
+                      border: '2px solid',
+                      borderColor: 'divider',
+                      borderRadius: 3,
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        borderColor: '#f59e0b',
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 8px 24px rgba(245, 158, 11, 0.2)'
+                      }
+                    }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ fontSize: '2rem' }}>⚡</Box>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.75rem', mb: 0.5 }}>
+                            Last Incident
+                          </Typography>
+                          <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', lineHeight: 1 }}>
+                            {(cats.Phish + cats.Malware + cats.Spam + cats.BEC + cats.ATO) > 0 ? '2h ago' : 'No incidents'}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Paper>
                   </Link>
                 </Box>
               </Box>
+
+              {/* Right: Security Assistant */}
               <SecurityAssistant />
+            </Box>
+
+            {/* Performance Metrics Row */}
+            <Box sx={{ 
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+              gap: 2
+            }}>
+              <Link href="/metrics/protection-rate" style={{ textDecoration: 'none' }}>
+                <Paper sx={{ 
+                  p: 2.5,
+                  bgcolor: 'background.paper',
+                  border: '2px solid',
+                  borderColor: 'divider',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  '&:hover': {
+                    borderColor: '#007070',
+                    bgcolor: 'rgba(0, 112, 112, 0.05)',
+                    transform: 'translateY(-2px)',
+                    '& .metric-value': {
+                      color: '#007070'
+                    }
+                  }
+                }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mb: 1, display: 'block' }}>
+                    Protection Rate
+                  </Typography>
+                  <Typography className="metric-value" variant="h5" sx={{ fontWeight: 800, color: 'text.primary', mb: 0.5, transition: 'color 0.3s ease' }}>
+                    94.2%
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ fontSize: '0.7rem' }}>📈</Box>
+                    <Typography variant="caption" sx={{ color: '#22c55e', fontSize: '0.65rem' }}>
+                      +2.1% vs last week
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Link>
+
+              <Link href="/metrics/response-time" style={{ textDecoration: 'none' }}>
+                <Paper sx={{ 
+                  p: 2.5,
+                  bgcolor: 'background.paper',
+                  border: '2px solid',
+                  borderColor: 'divider',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    borderColor: '#007070',
+                    bgcolor: 'rgba(0, 112, 112, 0.05)',
+                    transform: 'translateY(-2px)',
+                    '& .metric-value': {
+                      color: '#007070'
+                    }
+                  }
+                }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mb: 1, display: 'block' }}>
+                    Response Time
+                  </Typography>
+                  <Typography className="metric-value" variant="h5" sx={{ fontWeight: 800, color: 'text.primary', mb: 0.5, transition: 'color 0.3s ease' }}>
+                    2.3m
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ fontSize: '0.7rem' }}>⚡</Box>
+                    <Typography variant="caption" sx={{ color: '#22c55e', fontSize: '0.65rem' }}>
+                      Industry leading
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Link>
+
+              <Link href="/metrics/false-positives" style={{ textDecoration: 'none' }}>
+                <Paper sx={{ 
+                  p: 2.5,
+                  bgcolor: 'background.paper',
+                  border: '2px solid',
+                  borderColor: 'divider',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    borderColor: '#007070',
+                    bgcolor: 'rgba(0, 112, 112, 0.05)',
+                    transform: 'translateY(-2px)',
+                    '& .metric-value': {
+                      color: '#007070'
+                    }
+                  }
+                }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mb: 1, display: 'block' }}>
+                    False Positives
+                  </Typography>
+                  <Typography className="metric-value" variant="h5" sx={{ fontWeight: 800, color: 'text.primary', mb: 0.5, transition: 'color 0.3s ease' }}>
+                    0.8%
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ fontSize: '0.7rem' }}>✅</Box>
+                    <Typography variant="caption" sx={{ color: '#22c55e', fontSize: '0.65rem' }}>
+                      Excellent accuracy
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Link>
+
+              <Link href="/metrics/coverage" style={{ textDecoration: 'none' }}>
+                <Paper sx={{ 
+                  p: 2.5,
+                  bgcolor: 'background.paper',
+                  border: '2px solid',
+                  borderColor: 'divider',
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    borderColor: '#007070',
+                    bgcolor: 'rgba(0, 112, 112, 0.05)',
+                    transform: 'translateY(-2px)',
+                    '& .metric-value': {
+                      color: '#007070'
+                    }
+                  }
+                }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mb: 1, display: 'block' }}>
+                    Coverage
+                  </Typography>
+                  <Typography className="metric-value" variant="h5" sx={{ fontWeight: 800, color: 'text.primary', mb: 0.5, transition: 'color 0.3s ease' }}>
+                    99.1%
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ fontSize: '0.7rem' }}>🌐</Box>
+                    <Typography variant="caption" sx={{ color: '#22c55e', fontSize: '0.65rem' }}>
+                      Full coverage
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Link>
             </Box>
           </Box>
 
