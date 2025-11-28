@@ -146,8 +146,8 @@ export default function EDRMetricsPage() {
                 protecting your systems even when software patches haven't been applied yet.
               </Typography>
             </Box>
-            <Box sx={{ p: 2, bgcolor: 'rgba(139, 92, 246, 0.1)', borderRadius: 2, border: '1px solid #8b5cf6' }}>
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#8b5cf6' }}>🤔 Suspicious Behavior</Typography>
+            <Box sx={{ p: 2, bgcolor: 'rgba(0, 112, 112, 0.1)', borderRadius: 2, border: '1px solid #007070' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#007070' }}>🤔 Suspicious Behavior</Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                 Unusual system activity that might indicate a breach, such as unauthorized data access or unusual network connections. 
                 EDR monitors behavior patterns and alerts on anomalies.

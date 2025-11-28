@@ -68,6 +68,11 @@ export default function NavigationBar() {
       href: '/reports/attack',
       label: '🎯 MITRE ATT&CK',
       title: 'View security events mapped to ATT&CK techniques for threat intelligence'
+    },
+    {
+      href: '/threats/sms',
+      label: '📱 SMS Threats',
+      title: 'View SMS smishing detections and TOAD callback number threats'
     }
   ]
 

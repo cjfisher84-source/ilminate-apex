@@ -135,8 +135,8 @@ export default function EDRThreatsPage() {
                 EDR uses AI to identify anomalous behavior patterns and alerts on potential threats.
               </Typography>
             </Box>
-            <Box sx={{ p: 2, bgcolor: 'rgba(139, 92, 246, 0.1)', borderRadius: 2, border: '1px solid #8b5cf6' }}>
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#8b5cf6' }}>💥 Exploit Attempts</Typography>
+            <Box sx={{ p: 2, bgcolor: 'rgba(0, 112, 112, 0.1)', borderRadius: 2, border: '1px solid #007070' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#007070' }}>💥 Exploit Attempts</Typography>
               <Typography variant="body2" sx={{ mb: 1, color: 'text.secondary' }}>
                 Attackers try to exploit software vulnerabilities to gain unauthorized access to your systems and data.
               </Typography>

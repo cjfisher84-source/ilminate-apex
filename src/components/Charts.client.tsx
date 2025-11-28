@@ -946,7 +946,7 @@ export function AIExploitDetectionChart() {
               }} />
             </div>
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
-              <Chip label={`${item.trend}`} size="small" sx={{ bgcolor: '#8b5cf6', color: 'white', fontWeight: 600, fontSize: '0.6rem', height: 20 }} />
+              <Chip label={`${item.trend}`} size="small" sx={{ bgcolor: UNCW_TEAL, color: 'white', fontWeight: 600, fontSize: '0.6rem', height: 20 }} />
               <Chip label={`${item.success_rate}`} size="small" sx={{ bgcolor: '#10b981', color: 'white', fontWeight: 600, fontSize: '0.6rem', height: 20 }} />
             </div>
             <div style={{ marginTop: 'auto' }}>
@@ -1017,8 +1017,8 @@ export function CrossChannelTimelineChart({ campaignId }: { campaignId: string }
               <stop offset="95%" stopColor={UNCW_GOLD} stopOpacity={0.05}/>
             </linearGradient>
             <linearGradient id="colorSlack" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.5}/>
-              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.05}/>
+              <stop offset="5%" stopColor={UNCW_TEAL} stopOpacity={0.5}/>
+              <stop offset="95%" stopColor={UNCW_TEAL} stopOpacity={0.05}/>
             </linearGradient>
             <linearGradient id="colorAI" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#ef4444" stopOpacity={0.5}/>
@@ -1036,7 +1036,7 @@ export function CrossChannelTimelineChart({ campaignId }: { campaignId: string }
           <Legend wrapperStyle={{ paddingTop: 16 }} />
           <Area type="monotone" dataKey="email" name="Email" stroke={UNCW_TEAL} fill="url(#colorEmail)" strokeWidth={2} />
           <Area type="monotone" dataKey="aiAssistant" name="AI Assistant" stroke="#ef4444" fill="url(#colorAI)" strokeWidth={2} />
-          <Area type="monotone" dataKey="webPortal" name="Web Portal" stroke="#8b5cf6" fill="url(#colorSlack)" strokeWidth={2} />
+          <Area type="monotone" dataKey="webPortal" name="Web Portal" stroke={UNCW_TEAL} fill="url(#colorSlack)" strokeWidth={2} />
           <Area type="monotone" dataKey="mobileApp" name="Mobile App" stroke={UNCW_GOLD} fill="url(#colorTeams)" strokeWidth={2} />
         </AreaChart>
       </ResponsiveContainer>
