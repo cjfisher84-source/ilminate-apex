@@ -1,5 +1,5 @@
 'use client'
-import { Box, Typography, Card, CardContent, Button, Chip, Grid } from '@mui/material'
+import { Box, Typography, Card, CardContent, Button, Chip } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
 import UserProfile from '@/components/UserProfile'
@@ -115,47 +115,49 @@ export default function ThreatsPage() {
             >
               Threat Categories
             </Typography>
-            <Grid container spacing={2}>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+              gap: 2 
+            }}>
               {threatTypes.map((threat) => (
-                <Grid item xs={12} sm={6} md={4} key={threat.slug}>
-                  <Link href={`/threats/${threat.slug}`} style={{ textDecoration: 'none' }}>
-                    <Card sx={{ 
-                      bgcolor: 'background.paper', 
-                      border: '2px solid',
-                      borderColor: 'divider',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      height: '100%',
-                      '&:hover': {
-                        borderColor: threat.color,
-                        transform: 'translateY(-4px)',
-                        boxShadow: `0 8px 24px ${threat.color}40`
-                      }
-                    }}>
-                      <CardContent sx={{ p: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                          <Typography variant="h5" sx={{ fontWeight: 700, color: threat.color }}>
-                            {threat.label}
-                          </Typography>
-                          <Chip 
-                            label="View →" 
-                            size="small" 
-                            sx={{ 
-                              bgcolor: threat.color, 
-                              color: 'white',
-                              fontWeight: 600
-                            }} 
-                          />
-                        </Box>
-                        <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                          {threat.description}
+                <Link key={threat.slug} href={`/threats/${threat.slug}`} style={{ textDecoration: 'none' }}>
+                  <Card sx={{ 
+                    bgcolor: 'background.paper', 
+                    border: '2px solid',
+                    borderColor: 'divider',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    height: '100%',
+                    '&:hover': {
+                      borderColor: threat.color,
+                      transform: 'translateY(-4px)',
+                      boxShadow: `0 8px 24px ${threat.color}40`
+                    }
+                  }}>
+                    <CardContent sx={{ p: 3 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 700, color: threat.color }}>
+                          {threat.label}
                         </Typography>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                </Grid>
+                        <Chip 
+                          label="View →" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: threat.color, 
+                            color: 'white',
+                            fontWeight: 600
+                          }} 
+                        />
+                      </Box>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
+                        {threat.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
-            </Grid>
+            </Box>
           </Box>
 
           {/* Threat Family Types Chart */}
