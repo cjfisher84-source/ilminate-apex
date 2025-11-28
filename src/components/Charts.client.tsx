@@ -4,6 +4,7 @@ import { mockTimeline30d, mockCyberScore, mockAIThreats, mockEDRMetrics30d, mock
 import { Box, Typography, Chip, useTheme, Button } from '@mui/material'
 import { useEffect, useState, useRef, useMemo } from 'react'
 import React from 'react'
+import Link from 'next/link'
 import { useIsMobile, getResponsiveChartHeight } from '@/lib/mobileUtils'
 import { log } from '@/utils/log'
 import dynamic from 'next/dynamic'
@@ -89,29 +90,55 @@ export function TimelineArea() {
   }, [isMobile, theme.palette.mode])
   
   return (
-    <div 
-      className={isMobile ? 'mobile-chart-container' : ''}
-      style={{ 
-        backgroundColor: theme.palette.background.paper, 
-        borderRadius: 16, 
-        padding: isMobile ? 16 : 32, 
-        border: `2px solid ${theme.palette.divider}`,
-        height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-        transition: 'all 0.3s ease'
-      }}>
-      <div style={{ 
-        marginBottom: isMobile ? 16 : 24, 
-        color: theme.palette.text.primary, 
-        fontSize: isMobile ? '1.1rem' : '1.3rem', 
-        fontWeight: 700,
-        display: 'flex',
-        alignItems: 'center',
-        gap: isMobile ? 8 : 12
-      }}>
-        <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
-        {isMobile ? 'Threat Timeline (30d)' : 'Threat Timeline — last 30 days'}
-      </div>
+    <Link href="/investigations" style={{ textDecoration: 'none', display: 'block' }}>
+      <div 
+        className={isMobile ? 'mobile-chart-container' : ''}
+        style={{ 
+          backgroundColor: theme.palette.background.paper, 
+          borderRadius: 16, 
+          padding: isMobile ? 16 : 32, 
+          border: `2px solid ${theme.palette.divider}`,
+          height: chartHeight,
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+          transition: 'all 0.3s ease',
+          cursor: 'pointer',
+          '&:hover': {
+            borderColor: UNCW_TEAL,
+            transform: 'translateY(-2px)',
+            boxShadow: '0 8px 24px rgba(0, 112, 112, 0.2)'
+          }
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = UNCW_TEAL
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 112, 112, 0.2)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = theme.palette.divider
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+        <div style={{ 
+          marginBottom: isMobile ? 16 : 24, 
+          color: theme.palette.text.primary, 
+          fontSize: isMobile ? '1.1rem' : '1.3rem', 
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: isMobile ? 8 : 12
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12 }}>
+            <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+            {isMobile ? 'Threat Timeline (30d)' : 'Threat Timeline — last 30 days'}
+          </div>
+          {!isMobile && (
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+              Click to view investigations →
+            </Typography>
+          )}
+        </div>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: isMobile ? 5 : 20, left: isMobile ? -20 : 0, bottom: 0 }}>
           <defs>
@@ -144,7 +171,8 @@ export function TimelineArea() {
           <Area type="monotone" dataKey="delivered" name="Delivered" stroke={UNCW_GOLD} strokeWidth={isMobile ? 2 : 3} fill="url(#colorDelivered)" />
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+      </div>
+    </Link>
   )
 }
 
@@ -403,28 +431,50 @@ export function AIThreatsBar() {
   }
 
   return (
-    <div 
-      className={isMobile ? 'mobile-chart-container' : ''}
-      style={{ 
-        backgroundColor: 'transparent', 
-        borderRadius: 16, 
-        padding: isMobile ? 16 : 32, 
-        border: `2px solid ${theme.palette.divider}`,
-        height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
-      }}>
-      <div style={{ 
-        marginBottom: isMobile ? 16 : 24, 
-        color: theme.palette.text.primary, 
-        fontSize: isMobile ? '1.1rem' : '1.3rem', 
-        fontWeight: 700,
-        display: 'flex',
-        alignItems: 'center',
-        gap: isMobile ? 8 : 12
-      }}>
-        <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
-        AI Threats Breakdown
-      </div>
+    <Link href="/threats/ai" style={{ textDecoration: 'none', display: 'block' }}>
+      <div 
+        className={isMobile ? 'mobile-chart-container' : ''}
+        style={{ 
+          backgroundColor: 'transparent', 
+          borderRadius: 16, 
+          padding: isMobile ? 16 : 32, 
+          border: `2px solid ${theme.palette.divider}`,
+          height: chartHeight,
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = UNCW_TEAL
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 112, 112, 0.2)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = theme.palette.divider
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+        <div style={{ 
+          marginBottom: isMobile ? 16 : 24, 
+          color: theme.palette.text.primary, 
+          fontSize: isMobile ? '1.1rem' : '1.3rem', 
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: isMobile ? 8 : 12
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12 }}>
+            <div style={{ width: 4, height: isMobile ? 20 : 28, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+            AI Threats Breakdown
+          </div>
+          {!isMobile && (
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+              View details →
+            </Typography>
+          )}
+        </div>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart 
           data={data} 
@@ -807,28 +857,48 @@ export function AIExploitDetectionChart() {
   }, [data.length, theme.palette.mode])
   
   return (
-    <div style={{ 
-      backgroundColor: theme.palette.background.paper, 
-      borderRadius: 16, 
-      padding: 24, 
-      border: `2px solid ${theme.palette.divider}`,
-      height: 500,
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <Link href="/threats/ai-exploits" style={{ textDecoration: 'none', display: 'block' }}>
       <div style={{ 
-        marginBottom: 16, 
-        color: theme.palette.text.primary, 
-        fontSize: '1.1rem', 
-        fontWeight: 700,
+        backgroundColor: theme.palette.background.paper, 
+        borderRadius: 16, 
+        padding: 24, 
+        border: `2px solid ${theme.palette.divider}`,
+        height: 500,
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
         display: 'flex',
-        alignItems: 'center',
-        gap: 8
-      }}>
-        <div style={{ width: 3, height: 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
-        AI Exploit Detection & Prevention
-      </div>
+        flexDirection: 'column',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = '#ef4444'
+        e.currentTarget.style.transform = 'translateY(-2px)'
+        e.currentTarget.style.boxShadow = '0 8px 24px rgba(239, 68, 68, 0.2)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = theme.palette.divider
+        e.currentTarget.style.transform = 'translateY(0)'
+        e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+      }}
+      >
+        <div style={{ 
+          marginBottom: 16, 
+          color: theme.palette.text.primary, 
+          fontSize: '1.1rem', 
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 3, height: 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
+            AI Exploit Detection & Prevention
+          </div>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+            View details →
+          </Typography>
+        </div>
       
       {/* 3x2 grid layout - all tiles same size, no scrolling */}
       <div style={{ 
@@ -910,7 +980,8 @@ export function AIExploitDetectionChart() {
           </div>
         ))}
       </div>
-    </div>
+      </div>
+    </Link>
   )
 }
 
@@ -1009,30 +1080,52 @@ export function ThreatFamilyTypesChart() {
   }
 
   return (
-    <div 
-      className={isMobile ? 'mobile-chart-container' : ''}
-      style={{ 
-        backgroundColor: theme.palette.background.paper, 
-        borderRadius: 16, 
-        padding: isMobile ? 16 : 24, 
-        border: `2px solid ${theme.palette.divider}`,
-        height: chartHeight,
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-      <div style={{ 
-        marginBottom: isMobile ? 12 : 20, 
-        color: theme.palette.text.primary, 
-        fontSize: isMobile ? '1.05rem' : '1.2rem', 
-        fontWeight: 700,
-        display: 'flex',
-        alignItems: 'center',
-        gap: isMobile ? 6 : 8
-      }}>
-        <div style={{ width: 3, height: isMobile ? 16 : 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
-        Threat Family Types
-      </div>
+    <Link href="/threats" style={{ textDecoration: 'none', display: 'block' }}>
+      <div 
+        className={isMobile ? 'mobile-chart-container' : ''}
+        style={{ 
+          backgroundColor: theme.palette.background.paper, 
+          borderRadius: 16, 
+          padding: isMobile ? 16 : 24, 
+          border: `2px solid ${theme.palette.divider}`,
+          height: chartHeight,
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+          display: 'flex',
+          flexDirection: 'column',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = '#ef4444'
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.boxShadow = '0 8px 24px rgba(239, 68, 68, 0.2)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = theme.palette.divider
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+        <div style={{ 
+          marginBottom: isMobile ? 12 : 20, 
+          color: theme.palette.text.primary, 
+          fontSize: isMobile ? '1.05rem' : '1.2rem', 
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: isMobile ? 6 : 8
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 8 }}>
+            <div style={{ width: 3, height: isMobile ? 16 : 20, backgroundColor: '#ef4444', borderRadius: 2 }}></div>
+            Threat Family Types
+          </div>
+          {!isMobile && (
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+              View details →
+            </Typography>
+          )}
+        </div>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart 
           data={data} 
@@ -1078,7 +1171,8 @@ export function ThreatFamilyTypesChart() {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-    </div>
+      </div>
+    </Link>
   )
 }
 
@@ -1109,28 +1203,48 @@ export function PeerComparisonChart() {
   }
 
   return (
-    <div style={{ 
-      backgroundColor: theme.palette.background.paper, 
-      borderRadius: 16, 
-      padding: 24, 
-      border: `2px solid ${theme.palette.divider}`,
-      height: 420,
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <Link href="/metrics/peer-comparison" style={{ textDecoration: 'none', display: 'block' }}>
       <div style={{ 
-        marginBottom: 20, 
-        color: theme.palette.text.primary, 
-        fontSize: '1.2rem', 
-        fontWeight: 700,
+        backgroundColor: theme.palette.background.paper, 
+        borderRadius: 16, 
+        padding: 24, 
+        border: `2px solid ${theme.palette.divider}`,
+        height: 420,
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
         display: 'flex',
-        alignItems: 'center',
-        gap: 8
-      }}>
-        <div style={{ width: 3, height: 20, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
-        Customer vs Peers Comparison
-      </div>
+        flexDirection: 'column',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = UNCW_TEAL
+        e.currentTarget.style.transform = 'translateY(-2px)'
+        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 112, 112, 0.2)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = theme.palette.divider
+        e.currentTarget.style.transform = 'translateY(0)'
+        e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)'
+      }}
+      >
+        <div style={{ 
+          marginBottom: 20, 
+          color: theme.palette.text.primary, 
+          fontSize: '1.2rem', 
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 3, height: 20, backgroundColor: UNCW_TEAL, borderRadius: 2 }}></div>
+            Customer vs Peers Comparison
+          </div>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+            View details →
+          </Typography>
+        </div>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart 
           data={data} 
@@ -1172,7 +1286,8 @@ export function PeerComparisonChart() {
           <Bar dataKey="regionalPeers" name="Regional Peers" fill="#6b7280" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
-    </div>
+      </div>
+    </Link>
   )
 }
 
