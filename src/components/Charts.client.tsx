@@ -503,7 +503,8 @@ export function AIThreatsBar() {
           <Bar dataKey="count" fill={UNCW_TEAL} radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
-    </div>
+      </div>
+    </Link>
   )
 }
 
