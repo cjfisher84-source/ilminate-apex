@@ -101,12 +101,7 @@ export function TimelineArea() {
           height: chartHeight,
           boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
           transition: 'all 0.3s ease',
-          cursor: 'pointer',
-          '&:hover': {
-            borderColor: UNCW_TEAL,
-            transform: 'translateY(-2px)',
-            boxShadow: '0 8px 24px rgba(0, 112, 112, 0.2)'
-          }
+          cursor: 'pointer'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = UNCW_TEAL
