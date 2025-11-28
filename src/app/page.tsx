@@ -266,7 +266,20 @@ export default function Home() {
           </Box>
 
           {/* Advanced Image Detection Section */}
-          <ImageScanResults />
+          <Box
+            sx={{
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                '& > div > div:first-of-type h4': {
+                  color: 'primary.main'
+                }
+              }
+            }}
+            onClick={() => window.location.href = '/threats/image-scan'}
+          >
+            <ImageScanResults />
+          </Box>
 
           {/* MITRE ATT&CK Matrix Highlight */}
           <Link href="/reports/attack" style={{ textDecoration: 'none' }}>
@@ -369,52 +382,68 @@ export default function Home() {
                 gap: 3
               }}>
                 {/* Cyber Security Score - Enhanced */}
-                <Paper sx={{ 
-                  p: 3,
-                  bgcolor: 'background.paper',
-                  border: '2px solid',
-                  borderColor: 'divider',
-                  borderRadius: 3,
-                  position: 'relative',
-                  overflow: 'hidden',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '4px',
-                    background: 'linear-gradient(90deg, #007070 0%, #00a8a8 50%, #007070 100%)',
-                    backgroundSize: '200% 100%',
-                    animation: 'shimmer 3s ease-in-out infinite',
-                    '@keyframes shimmer': {
-                      '0%': { backgroundPosition: '200% 0' },
-                      '100%': { backgroundPosition: '-200% 0' }
+                <Link href="/metrics/security-score" style={{ textDecoration: 'none', display: 'block' }}>
+                  <Paper sx={{ 
+                    p: 3,
+                    bgcolor: 'background.paper',
+                    border: '2px solid',
+                    borderColor: 'divider',
+                    borderRadius: 3,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      borderColor: 'primary.main',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 24px rgba(0, 112, 112, 0.2)'
+                    },
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '4px',
+                      background: 'linear-gradient(90deg, #007070 0%, #00a8a8 50%, #007070 100%)',
+                      backgroundSize: '200% 100%',
+                      animation: 'shimmer 3s ease-in-out infinite',
+                      '@keyframes shimmer': {
+                        '0%': { backgroundPosition: '200% 0' },
+                        '100%': { backgroundPosition: '-200% 0' }
+                      }
                     }
-                  }
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                      Security Score
-                    </Typography>
-                    <Chip 
-                      label="Live" 
-                      size="small" 
-                      sx={{ 
-                        bgcolor: '#22c55e',
-                        color: 'white',
-                        fontWeight: 700,
-                        fontSize: '0.7rem',
-                        animation: 'pulse 2s ease-in-out infinite',
-                        '@keyframes pulse': {
-                          '0%, 100%': { opacity: 1 },
-                          '50%': { opacity: 0.7 }
-                        }
-                      }} 
-                    />
-                  </Box>
-                  <CyberScoreDonut />
-                </Paper>
+                  }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                        Security Score
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Chip 
+                          label="Live" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: '#22c55e',
+                            color: 'white',
+                            fontWeight: 700,
+                            fontSize: '0.7rem',
+                            animation: 'pulse 2s ease-in-out infinite',
+                            '@keyframes pulse': {
+                              '0%, 100%': { opacity: 1 },
+                              '50%': { opacity: 0.7 }
+                            }
+                          }} 
+                        />
+                        {!isMobile && (
+                          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                            View details →
+                          </Typography>
+                        )}
+                      </Box>
+                    </Box>
+                    <CyberScoreDonut />
+                  </Paper>
+                </Link>
 
                 {/* Real-Time Metrics Grid */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -667,26 +696,39 @@ export default function Home() {
           </Box>
 
           {/* Domain / Brand Abuse (DMARC value) */}
-          <Box className={isMobile ? 'mobile-table-wrapper' : ''}>
-            <TableContainer component={Paper} sx={{ 
-              bgcolor: 'background.paper', 
-              border: 2,
-              borderColor: 'divider',
-              borderRadius: 3,
-              boxShadow: 2
-            }}>
-              <Box sx={{ p: isMobile ? 1.5 : 2, borderBottom: 2, borderColor: 'primary.main', bgcolor: 'background.default' }}>
-                <Typography 
-                  variant="subtitle1" 
-                  sx={{ 
-                    color: 'text.primary', 
-                    fontWeight: 600,
-                    fontSize: isMobile ? '0.95rem' : '1rem'
-                  }}
-                >
-                  Domain / Brand Abuse — {isMobile ? 'DMARC' : 'showing the value of DMARC'}
-                </Typography>
-              </Box>
+          <Link href="/dmarc" style={{ textDecoration: 'none', display: 'block' }}>
+            <Box className={isMobile ? 'mobile-table-wrapper' : ''}>
+              <TableContainer component={Paper} sx={{ 
+                bgcolor: 'background.paper', 
+                border: 2,
+                borderColor: 'divider',
+                borderRadius: 3,
+                boxShadow: 2,
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 24px rgba(0, 112, 112, 0.2)'
+                }
+              }}>
+                <Box sx={{ p: isMobile ? 1.5 : 2, borderBottom: 2, borderColor: 'primary.main', bgcolor: 'background.default', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography 
+                    variant="subtitle1" 
+                    sx={{ 
+                      color: 'text.primary', 
+                      fontWeight: 600,
+                      fontSize: isMobile ? '0.95rem' : '1rem'
+                    }}
+                  >
+                    Domain / Brand Abuse — {isMobile ? 'DMARC' : 'showing the value of DMARC'}
+                  </Typography>
+                  {!isMobile && (
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                      View all domains →
+                    </Typography>
+                  )}
+                </Box>
               <Table sx={{ minWidth: isMobile ? 600 : 'auto' }}>
                 <TableHead>
                   <TableRow sx={{ bgcolor: 'background.default' }}>
@@ -774,7 +816,8 @@ export default function Home() {
                 </TableBody>
               </Table>
             </TableContainer>
-          </Box>
+            </Box>
+          </Link>
 
           {/* AI Threats */}
           <AIThreatsBar />
@@ -786,28 +829,50 @@ export default function Home() {
           {isFeatureEnabled(customerId, 'edr') && (
             <>
               {/* EDR Section Header */}
-              <Box sx={{ mt: isMobile ? 2 : 4, mb: 2 }}>
-                <Typography 
-                  variant="h4" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    color: 'text.primary', 
-                    mb: 1,
-                    fontSize: getResponsiveFontSize(isMobile, 'h4')
-                  }}
-                >
-                  {isMobile ? 'EDR' : 'Endpoint Detection & Response (EDR)'}
-                </Typography>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    color: 'text.secondary',
-                    fontSize: getResponsiveFontSize(isMobile, 'body1')
-                  }}
-                >
-                  Real-time endpoint security monitoring{isMobile ? '' : ', threat detection, and automated response across your infrastructure'}
-                </Typography>
-              </Box>
+              <Link href="/edr/metrics" style={{ textDecoration: 'none', display: 'block' }}>
+                <Box sx={{ 
+                  mt: isMobile ? 2 : 4, 
+                  mb: 2,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    '& h4': {
+                      color: 'primary.main'
+                    }
+                  }
+                }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                      <Typography 
+                        variant="h4" 
+                        sx={{ 
+                          fontWeight: 700, 
+                          color: 'text.primary', 
+                          mb: 1,
+                          fontSize: getResponsiveFontSize(isMobile, 'h4'),
+                          transition: 'color 0.3s ease'
+                        }}
+                      >
+                        {isMobile ? 'EDR' : 'Endpoint Detection & Response (EDR)'}
+                      </Typography>
+                      <Typography 
+                        variant="body1" 
+                        sx={{ 
+                          color: 'text.secondary',
+                          fontSize: getResponsiveFontSize(isMobile, 'body1')
+                        }}
+                      >
+                        Real-time endpoint security monitoring{isMobile ? '' : ', threat detection, and automated response across your infrastructure'}
+                      </Typography>
+                    </Box>
+                    {!isMobile && (
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem', mt: 1 }}>
+                        View details →
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              </Link>
 
               {/* EDR Metrics Timeline */}
               <EDRMetricsLines />
