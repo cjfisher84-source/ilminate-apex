@@ -266,20 +266,21 @@ export default function Home() {
           </Box>
 
           {/* Advanced Image Detection Section */}
-          <Box
-            sx={{
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              '&:hover': {
-                '& > div > div:first-of-type h4': {
-                  color: 'primary.main'
+          <Link href="/threats/image-scan" style={{ textDecoration: 'none', display: 'block' }}>
+            <Box
+              sx={{
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  '& > div > div:first-of-type h4': {
+                    color: 'primary.main'
+                  }
                 }
-              }
-            }}
-            onClick={() => window.location.href = '/threats/image-scan'}
-          >
-            <ImageScanResults />
-          </Box>
+              }}
+            >
+              <ImageScanResults />
+            </Box>
+          </Link>
 
           {/* MITRE ATT&CK Matrix Highlight */}
           <Link href="/reports/attack" style={{ textDecoration: 'none' }}>
