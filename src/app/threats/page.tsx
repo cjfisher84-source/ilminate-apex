@@ -20,7 +20,7 @@ export default function ThreatsPage() {
     { label: 'Phish', slug: 'phish', color: '#ef4444', description: 'Deceptive messages trying to steal credentials or sensitive info.' },
     { label: 'Malware', slug: 'malware', color: '#f97316', description: 'Malicious software via links/attachments that can infect endpoints.' },
     { label: 'Spam', slug: 'spam', color: '#eab308', description: 'Bulk unsolicited messages — often noisy cover for real threats.' },
-    { label: 'BEC', slug: 'bec', color: '#007070', description: 'Business Email Compromise — social engineering for payment fraud.' },
+    { label: 'BEC', slug: 'bec', color: '#8b5cf6', description: 'Business Email Compromise — social engineering for payment fraud.' },
     { label: 'ATO', slug: 'ato', color: '#ec4899', description: 'Account Takeover — attacker uses stolen credentials to act as the user.' },
   ]
 

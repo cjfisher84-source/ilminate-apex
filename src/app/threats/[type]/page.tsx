@@ -135,7 +135,7 @@ const THREAT_INFO: Record<string, { title: string; description: string; color: s
   ato: {
     title: 'Account Takeover',
     description: 'Attackers use stolen credentials to access legitimate accounts and conduct malicious activities while appearing as the legitimate user.',
-    color: '#007070',
+    color: '#8b5cf6',
     indicators: [
       'Login from unusual locations or devices',
       'Abnormal email activity patterns',
